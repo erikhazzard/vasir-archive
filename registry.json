@@ -342,19 +342,6 @@
       "entry": "SKILL.md"
     },
     {
-      "name": "documentation__writing",
-      "description": "Creates, revises, audits, and organizes technical documentation using Diátaxis. Use when authoring or restructuring tutorials, how-to guides, reference, explanations, API docs, quickstarts, installation or troubleshooting guides, READMEs, and documentation navigation.",
-      "category": "uncategorized",
-      "tags": [],
-      "version": "0.1.0",
-      "recommends": [],
-      "files": [
-        "SKILL.md"
-      ],
-      "path": ".agents/skills/documentation__writing",
-      "entry": "SKILL.md"
-    },
-    {
       "name": "eval__design-proof-gates",
       "description": "Designs the smallest sufficient set of falsifiable proof gates and owns a warranted eval-plan.md. Trigger: multiple gates, actors, environments, sessions, or a missing harness require durable coordination; decline when one inline check is enough.",
       "category": "uncategorized",
@@ -394,7 +381,7 @@
         "lib/README.md",
         "references/article.md",
         "references/visuals.md",
-        "references/writing-style.md"
+        "references/writing-from-reader-perspective.md"
       ],
       "path": ".agents/skills/explaining__creating-interactive-articles",
       "entry": "SKILL.md"
@@ -1176,26 +1163,8 @@
       "entry": "SKILL.md"
     },
     {
-      "name": "writing__authorial-voice",
-      "description": "Writes in an opinionated authorial voice. Use for player / user facing text.",
-      "category": "uncategorized",
-      "tags": [],
-      "version": "0.1.0",
-      "recommends": [],
-      "files": [
-        "SKILL.md",
-        "references/plainspoken-lyricism.md",
-        "references/source-analysis-and-evaluation.md",
-        "references/trait-drafting-instruction.md",
-        "references/trait-revision-instruction.md",
-        "scripts/screen_overlap.py"
-      ],
-      "path": ".agents/skills/writing__authorial-voice",
-      "entry": "SKILL.md"
-    },
-    {
       "name": "writing__prose-styles",
-      "description": "Writes prose in one of four house voices, lyrical fiction, lyrical realism, narrative journalism and the house voice for players and users. Use for fantasy or real-world storyteller fiction (in the vein of The Name of the Wind), reported narrative, columns and newsletters, or in-game and in-app copy.",
+      "description": "Writes prose in one of five house voices, lyrical fiction, lyrical realism, narrative journalism, explanatory and technical prose, and the house voice for players and users. Use for fantasy or real-world storyteller fiction (in the vein of The Name of the Wind), reported narrative, columns and newsletters, technical explanations, docs and reviews, or in-game and in-app copy.",
       "category": "uncategorized",
       "tags": [],
       "version": "0.1.0",
@@ -1207,27 +1176,16 @@
         "references/house/trait-drafting-instruction.md",
         "references/house/trait-revision-instruction.md",
         "references/narrative-journalism-rules.md",
+        "references/writing-from-reader-perspective.md",
         "scripts/hardchecks.py",
         "scripts/screen_overlap.py",
+        "voices/explanatory.md",
         "voices/house.md",
         "voices/lyrical-fiction.md",
         "voices/lyrical-realism.md",
         "voices/narrative-journalism.md"
       ],
       "path": ".agents/skills/writing__prose-styles",
-      "entry": "SKILL.md"
-    },
-    {
-      "name": "writing__response-quality-style-guide",
-      "description": "Sharpens high-stakes written artifacts and critique. Use for final prose polish, strategy memos, analysis, reviews, docs, or prompts where clarity, force, structure, or anti-slop editing matters.",
-      "category": "uncategorized",
-      "tags": [],
-      "version": "0.1.0",
-      "recommends": [],
-      "files": [
-        "SKILL.md"
-      ],
-      "path": ".agents/skills/writing__response-quality-style-guide",
       "entry": "SKILL.md"
     },
     {

@@ -15,7 +15,7 @@ Do not turn this into a long questionnaire. Ask five questions by default, depen
 
 - `references/article.md` offline HTML scaffold, D3-ready article layout, state coordination, responsive patterns, QA
 - `references/visuals.md` D3 v7 visualization patterns, interaction recipes, chart choices, accessibility, validation
-- `references/writing-style.md` required writing style for article prose, captions, prompts, headings, notes, and delivery summaries
+- `references/writing-from-reader-perspective.md` required writing style for article prose, captions, prompts, headings, notes, and delivery summaries
 
 ## Mission Standard
 
@@ -30,7 +30,7 @@ Every artifact must satisfy these standards:
 5. **D3-first visuals.** Use D3 v7 for nontrivial charts, scales, axes, layouts, transitions, brushing, Delaunay hover, data joins, and cross-chart dispatch.
 6. **Fully offline delivery.** No CDN, remote fonts, remote scripts, external image hosts, runtime API calls, or remote datasets.
 7. **Accessible, robust behavior.** Captions, keyboard-accessible controls, non-color-only encodings, reduced-motion handling, responsive layout, and no console errors.
-8. **Required writing style.** All prose follows `references/writing-style.md` without weakening truth, technical clarity, or figure comprehension.
+8. **Required writing style.** All prose follows `references/writing-from-reader-perspective.md` without weakening truth, technical clarity, or figure comprehension.
 
 ## Articles, Not Dashboards
 
@@ -119,7 +119,7 @@ Question quality rules:
 If the user gives a brief prompt, use these defaults unless contradicted:
 
 - Audience: technically curious reader who is new to this exact concept.
-- Style: follow `references/writing-style.md`: concrete mechanisms, old-to-new flow, plain force, no AI-default prose, no hype.
+- Style: follow `references/writing-from-reader-perspective.md`: concrete mechanisms, old-to-new flow, plain force, no AI-default prose, no hype.
 - Output: one standalone `index.html` unless the concept clearly needs a series.
 - Scope: one core insight plus supporting mechanics, not an encyclopedia.
 - Visual implementation: D3 v7 for nontrivial figures, bundled offline.
@@ -236,7 +236,7 @@ Implementation rules:
 - Generated data must be deterministic with a seeded random generator.
 - Real data must include provenance and transformation notes.
 - Prose and figures should be written together. The prose tells the reader what to notice.
-- Run the prose through `references/writing-style.md` while drafting, not after. If style pressure conflicts with correctness, source grounding, accessibility, or reader comprehension, correctness wins.
+- Run the prose through `references/writing-from-reader-perspective.md` while drafting, not after. If style pressure conflicts with correctness, source grounding, accessibility, or reader comprehension, correctness wins.
 
 Build the most important figure first internally, test it, then complete the rest. For each major section, verify that the default state demonstrates the intended insight.
 
@@ -262,7 +262,7 @@ Before delivering, run this checklist. If a check cannot be performed, disclose 
 - Captions say what to notice, not merely what is present.
 - There is no generic AI ornamentation.
 - Reader-facing prose does not drift into implementation tutorial mode.
-- Prose follows `references/writing-style.md`: no grand openers, negation-pivot drama, hollow hype, generic transitions, fake profundity, decorative metaphor, summary endings, or fabricated concrete details.
+- Prose follows `references/writing-from-reader-perspective.md`: no grand openers, negation-pivot drama, hollow hype, generic transitions, fake profundity, decorative metaphor, summary endings, or fabricated concrete details.
 - Each section gives the reader a portable handle: a named mechanism, pattern, variable relationship, visual convention, or boundary they can use after reading.
 
 #### Runtime and Accessibility
@@ -317,7 +317,7 @@ For audits, provide:
 
 ## Required Writing Style
 
-Use `references/writing-style.md` for all article prose, headings, captions, annotations, prediction prompts, notes, limitations, and delivery summaries.
+Use `references/writing-from-reader-perspective.md` for all article prose, headings, captions, annotations, prediction prompts, notes, limitations, and delivery summaries.
 
 Apply it as a technical-explainer style, not as decorative essay cosplay:
 

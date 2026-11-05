@@ -37,9 +37,9 @@
     {
       "id": "documentation-sibling-boundary",
       "task": "Restructure our repository's Markdown API guides into tutorials, how-to pages, explanations, and reference pages. No PDF is involved. Which skill owns this work?",
-      "outputHint": "Route authored and restructured technical documentation to documentation__writing, not the PDF transcription skill.",
+      "outputHint": "Route authored and restructured technical documentation to writing__prose-styles, not the PDF transcription skill.",
       "requiredSubstrings": [
-        "documentation__writing",
+        "writing__prose-styles",
         "not",
         "audited-pdf-to-markdown"
       ]
