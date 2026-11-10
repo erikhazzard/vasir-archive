@@ -40,6 +40,8 @@ Begin with the user or engineering outcome, real entrypoints and consumers, supp
 
 Trace the normal path and materially distinct failure, recovery, concurrency, migration, or lifecycle paths. Identify authoritative state, derived representations, mutation points, I/O, trust boundaries, and existing mitigations. Inspect current proof and its blind spots.
 
+**Model the state machines the boundary touches.** When it writes or branches on state that outlives one call—status fields, flag clusters, lifecycles, retries, queues, persisted records—build the state × event table from the write sites and find the invalid states and transitions the code can actually reach, including through retries and concurrency. Follow the [state-machine pass](references/state-machine-pass.md). When the boundary holds no such state, say so in one line.
+
 **The diff is an entry point, not a fence.** Follow an implicated mechanism to its owner, consumers, generators, configuration, and proof—even across modules—when that can change the diagnosis or enable removal of the chain. State why the added slice is relevant. Broader read-only investigation is encouraged when it resolves that question; unrelated repository cleanup is not. Respect explicit exclusions and separately identify any excluded dependency that prevents a conclusion.
 
 Stop expanding when material chains terminate in evidenced requirements and the remedy's consumers and obligations are accounted for. Do not stop merely because the right owner is outside the diff; do not keep expanding merely because more code exists.
@@ -163,3 +165,4 @@ Return findings inline or to the calling handoff. When a durable standalone repo
 ## Reference
 
 - [Calibration examples](references/calibration-examples.md) — read when a remedy involves a compensation chain, apparent duplication, performance-sensitive state, compatibility retirement, or a conflict between release safety and design acceptance.
+- [State-machine pass](references/state-machine-pass.md) — read when the boundary writes or branches on state that outlives one call.

@@ -1,4 +1,4 @@
-"""Hard checks for references/narrative-journalism-rules.md (section 9). Labels: 9.N = section 9 check N; 7a/7b = section 7 caps.
+"""Hard checks for the writing rules in voices/narrative-journalism.md (section 9). Labels: 9.N = section 9 check N; 7a/7b = section 7 caps.
 
 Usage:  python3 -I hardchecks.py MODE FILE [--prologue] [--refs REF.txt ...]
 MODE: narrative | historical | column

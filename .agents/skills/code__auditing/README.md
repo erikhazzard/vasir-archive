@@ -6,6 +6,7 @@ The runtime manifest is `SKILL.md`. It owns evidence-grounded code review, maint
 
 - `SKILL.md` — the operating instructions and single report contract.
 - `references/calibration-examples.md` — contrastive cases for difficult remedy choices.
+- `references/state-machine-pass.md` — how to model the touched state machines and prove reachable invalid states.
 - `evals/cases.md` — lightweight behavioral and routing cases for maintainers; not an ordinary runtime dependency.
 
 ## Naming and replacement

@@ -161,7 +161,8 @@
         "README.md",
         "SKILL.md",
         "evals/cases.md",
-        "references/calibration-examples.md"
+        "references/calibration-examples.md",
+        "references/state-machine-pass.md"
       ],
       "path": ".agents/skills/code__auditing",
       "entry": "SKILL.md"
@@ -1171,19 +1172,14 @@
       "recommends": [],
       "files": [
         "SKILL.md",
-        "references/house/plainspoken-lyricism.md",
-        "references/house/source-analysis-and-evaluation.md",
-        "references/house/trait-drafting-instruction.md",
-        "references/house/trait-revision-instruction.md",
-        "references/narrative-journalism-rules.md",
-        "references/writing-from-reader-perspective.md",
         "scripts/hardchecks.py",
         "scripts/screen_overlap.py",
         "voices/explanatory.md",
         "voices/house.md",
         "voices/lyrical-fiction.md",
         "voices/lyrical-realism.md",
-        "voices/narrative-journalism.md"
+        "voices/narrative-journalism.md",
+        "writing-from-reader-perspective.md"
       ],
       "path": ".agents/skills/writing__prose-styles",
       "entry": "SKILL.md"

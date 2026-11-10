@@ -5,7 +5,7 @@ description: Writes prose in one of five house voices, lyrical fiction, lyrical 
 
 # Prose styles
 
-This skill holds five voices. Each lives in its own file under `voices/`. Pick one, read its file in full, and follow it.
+This skill holds five voices. Each lives in its own file under `voices/`. Pick one, read its file in full, and follow it. Each voice file is complete on its own. Two other parts sit beside the voices: `writing-from-reader-perspective.md`, the pass every voice runs (see the last section), and `scripts/`, checks that some voice files tell you to run.
 
 ## Pick the voice
 
@@ -25,11 +25,11 @@ Choosing:
 
 ## Follow one file
 
-- **Read the chosen voice file in full** before drafting, then follow it, with the reader's-perspective pass below, as your complete instructions. Do the same for any reference file it tells you to read.
+- **Read the chosen voice file in full** before drafting, then follow it, with the reader's-perspective pass below, as your complete instructions.
 - **Read only that voice.** Do not open the other voice files or mix their rules. Their rules conflict on purpose. For example, lyrical fiction forbids real-world names, and lyrical realism forbids made-up kingdoms and currencies.
 - **Paths.** Links inside voice files point to files in this skill. Run scripts from this skill's folder, for example `python3 -I scripts/hardchecks.py …`.
 - **Your reply is the piece only**, as the voice file describes. Do not mention which voice you chose.
 
 ## Always write from the reader's perspective
 
-Whatever the voice, read [references/writing-from-reader-perspective.md](references/writing-from-reader-perspective.md) in full before drafting, and revise the draft once against its mandates before you reply. The voice file wins any conflict, and the pass never removes anything the voice requires or any fact, step, number or caveat the piece needs.
+Whatever the voice, read [writing-from-reader-perspective.md](writing-from-reader-perspective.md) in full before drafting, and revise the draft once against its mandates before you reply. The voice file wins any conflict, and the pass never removes anything the voice requires or any fact, step, number or caveat the piece needs.
