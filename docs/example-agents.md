@@ -4,7 +4,7 @@ Use this page when you want a filled example to adapt, not just the source opera
 
 For the fastest starting point, run `vasir agents sync`. It infers the profile, renders the current `AGENTS.md` and `CLAUDE.md` templates, fills purpose/routing from local repo context, injects `AGENTS__non-obvious.md` into both generated files, and validates the generated `AGENTS.md` result. Use `vasir agents sync --profile frontend|backend|ios|generic` when you need an explicit profile, or `vasir agents sync --scope frontend --profile frontend` for a nested app/package root. For the source templates, see [templates/agents/README.md](../templates/agents/README.md). The shared operating-contract structure lives in [templates/agents/AGENTS.md](../templates/agents/AGENTS.md) and [templates/agents/CLAUDE.md](../templates/agents/CLAUDE.md); stack-specific content lives in [templates/agents/snippets/](../templates/agents/snippets/).
 
-Use the structure below as a compact rendered `AGENTS.md` example. In normal repos, edit `AGENTS__non-obvious.md` for repo-specific constraints and rerun `vasir agents sync` to regenerate both root contracts. `CLAUDE.md` has the same shared laws but keeps Claude/Fable-specific model-routing text.
+Use the structure below as a compact rendered `AGENTS.md` example. In normal repos, edit `AGENTS__non-obvious.md` for repo-specific constraints and rerun `vasir agents sync` to regenerate both root contracts. `CLAUDE.md` has the same shared laws but keeps Claude-specific model-routing text.
 
 ```markdown
 # AGENTS.md

@@ -12,7 +12,7 @@ and [CLAUDE.md](./CLAUDE.md); stack-specific profile content lives in
 Vasir has three layers:
 
 1. `.agents/skills/<skill>/SKILL.md` is the source of truth for reusable agent behavior. Skill files own their workflow, quality bar, and any skill-specific artifacts.
-2. `templates/agents/AGENTS.md` and `templates/agents/CLAUDE.md` are repo-root operating contracts. They own the shared structure, precedence rules, planning/eval requirements, and the sections that reference skills. `AGENTS.md` is for Codex and other non-Claude agents; `CLAUDE.md` keeps the Claude/Fable-specific routing text.
+2. `templates/agents/AGENTS.md` and `templates/agents/CLAUDE.md` are repo-root operating contracts. They own the shared structure, precedence rules, planning/eval requirements, and the sections that reference skills. `AGENTS.md` is for Codex and other non-Claude agents; `CLAUDE.md` keeps the Claude-specific routing text.
 3. `templates/agents/snippets/*-inserts.md` is the profile selection layer. Snippets decide which stack-specific purpose, routing, and doctrine content gets inserted for `backend`, `frontend`, or `ios`.
 
 Root contract files have three jobs:
@@ -52,7 +52,7 @@ If you want to edit the source templates directly, use the table below and stop 
 | Change iOS profile content | [snippets/ios-inserts.md](./snippets/ios-inserts.md) |
 | Change shared root-contract laws | [AGENTS.md](./AGENTS.md) and [CLAUDE.md](./CLAUDE.md) |
 | Change Codex/non-Claude routing text | [AGENTS.md](./AGENTS.md) |
-| Change Claude/Fable routing text | [CLAUDE.md](./CLAUDE.md) |
+| Change Claude routing text | [CLAUDE.md](./CLAUDE.md) |
 | See a filled example instead of the source template | [../../docs/example-agents.md](../../docs/example-agents.md) |
 
 ## Recommended Workflow

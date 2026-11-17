@@ -6,7 +6,7 @@
 
 **How to read this file:** Laws with reasons, not procedure. Every rule earned its place in real lanes and names the failure it prevents; if a line would not change your behavior, that is a defect — say so. XML tags structure this file because structure serves humans and LLMs alike, but no output format in this contract is a mandated shape: required *elements* are named, the rendering is yours (XML in your own output is welcome whenever it clarifies).
 
-**Twin files:** `CLAUDE.md` is the contract for Claude agents (Fable orchestrator + Claude subagents). `AGENTS.md` is the codex twin — identical laws, codex-appropriate model routing, no Claude-specific machinery. A change to any shared law lands in both files in the same turn.
+**Twin files:** `CLAUDE.md` is the contract for Claude agents (Opus or Fable). `AGENTS.md` is the codex twin — identical laws, codex-appropriate model routing, no Claude-specific machinery. A change to any shared law lands in both files in the same turn.
 
 ---
 
@@ -208,16 +208,13 @@
 # 7. Multi-Agent & Model Routing
 
 <multi_agent_routing>
-  Default: Fable keeps coherent lane ownership and final synthesis in the current context. Delegate separable work when a compact result protects parent context or repays spawn overhead. Never spawn for one trivial read, search, or command, or for context Fable must continuously interleave with its lane.
+  For Claude sessions, use Opus 5.5 (`claude-opus-5-5`) or Fable 5.2 (`claude-fable-5-2`), both at `xhigh`. Keep final synthesis in the current session. Delegate separable work when a compact result protects parent context or repays spawn overhead. Never spawn for one trivial read, search, or command, or for context the current agent needs throughout its work.
 
-  Routing order (first match wins):
-    1. **Fable xhigh or gpt-6-astra xhigh:** product code, architecture, consequential judgment, synthesis, reviews, gate verdicts, and final decisions. Fable owns direct Claude-context work; use Astra only for an explicitly delegated lane.
-    2. **gpt-6-luna max:** bounded file/repo reading, reconnaissance, failure investigation, log/diff interpretation, evidence extraction, and exact safe command batteries such as tests, builds, and benchmarks. Command-only tasks return raw or capped output and make no diagnosis or verdict.
-    3. **gpt-6.1-sol max:** bounded advisory specialist work and routine tasks that need neither repo investigation, product-code authorship, architecture selection, nor a gate verdict.
-    A coding or judgment agent may read files and run commands needed for its own lane. The routing table governs delegation; it does not require fragmenting one coherent task across agents.
+  The selected Claude model owns product code, architecture, consequential judgment, reviews, and final decisions. For an explicitly delegated OpenAI task requiring that judgment, use the OpenAI default, `gpt-6.2-astra` at `ultra`.
+  Use `gpt-6.2-sol` at `xhigh` for bounded OpenAI tasks such as repository investigation, evidence gathering, running tests and builds, routine work, and specialist advice. A command-only assignment returns the requested output. The lead may investigate and run commands directly.
 
   <skill_activation_routing>
-    Skill matches are candidates, not a checklist. Keep the lane orchestrator, active code owner, and final synthesis in the parent. When optional specialist work is separable, delegate it using the routing order above; the worker selects the smallest applicable skill set and returns a capped result. Workers do not recursively delegate. Host-required parent skill loading still wins.
+    Skill matches are candidates, not a checklist. Keep the lane orchestrator, active code owner, and final synthesis in the parent. When optional specialist work is separable, select the delegate by task using the guidance above; the worker selects the smallest applicable skill set and returns a capped result. Workers do not recursively delegate. Host-required parent skill loading still wins.
   </skill_activation_routing>
 
   Bindability gate:
@@ -225,8 +222,7 @@
     - Use `codex exec` for model-routed delegation. If explicit routing is unavailable, work locally; if §6 requires an independent reviewer, report the missing reviewer surface as a blocker.
 
   Authority and topology:
-    - Fable owns final acceptance, synthesis, and every gate verdict. Product-code authorship stays single-writer and may be assigned only to Fable xhigh or an explicitly scoped Astra xhigh lane.
-    - Luna max and Sol max delegates never author product code or render gate verdicts. Luna max returns evidence for consequential decisions to Fable xhigh or Astra xhigh.
+    - The orchestrator owns final acceptance, synthesis, and every gate verdict. Product code has one author, either the orchestrator or an Astra delegate explicitly assigned that scope. Sol returns evidence and advice to the orchestrator.
     - Model routing never grants production write authority. Read-only production inspection remains pre-authorized; production writes remain governed by §3.
     - **Use the existing repo folder.** All agents work in that same folder. Stay in your assigned lane and preserve everyone else's changes. Never create another worktree, clone, copied repo, temporary checkout, or second dependency installation. A fresh or independent reviewer means a new conversation reading the same folder. If working there is unsafe because lanes conflict, stop and report the conflict. §8 governs custody.
 
@@ -237,13 +233,11 @@
   Codex invocation mechanics (this machine):
     - Always run codex with full permissions (YOLO); never downgrade delegated runs to read-only or approval-gated sandboxes.
     - A zsh function wraps `codex`, injecting `-C "$PWD" -s danger-full-access -a never` — the wrapped form is already YOLO. Do NOT pass `-C` through the wrapper (errors: "--cd cannot be used multiple times").
-    - Command runner: `codex exec -m gpt-6-luna -c 'model_reasoning_effort="max"' "<exact safe commands; return raw or capped output; make no verdict>"`
-    - Read/recon: `codex exec -m gpt-6-luna -c 'model_reasoning_effort="max"' "<bounded evidence task; demand file:line evidence; cap answer length>"`
-    - Medium work: `codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="max"' "<bounded task; cap answer length>"`
-    - Coding/judgment: `codex exec -m gpt-6-astra -c 'model_reasoning_effort="xhigh"' "<coding or judgment task; define authority and deliverable>"`
+    - Bounded investigation, commands, or advice: `codex exec -m gpt-6.2-sol -c 'model_reasoning_effort="xhigh"' "<bounded task and expected output>"`
+    - Coding or judgment: `codex exec -m gpt-6.2-astra -c 'model_reasoning_effort="ultra"' "<coding or judgment task; define authority and deliverable>"`
     - Bypass form (`command codex`, scripts, non-zsh contexts): add `-C "$PWD" --dangerously-bypass-approvals-and-sandbox` to the corresponding invocation.
     - Codex MCP calls carry the same settings: `sandbox=danger-full-access`, `approval-policy=never`, and `cwd` set to the current repo root.
-    - Every delegated invocation explicitly selects its model and `model_reasoning_effort`; local defaults do not determine routing.
+    - Each Codex invocation explicitly selects its model and `model_reasoning_effort`. For Claude CLI sessions, use `claude --model claude-opus-5-5 --effort xhigh` or `claude --model claude-fable-5-2 --effort xhigh`.
 
   Proof:
     - All work follows the same evidence-honesty standard; proof depth and storage scale with risk (§5). Quick changes do not create `tmp/` artifacts by default.
@@ -258,7 +252,7 @@
   **Shared repo folder.** This folder carries live work from the user and parallel agents. Treat unrecognized changes as protected. Inspect diffs before editing files that may hold parallel work; touch only the lines your lane requires; if your edit collides with an unowned change, halt and report (§3). Broad formatters, codemods, autofixes, and file rewrites are forbidden unless the plan names the exact files and expected rewrite. Never restore files to HEAD, discard hunks, or recreate files as a shortcut. Git drift is a lane sensor, not a narration trigger — mention unrelated dirty files only when they overlap your work or block proof.
 
   **Git — commit forward, commit often.**
-  - The orchestrator commits after each completed working rung with current proof, at lane close, and at coherent stopping points. Trusted xhigh subagents may also commit their finished work. Prefer MORE commits over fewer — small commits are how an agent-heavy tree stays inspectable. A failure state is the user having to run `git commit` himself.
+  - The orchestrator commits after each completed working rung with current proof, at lane close, and at coherent stopping points. Trusted delegates assigned authorship under §7 may also commit their finished work. Prefer MORE commits over fewer — small commits are how an agent-heavy tree stays inspectable. A failure state is the user having to run `git commit` himself.
   - Truthful 1–2 line messages. Commits may include unrelated parallel changes; do not block on perfect authorship separation — preserve the work, move the repo forward.
   - Read-only git is always allowed. `git add` and `git commit` are the ONLY mutating git operations. Everything else — `revert`, `reset`, `restore`, `checkout -- <path>`, `clean`, `rebase`, `--amend`, force-push, branch deletion is forbidden unless the user names the exact operation. Recovery is editing forward: author the corrected state as a new commit. Commit-level undo is never safe here — sweep commits bundle unrelated parallel work, so any rollback claws back other lanes' progress and breaks concurrent agents.
   - Do not reconstruct "my delta" from Git; attribution is unnecessary in a shared tree. Inspect only task-touched paths when a concrete conflict or proof failure requires it—never run repository-wide `status`/`diff`/`log`/`show` as routine close-out.
