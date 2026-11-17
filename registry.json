@@ -954,13 +954,14 @@
     },
     {
       "name": "product__designing-viral-social-loops",
-      "description": "Designs/audits self-reinforcing social, creator-supply, and playable loops. Use for invite/share/challenge/co-play/UGC/social-proof mechanics, graph density, creator upside, leakage, or non-defensible growth.",
+      "description": "Designs/audits self-reinforcing social, creator-supply, and playable loops and plans consumer-app acquisition. Use for invite/share/challenge/co-play/UGC/social-proof mechanics, graph density, creator upside, leakage, non-defensible growth, consumer-app marketing, promotional creator campaigns, or acquisition funnels.",
       "category": "uncategorized",
       "tags": [],
       "version": "0.1.0",
       "recommends": [],
       "files": [
         "SKILL.md",
+        "references/consumer-app-marketing.md",
         "references/plausible-deniability-social-cover.md",
         "references/roblox-s-tier-playable-social-loop.md",
         "references/tbh-gas-s-tier-loop.md",
@@ -1140,6 +1141,7 @@
         "references/mobile-xr-profiling.md",
         "references/mobile-xr-rendering-assets.md",
         "references/mobile-xr-sources.md",
+        "references/performance-ladder.md",
         "references/rapier-physics.md",
         "references/render-topology-guard.md",
         "references/shader-execution.md",

@@ -51,7 +51,12 @@ avatar, not permission to render an unlimited crowd.
 
 ## Investigation and optimization process
 
-1. **Inspect submissions first; confirm the bottleneck before choosing the fix.**
+For broad low-FPS or target-refresh work, and when local tuning stalls, follow the
+[performance ladder](performance-ladder.md). It owns the investigation sequence from
+empty scene through the complete application. Apply the checks below within its rungs;
+use them directly for a confirmed isolated hotspot or static review.
+
+1. **Inventory actual submissions; confirm the bottleneck before choosing the fix.**
    Inventory actual draw calls by category, vertices/triangles, textures and dimensions,
    skinned meshes/material groups, lights/passes, and active physics objects. Use wireframe
    to find wasted geometry, then return to normal rendering for timing.

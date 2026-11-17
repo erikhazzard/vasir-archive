@@ -8,6 +8,8 @@ The cases also exercise positive, negative, and borderline routing; diagnosis, c
 
 Four contrasting shader cases cover identical loop work grouped or scattered across supplied execution groups, uniform branching versus eager selection and compile specialization, opposing measured outcomes of loop unrolling, and evidenced AMD waterfall lowering versus ordinary texture-array-layer indexing and unsupported browser subgroup assumptions. They test mechanisms and evidence, not GPU vocabulary or blanket optimization rules.
 
+Three performance-process cases cover stalled micro-optimizations, a substantially smaller avatar rig under an authorized quality trade, and a confirmed local defect that should remain narrow. They require the treatment to reconstruct cumulative system cost from an actually empty runtime, recursively explain expensive work, test cheaper representations, and verify the assembled result. The negative case protects useful local fixes from an unnecessary full investigation. These cases omit generation-time output hints; the suite judge owns the substantive expectations. Substring checks remain only a floor, not evidence that the process was followed.
+
 Run the structural smoke test locally:
 
 ```bash
@@ -16,7 +18,7 @@ npm run eval -- threejs__improve-performance mock --trials 1
 
 A live-model run is required for the behavioral verdict. Mock mode proves suite discovery, baseline/treatment wiring, and result persistence only.
 
-Current limit: the suite supplies source facts and hypothetical compiler/profile reports to evaluate architecture, shader-execution, and instrumentation judgment. Neither mock nor live-model results capture a browser frame, execute the proposed counters, measure GPU cost, or prove visual equivalence; runtime claims still need target-device evidence.
+Current limit: the suite supplies source facts and hypothetical compiler/profile reports to evaluate architecture, shader-execution, instrumentation, and performance-process judgment. Neither mock nor live-model results capture a browser frame, execute the proposed counters, measure GPU cost, or prove visual equivalence; runtime claims still need target-device evidence.
 
 For realistic defect-discovery A/Bs rather than inline topology cases, use one of the manual static-audit fixtures:
 

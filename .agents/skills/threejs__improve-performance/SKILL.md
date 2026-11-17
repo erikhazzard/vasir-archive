@@ -12,6 +12,8 @@ Examine the problem from both directions: **what can we remove from this design,
 
 **Keep experiments small; keep design ambition high.** Consider simpler designs early and require evidence before adopting them. Apply this principle during new construction as well as remediation; a sensible initial representation needs no preexisting slowdown, while a claimed speedup still needs measurement.
 
+**Stuck in a rabbit hole of micro-optimizations? Kick off the [performance ladder](references/performance-ladder.md).** When repeated local tweaks fail to close the frame-budget gap, gains disappear into noise, or you cannot explain where the budget goes, stop tuning that path. Start from an empty scene in the real runtime, add systems one rung at a time, measure their added work, and drill into costly subsystems. Use that evidence to remove whole categories of work and challenge the design before resuming local tuning.
+
 For measured performance claims, work as an experimentalist. Reconstruct the relevant runtime identity, frame and dataflow architecture, and presentation deadline. Reuse a reproducible workload, form competing hypotheses, and run the smallest reversible perturbation that makes those hypotheses predict different outcomes. Change one causal unit, replay the same workload, and claim a win only when the predicted metric moves beyond normal variance and the relevant gameplay, rendering, interaction, and lifecycle contracts still hold.
 
 Your standing instincts:
@@ -52,6 +54,8 @@ Do not output generic optimization folklore. Tie recommendations to applicable s
 - **Warmup:** stage likely-next-use resources; do not blindly prewarm the entire application.
 
 ## Reference routing
+
+For broad low-FPS investigations, reaching a target refresh rate such as 72 Hz, or the stalled-tuning trigger above, read and follow [Performance ladder](references/performance-ladder.md). It owns the empty-scene reconstruction, recursive attribution, and necessary-work record. Reuse a current ladder when its workload and runtime still match. Static `build_review` and a confirmed isolated `hotspot_fix` do not require a whole-application ladder.
 
 For `full_audit`, runtime design, or changes to data layout, repeated work, caching, or dirty tracking, read [Eliminate unnecessary work](references/eliminate-unnecessary-work.md). It supplies concrete design choices for the governing principle above; use the affected subsystem references for eligibility and correctness details.
 
@@ -126,7 +130,7 @@ Use for “maximize performance,” “why is the app slow,” multi-platform op
 
 ## Investigation and remediation
 
-For mobile/WebXR optimization, follow the house process; use the diagnostic detail below where needed for attribution and measured verification. `build_review` does not require an investigation. Report evidence, relevant checks, and decisions rather than hidden chain-of-thought.
+For broad target-rate work or stalled tuning, the performance ladder owns the investigation sequence; the steps below supply its measurement and attribution detail. For mobile/WebXR, also apply the house rules. `build_review` does not require an investigation. Report evidence, relevant checks, and decisions rather than hidden chain-of-thought.
 
 ### 0. Route the task
 
@@ -278,6 +282,8 @@ Reject or mark inconclusive when the predicted metric does not move beyond norma
 
 ### 10. Stop deliberately
 
+While the target remains unmet, diminishing returns from one local path trigger the performance ladder before concluding that useful optimizations are exhausted. Reuse its existing evidence; if the task is explicitly confined to one subsystem, apply the ladder within that boundary and report any wider constraint.
+
 Stop when one of these is true:
 
 - every target tier meets its pass criteria with required headroom
@@ -293,5 +299,7 @@ For `build_review`, report the concrete implementation or finding, applicable ho
 For `hotspot_fix`, give the cause or static policy violation and supporting locations/evidence, the change made or recommended, relevant before/after limiting metrics when measured, correctness checks, and remaining uncertainty. If evidence is missing, name the smallest next discriminating check. Include concrete stack-native edits when implementation is requested.
 
 For `full_audit`, lead with a compact ranked table: `Finding | Evidence/location | Cost mechanism | Action | Quality/behavior trade`. Add only the runtime, dataflow, measurement, or acceptance detail that changes a decision; concentrate on the dominant work. Keep policy findings separate from measured bottleneck attribution.
+
+When using the performance ladder, retain its cumulative rung measurements and necessary/removable-work record in the existing task or benchmark artifact, including unexplained cost and the integrated acceptance result.
 
 Preserve enough scenario/settings, before/after evidence, relevant checks, and residual bottleneck information for another engineer to assess and repeat a measured result. Honor diagnostic-only requests; implement when asked. Keep validation and documentation proportional, with no speculative speedup percentages or unrequested reports.

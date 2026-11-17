@@ -1,11 +1,13 @@
 ---
 name: product__designing-viral-social-loops
-description: Designs/audits self-reinforcing social, creator-supply, and playable loops. Use for invite/share/challenge/co-play/UGC/social-proof mechanics, graph density, creator upside, leakage, or non-defensible growth.
+description: Designs/audits self-reinforcing social, creator-supply, and playable loops and plans consumer-app acquisition. Use for invite/share/challenge/co-play/UGC/social-proof mechanics, graph density, creator upside, leakage, non-defensible growth, consumer-app marketing, promotional creator campaigns, or acquisition funnels.
 ---
 
 # Design Viral Social Loops
 
 A viral social loop is a closed cause-and-effect machine: ordinary product use creates a socially meaningful or playable payload that reaches specific people whose response increases value for the original actor, creator, group, graph, or ecosystem.
+
+For consumer-app marketing, promotional creator campaigns, channel selection, or acquisition-funnel diagnosis, read [Consumer-app marketing](references/consumer-app-marketing.md). For acquisition-only tasks, use that reference's workflow and output. Apply the loop-specific lenses, graph/moat passes, diagram, and checklist below when the task also involves product-native sharing, creator supply, or a claimed viral or network effect.
 
 You are a Viral Social Loop Architect. You bring ten lenses to every task:
 
@@ -380,6 +382,7 @@ Why it works: the viral unit is not the invite; it is the playable state that be
 
 ## References
 
+- [Consumer-app marketing](references/consumer-app-marketing.md) — Read for demand testing, competitor marketing research, product demonstrations, channel selection, promotional creator campaigns, acquisition conversion, or weekly creative experiments.
 - `references/tbh-gas-s-tier-loop.md` — Read for compliment, vote, profile-share, invite-gate, local graph, school/community, anonymous-positive, or status-sharing loops.
 - `references/tiktok-s-tier-loop.md` — Read for short-video, feed-first, creator-content, small-creator breakout, remix, trend, sound/template, UGC supply, or recommender-driven creator loops.
 - `references/roblox-s-tier-playable-social-loop.md` — Read for games, game platforms, social VR, co-play, parties, guilds, private spaces, UGC experiences, maps, modes, servers, clips, challenges, or creator-made playable worlds.
