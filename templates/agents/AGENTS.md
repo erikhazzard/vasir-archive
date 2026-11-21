@@ -6,7 +6,7 @@
 
 **How to read this file:** Laws with reasons, not procedure. Every rule earned its place in real lanes and names the failure it prevents; if a line would not change your behavior, that is a defect — say so. XML tags structure this file because structure serves humans and LLMs alike, but no output format in this contract is a mandated shape: required *elements* are named, the rendering is yours (XML in your own output is welcome whenever it clarifies).
 
-**Twin files:** `AGENTS.md` is the contract for codex and other non-Claude agents, whether orchestrating or acting as a spawned delegate. `CLAUDE.md` is the Claude twin — identical laws, Claude-specific model routing. A change to any shared law lands in both files in the same turn.
+**One contract:** this file is the contract for every agent, whether orchestrating or acting as a spawned delegate. `CLAUDE.md` is one line that loads this file in a Claude session. It holds no laws of its own, so there is no second copy to keep in step. §7 says which models an OpenAI session uses and which a Claude session uses.
 
 ---
 
@@ -193,11 +193,11 @@
   </independent_review_topology>
 
   <code_audit_routing>
-    **Classify first match.** A request that explicitly asks for multiple distinct audit lenses uses only those named lenses. A single named specialist audit—for example security, test-suite, documentation, developer-UX, accretion, or Node-backend latency/scale/cost/capacity—uses only that named lens; the word "code" may name the boundary without adding the generic pair. A focused code review, merge-safety, correctness, general performance, hardening, production-readiness, or release-readiness request uses `$code__auditing` alone. The unqualified phrases `audit the code`, `audit this code`, `do a code audit`, and `run a code audit` mean one standard review applying both `$code__auditing` and `$audit-ai-code-accretion` to the same boundary. A boundary-only suffix such as `on this diff`, `in this package`, or `for this subsystem` retains the standard pair; a named lens or risk/outcome qualifier uses an earlier branch. Never infer every installed audit skill from broad adjectives.
+    **Classify first match.** A request that explicitly asks for multiple distinct audit lenses uses only those named lenses. A single named specialist audit—for example security, test-suite, developer-UX, or Node-backend latency/scale/cost/capacity—uses only that named lens; the word "code" may name the boundary without adding the general code audit. A focused code review, merge-safety, correctness, general performance, hardening, production-readiness, release-readiness, or accretion request, and the unqualified phrases `audit the code`, `audit this code`, `do a code audit`, and `run a code audit`, use `$code-audit-codebase`, which carries the structural accretion lens inside it. A boundary-only suffix such as `on this diff`, `in this package`, or `for this subsystem` changes nothing; a named lens uses the earlier branch. Never infer every installed audit skill from broad adjectives.
 
-    **Paired and combined output.** In the standard pair, or an explicitly combined review that includes both code/release and accretion, `$code__auditing` owns the canonical report and release verdict. `$audit-ai-code-accretion` contributes the embedded structural-deletion/collapse assessment without a second report or rival ship verdict.
+    **One report.** `$code-audit-codebase` owns the canonical report and release verdict. Its structural-deletion/collapse assessment is embedded in that report, without a second report or rival ship verdict.
 
-    **One reviewer, both lenses.** The independent-review topology above owns freshness and exactly-once delegation. One reviewer applies the standard pair; do not spawn one verdict agent per lens.
+    **One reviewer.** The independent-review topology above owns freshness and exactly-once delegation. One reviewer applies the audit; do not spawn one verdict agent per lens.
   </code_audit_routing>
 
   A postmortem exists only when the diagnosis itself would be materially expensive or dangerous to re-derive: several ruled-out causes, misleading symptoms, or cross-lane networking/persistence/infra evidence. Routine changes and obvious bugs do not qualify.
@@ -210,8 +210,10 @@
 <multi_agent_routing>
   The default OpenAI model is `gpt-6.2-astra` at `ultra` reasoning effort. The current agent owns the work and final synthesis. Delegate separable work when a compact result protects parent context or repays spawn overhead. Never spawn for one trivial read, search, or command, or for context the current agent must continuously interleave with its lane.
 
-  Use `gpt-6.2-astra` at `ultra` for product code, architecture, consequential judgment, reviews, and final decisions.
+  In an OpenAI session, use `gpt-6.2-astra` at `ultra` for product code, architecture, consequential judgment, reviews, and final decisions.
   Use `gpt-6.2-sol` at `xhigh` for bounded OpenAI tasks such as repository investigation, evidence gathering, running tests and builds, routine work, and specialist advice. A command-only assignment returns the requested output. The lead may investigate and run commands directly.
+
+  For Claude sessions, use Opus 5.5 (`claude-opus-5-5`) or Fable 5.2 (`claude-fable-5-2`), both at `xhigh`. The selected Claude model owns product code, architecture, consequential judgment, reviews, and final decisions. For an explicitly delegated OpenAI task requiring that judgment, use the OpenAI default, `gpt-6.2-astra` at `ultra`.
 
   <skill_activation_routing>
     Skill matches are candidates, not a checklist. Keep the lane orchestrator, active code owner, and final synthesis in the parent. When optional specialist work is separable, select the delegate by task using the guidance above; the worker selects the smallest applicable skill set and returns a capped result. Workers do not recursively delegate. Host-required parent skill loading still wins.
@@ -237,7 +239,8 @@
     - Coding or judgment: `codex exec -m gpt-6.2-astra -c 'model_reasoning_effort="ultra"' "<coding or judgment task; define authority and deliverable>"`
     - Bypass form (`command codex`, scripts, non-zsh contexts): add `-C "$PWD" --dangerously-bypass-approvals-and-sandbox` to the corresponding invocation.
     - Codex MCP calls carry the same settings: `sandbox=danger-full-access`, `approval-policy=never`, and `cwd` set to the current repo root.
-    - Every delegated invocation explicitly selects its model and `model_reasoning_effort`; local defaults do not determine routing.
+    - For Claude CLI sessions, use `claude --model claude-opus-5-5 --effort xhigh` or `claude --model claude-fable-5-2 --effort xhigh`.
+    - Every delegated invocation explicitly selects its model and `model_reasoning_effort`; local defaults do not determine routing. A default, or a model name recalled from memory, may be an older model.
 
   Proof:
     - All work follows the same evidence-honesty standard; proof depth and storage scale with risk (§5). Quick changes do not create `tmp/` artifacts by default.
@@ -397,18 +400,19 @@
 # 11. Skills
 
 <skills>
-  Skill invocation means actually running the skill, not naming it. Skills live in `.agents/skills/`. The planning/proof/audit vocabulary:
-  - `plan__maintain-work-spec` — creates/updates the work spec; owns its product spine, stable contract/decision IDs, and vertical-rung shape.
-  - `plan__question-spec` — optional independent product/capability challenge when work-spec review is requested or specifically warranted; never an automatic pre-implementation gate (§6).
-  - `eval__design-proof-gates` — creates/updates the eval plan; owns proof-gate design.
-  - `eval__implement-proof-gate` — builds the missing runnable harness for an approved gate.
-  - `code__auditing` — code-audit lead and release-verdict owner; standard code audits pair it with `audit-ai-code-accretion` (§6).
-  - `audit-ai-code-accretion` — implemented-code structural accretion lens; embedded in standard or explicitly combined code-plus-accretion audits and standalone for accretion-only/deletion/collapse requests.
-  - `testing__auditing`, `security__auditing-code`, `code__crafting-dev-ux` — focused audit lenses (§6).
-  - `handoff__final-quality-gate` — optional independent ship judgment when requested or warranted by a specific high-regret risk.
-  - `ops__maintain-incident-postmortem`, `prompt__perform-root-cause-analysis` — post-work diagnosis capture (§6).
+  Skill invocation means actually running the skill, not naming it. Skills live in `.agents/skills/`. A name followed by brackets is a package and the procedure inside it. The planning/proof/audit vocabulary:
+  - `plan-manage-work-spec` (work-spec) — creates/updates the work spec; owns its product spine, stable contract/decision IDs, and vertical-rung shape.
+  - `plan-manage-work-spec` (question-spec) — optional independent product/capability challenge when work-spec review is requested or specifically warranted; never an automatic pre-implementation gate (§6).
+  - `plan-manage-work-spec` (proof-gates) — creates/updates the eval plan; owns proof-gate design.
+  - `plan-manage-work-spec` (proof-harness) — builds the missing runnable harness for an approved gate.
+  - `code-audit-codebase` — code-audit lead and release-verdict owner; it carries the implemented-code structural accretion lens, embedded in every code audit and standalone for accretion-only/deletion/collapse requests (§6).
+  - `code-audit-tests`, `code-audit-security`, `code-design-developer-experience` — focused audit lenses (§6).
+  - `plan-manage-work-spec` (final-gate) — optional independent ship judgment when requested or warranted by a specific high-regret risk.
+  - `code-analyze-failure` (postmortem), `code-analyze-failure` (root-cause) — post-work diagnosis capture (§6).
 
   **Direct authoring is blessed** when the schema is demonstrably in context (you authored or fully read a conforming artifact this session): write the spec/eval artifact directly and keep it schema-conformant. The artifact is the contract, not the ceremony of invoking the skill. Invoke the skill when the schema is unfamiliar or the skill computes something you would otherwise guess.
+
+  **Shared skills are edited at their source.** A skill installed from the shared library is changed in the library, `gc-skills`, never in this repo's installed copy: the next sync replaces that copy, so an edit made here is lost, and until then every other repo runs the old text. What is true only of this repo goes in a skill this repo owns, in a folder of its own beside the installed ones, never inside an installed skill.
 
   Skill output conflicting with a higher rung of §1 loses. A skill result conflicting with an approved spec is a boundary (§3) unless the current turn resolves it.
 </skills>

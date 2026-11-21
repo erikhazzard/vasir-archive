@@ -1,261 +1,43 @@
-# Vasir
+# Vasir Skills
 
-Vasir gives each repo generated root agent manuals, a small source file for local constraints, and a managed skill tree.
+Skills for coding agents, and the root operating contract they work under.
 
-- `AGENTS__non-obvious.md` is authored. Put repo constraints, hazards, and local rules here.
-- `AGENTS.md` and `CLAUDE.md` are generated twin root contracts. Commit them, but regenerate them from Vasir.
-- `.agents/skills/` holds copied skills. `.codex/skills` and `.claude/skills` point at the same tree.
+| Path | What it is |
+| --- | --- |
+| [skills/](skills/) | One folder per skill. Each has a `SKILL.md` and the references, templates and scripts it needs. |
+| [templates/agents/](templates/agents/) | The root contract, [AGENTS.md](templates/agents/AGENTS.md); a one-line [CLAUDE.md](templates/agents/CLAUDE.md) that loads it in Claude sessions; and snippets for backend, frontend and iOS repositories. |
+| [MIGRATING.md](MIGRATING.md) | What each skill of the earlier Vasir repository is called here. |
 
-Source rule: edit `AGENTS__non-obvious.md`, then run `vasir agents sync`.
+## Use a skill
 
-## Install
+Copy its folder into your project's `.agents/skills/`. There is no installer and no registry.
 
-Vasir requires Node 18.17 or newer.
+A skill names another skill in backticks, and a procedure inside a package in brackets after it: `game-design-game` (art-direction). Each says what to do when a skill it names is not installed.
 
-```bash
-npm install -g git+https://github.com/erikhazzard/vasir.git
-vasir --version
+Several packages hold more than one procedure. Their `SKILL.md` is short and says which file under `references/` to read for which request.
+
+## Use the root contract
+
+1. Copy `templates/agents/AGENTS.md` and `CLAUDE.md` to the root of your repository.
+2. Replace the Purpose block at the top.
+3. Record what is true of your project and not obvious in §2.
+4. Take the snippet for your stack from `templates/agents/snippets/` and put its blocks into the marker blocks of the same names.
+5. Read §7. It names the models to use for each kind of work, so check they are still current. The lines under "Codex invocation mechanics (this machine)" describe one machine's shell and run delegated agents without a sandbox. Change or remove them for yours.
+
+Skills cite the contract's sections by number, so keep the numbering.
+
+## Changes
+
+This repository is a published copy. The skills are written, and measured against the same task done without them, in a separate library, then copied here. Change them there.
+
+MIT. See [LICENSE](LICENSE).
+
+## What this repository was
+
+Until 21 November 2026 this repository held the Vasir command-line tool: an installer, a skill registry, per-skill eval suites, benchmarks and the source of vasirbenchmark.com. All of it is in the history. The last commit that has it is `87dee45`:
+
+```sh
+git checkout 87dee45
 ```
 
-## Start A Repo
-
-Run setup from the repo root.
-
-```bash
-vasir init
-vasir agents sync
-```
-
-`vasir init` installs the skill catalog and repo metadata:
-
-- syncs the bundled catalog into `~/.agents/vasir`
-- copies skills into `.agents/skills/`
-- creates `.agents/vasir.json` and `.agents/vasir-install-state.json`
-- creates `.codex/skills` and `.claude/skills` links
-- seeds root `AGENTS.md` and `CLAUDE.md` when missing
-
-`vasir agents sync` renders the root manuals:
-
-- infers or applies a `frontend`, `backend`, `ios`, or `generic` profile
-- creates `AGENTS__non-obvious.md` when missing
-- injects the sidecar into Section 2 of both generated root contracts
-- fills purpose and routing from local repo context
-- validates the generated `AGENTS.md` result before writing the pair
-
-After that, edit the sidecar and regenerate.
-
-```bash
-$EDITOR AGENTS__non-obvious.md
-vasir agents sync
-```
-
-## Root, Nested Root, And Folder AGENTS/CLAUDE
-
-Use the repo root for repo-wide rules.
-
-```bash
-vasir agents sync
-vasir agents sync --profile frontend
-vasir agents sync --profile generic
-```
-
-Nested root AGENTS/CLAUDE pairs are generated root contracts for app/package folders. Use `--scope` only when a subfolder is a nested app/package root, such as `frontend/`, `backend/`, `apps/web/`, `packages/web/`, or `services/api/`.
-
-```bash
-vasir agents sync --scope frontend --profile frontend
-vasir agents sync --scope backend --profile backend
-vasir agents sync --scope apps/web --profile frontend
-vasir agents sync --scope packages/web --profile frontend
-vasir agents sync --scope services/api --profile backend
-```
-
-Nested root sync writes the sidecar and generated twin files inside that folder.
-
-```text
-frontend/
-  AGENTS.md
-  CLAUDE.md
-  AGENTS__non-obvious.md
-
-backend/
-  AGENTS.md
-  CLAUDE.md
-  AGENTS__non-obvious.md
-```
-
-When the folder name or contents make the stack obvious, omit `--profile`.
-
-```bash
-vasir agents sync --scope frontend
-```
-
-Folder AGENTS are different. They are authored directly as local steering maps: what the folder owns, where work enters, what agents tend to break, which local constraints matter, how to prove changes, and where deeper maps take over.
-
-```text
-src/server/
-  AGENTS.md
-
-games/chess/
-  AGENTS.md
-```
-
-Do not use `vasir agents sync --scope` for ordinary folder steering maps. Use the installed `agents__creating-folder-agents` skill or edit the folder `AGENTS.md` directly.
-
-Use `--repo-root` when the managed Vasir project root itself changes. That affects skills, config, and install state, not only a nested AGENTS file.
-
-```bash
-vasir init --repo-root frontend
-vasir update --repo-root frontend
-```
-
-## Daily Commands
-
-Inspect without changing files.
-
-```bash
-vasir
-vasir status
-vasir context --json
-vasir context --json --debug
-```
-
-Refresh tracked skills after upgrading the Vasir CLI.
-
-```bash
-vasir update --dry-run
-vasir update
-```
-
-Preview or apply root contract template changes.
-
-```bash
-vasir agents sync --dry-run
-vasir agents sync
-```
-
-Validate generated AGENTS files.
-
-```bash
-vasir agents validate
-vasir agents validate --scope frontend
-```
-
-Repair repo-local Vasir metadata.
-
-```bash
-vasir doctor
-vasir repair
-```
-
-## Skills
-
-Install the full catalog.
-
-```bash
-vasir init
-```
-
-Install selected skills.
-
-```bash
-vasir add code__fixing-bugs
-vasir add design__building-frontend-interfaces testing__enforcing-mandate
-```
-
-Remove selected skills.
-
-```bash
-vasir remove design__building-frontend-interfaces
-```
-
-Adopt an existing `.agents/skills/` tree without copying files.
-
-```bash
-vasir adopt
-```
-
-Review tracked skill changes before updating.
-
-```bash
-vasir diff
-vasir diff --exit-code
-```
-
-## File Ownership
-
-In a managed repo, edit these files directly.
-
-```text
-AGENTS__non-obvious.md
-.agents/vasir.json
-```
-
-Vasir owns these files.
-
-```text
-AGENTS.md
-CLAUDE.md
-.agents/vasir-install-state.json
-```
-
-`AGENTS.md` and `CLAUDE.md` are safe to commit. Put durable repo constraints in `AGENTS__non-obvious.md` and rerun `vasir agents sync`.
-
-Vasir also carries old layouts forward:
-
-- old `.agents/non-obvious.md` sidecars move to `AGENTS__non-obvious.md`
-- old manual `AGENTS.md` or `CLAUDE.md` non-obvious blocks can seed `AGENTS__non-obvious.md`
-- dirty global caches move to `~/.agents/vasir.dirty-backup.<timestamp>` during `init` or `update`, then Vasir rebuilds a clean cache from the installed bundle
-
-In the Vasir repo itself, these generated files also change when templates, skills, or package metadata change.
-
-```text
-registry.json
-.vasir-catalog-manifest.json
-```
-
-## Skill Evals
-
-Run a built-in skill eval.
-
-```bash
-npm run eval testing__enforcing-mandate
-npm run eval testing__enforcing-mandate mock
-npm run eval inspect testing__enforcing-mandate
-npm run eval rescore testing__enforcing-mandate
-```
-
-Provider credentials can live in repo-root `keys.json`. Start from [keys.json.example](./keys.json.example).
-
-## Publish VasirBench
-
-From the Vasir source repository, preview and publish the accepted static site:
-
-```bash
-vasir benchmark publish --dry-run
-vasir benchmark publish
-```
-
-The production target is fixed at [https://vasirbenchmark.com](https://vasirbenchmark.com). Publication requires the AWS CLI profile `faedark` to resolve to account `339713108333`, a current accepted site receipt, and Chrome or Chromium for the live route proof. See the [`benchmark publish` reference](./docs/cli-reference.md#benchmark-publication) and [publication troubleshooting](./docs/troubleshooting.md#benchmark-publication-errors).
-
-## Developing Vasir
-
-Regenerate registry artifacts after changing skills, templates, docs included in the packaged catalog, or package metadata.
-
-```bash
-npm run build:registry
-npm run check:registry
-npm test
-```
-
-`registry.json` and `.vasir-catalog-manifest.json` are generated from `.agents/skills/`, `templates/`, selected docs, and package metadata. `SKILL.md` is the primary skill source; optional `meta.json` remains a compatibility fallback.
-
-## Reference
-
-- CLI details: [docs/cli-reference.md](./docs/cli-reference.md)
-- Troubleshooting: [docs/troubleshooting.md](./docs/troubleshooting.md)
-- AGENTS/CLAUDE template notes: [templates/agents/README.md](./templates/agents/README.md)
-- Example generated root contract: [docs/example-agents.md](./docs/example-agents.md)
-- Create a skill: [docs/create-your-first-skill.md](./docs/create-your-first-skill.md)
-- Skill authoring reference: [docs/writing-skills.md](./docs/writing-skills.md)
-- Skill metadata/layout reference: [docs/skill-reference.md](./docs/skill-reference.md)
-- Manifesto: [MANIFESTO.md](./MANIFESTO.md)
+Nothing here builds or publishes a package any more. To put a skill into a project, copy its folder.
