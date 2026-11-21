@@ -1,0 +1,1534 @@
+(async function () {
+  'use strict';
+
+  const rootData = window.VASIR_DATA;
+  const writingOverallScope = rootData?.overall?.categories?.some(category => category.id === 'writing')
+    ? 'All Writing contributes to the Overall category-weighted comparison.' : 'Writing is excluded from Overall.';
+  const runtimeBase = document.currentScript?.src || window.location.href;
+  const initialBenchmarkId = decodeURIComponent(window.location.hash.slice(1)).split('/')[0];
+  const navigateTestingReport = benchmarkId => {
+    document.querySelectorAll('[data-report-section]').forEach(link => { link.href = `#${benchmarkId}/${link.dataset.reportSection}`; });
+    const navigate = () => {
+      const [benchmark, section] = decodeURIComponent(window.location.hash.slice(1)).split('/');
+      if (benchmark !== benchmarkId) { window.location.reload(); return; }
+      const target = section === 'overview' ? 'paired-check' : section === 'technical' ? 'method' : section;
+      if (target === 'method') document.querySelector('[data-testing-method]').open = true;
+      if (['paired-check', 'method', 'top'].includes(target)) document.getElementById(target)?.scrollIntoView();
+    };
+    window.addEventListener('hashchange', navigate);
+    navigate();
+  };
+  const renderTestingReport = (publication, paired, taste, testFiles) => {
+    const authoring = publication.benchmark.id === 'test-authoring';
+    const provisional = authoring && publication.schemaVersion === 2;
+    const reviewerCount = provisional ? 1 : 2;
+    const benchmarkId = publication.benchmark.id;
+    const title = authoring ? 'Writing new tests' : 'Backend testing';
+    const caseLabel = authoring ? 'Redis work queue' : 'Player saves';
+    const treatmentCondition = authoring ? 'current' : 'repaired';
+    const compact = authoring || publication.schemaVersion === 4;
+    if (!(authoring ? [1, 2].includes(publication.schemaVersion) : [3, 4].includes(publication.schemaVersion)) || paired?.kind !== (authoring ? 'test-authoring-round' : compact ? 'backend-testing-current-round' : 'backend-testing-paired-repair-check') || paired.schemaVersion !== (provisional ? 2 : 1)) throw new Error('Current paired evidence unavailable.');
+    if (taste && (compact ? taste !== paired : taste.kind !== 'backend-testing-taste-review' || taste.schemaVersion !== 2)) throw new Error('Dimension evidence unavailable.');
+    const escape = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+    const number = value => Number.isFinite(value) ? value.toLocaleString('en-US', { maximumFractionDigits: 1 }) : '—';
+    const tasteScore = value => Number.isFinite(value) ? value.toFixed(2) : 'Unscored';
+    const tastePanelScore = value => Number.isFinite(value) ? value.toFixed(3) : 'Unscored';
+    const tasteDelta = value => Number.isFinite(value) ? `${value > 0 ? '+' : ''}${value.toFixed(3)}` : 'Unscored';
+    const hasRange = range => Number.isFinite(range?.minimum) && Number.isFinite(range?.maximum);
+    const duration = value => Number.isFinite(value) ? `${number(value / 1000)}s` : '—';
+    const overall = publication.overall;
+    if (!taste || overall?.schemaVersion !== 2 || testFiles?.kind !== (authoring ? 'test-authoring-files' : 'backend-testing-files') || testFiles.schemaVersion !== (provisional ? 2 : 1)) throw new Error('Combined score and test files unavailable.');
+    const scoreFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const finalScore = value => Number.isFinite(value) ? scoreFormatter.format(value) : 'Unscored';
+    const finalDelta = value => Number.isFinite(value) ? `${value > 0 ? '+' : ''}${scoreFormatter.format(value)} pts` : 'Unscored';
+    const conditions = publication.conditions.map(condition => ({ ...condition, label: condition.id === 'none' ? 'Minimal' : 'Skill' }));
+    const scoringCriteria = overall.scoreBasis.criteria.map(criterion => {
+      const native = [...taste.scoreBasis.dimensions, ...(taste.scoreBasis.objectiveDimensions || [])].find(dimension => dimension.id === criterion.id);
+      return native ? { ...native, ...criterion, anchors: native.anchors || (criterion.id === 'fault_detection' ? { 0: authoring ? 'No calibrated fault caused an adjudicated failure in a healthy-passing matched case.' : 'No calibrated fault was detected by an adjudicated matched assertion.', 1: authoring ? 'All six calibrated faults caused adjudicated failures in healthy-passing matched cases.' : 'All six calibrated faults were detected by adjudicated matched assertions.' } : { 0: 'No clean runnable test suite.', 1: 'Both healthy controls passed nonzero tests with clean cleanup.' }) } : { ...criterion, description: criterion.id === 'preservation' ? 'Preserve the existing meaningful test protection, according to each reviewer’s cited code assessment.' : 'Retain meaningful runnable behavioral coverage, according to each reviewer’s cited code assessment.', anchors: criterion.id === 'preservation' ? { 0: 'Existing meaningful protection was lost.', 1: 'Existing meaningful protection was retained.' } : { 0: 'No meaningful runnable coverage.', 1: 'Meaningful runnable coverage is present.' } };
+    });
+    const qualityDimensions = taste.scoreBasis.dimensions.map(dimension => ({ ...dimension, weight: scoringCriteria.find(criterion => criterion.id === dimension.id).weight }));
+    const criterionReadings = row => scoringCriteria.map(criterion => {
+      const scores = row.judgments.map(judge => judge.contributions.find(item => item.id === criterion.id).score);
+      const complete = scores.every(Number.isFinite);
+      return { id: criterion.id, score: complete ? scores.reduce((sum, score) => sum + score, 0) / scores.length : null, range: { minimum: complete ? Math.min(...scores) : null, maximum: complete ? Math.max(...scores) : null } };
+    });
+    const criterionProfile = configurationId => scoringCriteria.map(criterion => {
+      const rows = overall.rows.filter(row => row.configurationId === configurationId);
+      const baseline = criterionReadings(rows.find(row => row.condition === 'none')).find(item => item.id === criterion.id).score;
+      const treatment = criterionReadings(rows.find(row => row.condition === treatmentCondition)).find(item => item.id === criterion.id).score;
+      return { id: criterion.id, baseline, treatment, delta: Number.isFinite(baseline) && Number.isFinite(treatment) ? treatment - baseline : null };
+    });
+    const baselineRows = paired.rows.filter(row => row.condition === 'none'), currentRows = paired.rows.filter(row => row.condition === treatmentCondition);
+    const baselineProtectionLosses = baselineRows.filter(row => row.protection === 'lost').length;
+    const currentRetained = currentRows.filter(row => row.protection === 'retained').length;
+    const namingDisagreement = compact && !authoring ? `Suite-owned helpers are in scope. Semantic naming ratings differ: ${paired.rows[0].judgments.map(judge => `${judge.judgeConfigurationId.startsWith('codex:') ? 'Astra' : 'Opus'} rated ${paired.rows.filter(row => row.judgments.find(item => item.judgeConfigurationId === judge.judgeConfigurationId).dimensions.find(item => item.id === 'semantic_naming').score === 0).length}/${paired.rows.length} suites 0`).join('; ')}. Both reviewers’ original grades remain in the panel.` : '';
+    const evidenceMarkup = evidence => evidence.map(item => `<code data-testing-taste-citation data-file="${escape(item.file)}" data-version="${escape(item.version)}" data-start-line="${item.startLine}" data-end-line="${item.endLine}">${escape(item.file)} (${escape(item.version)}) L${item.startLine}${item.endLine !== item.startLine ? `–${item.endLine}` : ''}</code>`).join(' · ');
+    const dimensionTable = (readings, attributes, range = false) => `<div class="testing-report__table-wrap" tabindex="0" role="region" aria-label="${range ? 'Criterion means and reviewer ranges' : 'Criterion ratings'}"><table class="testing-report__table testing-report__table--dimensions"><thead><tr><th scope="col">Criterion</th><th scope="col">${range ? 'Mean' : 'Rating'} /1</th>${range ? '<th scope="col">Judge range</th>' : ''}</tr></thead><tbody>${scoringCriteria.map(dimension => {
+      const reading = readings.find(item => item.id === dimension.id);
+      return `<tr ${attributes}="${escape(dimension.id)}"><th scope="row">${escape(dimension.label)}<small class="work-spec-dimensions__weight">${number(dimension.weight)}% weight</small></th><td data-testing-taste-dimension-score>${range ? tastePanelScore(reading?.score) : tasteScore(reading?.score)}</td>${range ? `<td data-testing-taste-dimension-range>${hasRange(reading?.range) ? `${tasteScore(reading.range.minimum)}–${tasteScore(reading.range.maximum)}` : 'Unscored'}</td>` : ''}</tr>`;
+    }).join('')}</tbody></table></div>`;
+    const tasteJudgeMarkup = (judgment, index, finalJudgment) => `<li class="model-run__judge" data-testing-taste-judge="${escape(judgment.judgeConfigurationId)}" data-review-sha256="${escape(judgment.reviewSha256)}" data-status="${escape(judgment.status)}"${judgment.failure ? ` data-failure="${escape(judgment.failure)}"` : ''}>
+      <header class="model-run__judge-header"><span class="model-run__judge-identity"><strong class="model-run__judge-index">Judge ${String(index + 1).padStart(2, '0')}</strong><span class="model-run__judge-configuration">${escape(judgment.judgeConfigurationId)}</span></span><span class="model-run__judge-score"><strong class="model-run__judge-score-value" data-testing-taste-judge-score>${finalScore(finalJudgment?.score)}</strong><small class="model-run__judge-score-unit">/100</small></span></header>
+      <div class="model-run__judge-rationale"><p data-testing-taste-review-status>${judgment.failure === 'timeout' ? 'Review timed out; no ratings returned.' : `Review: ${escape(judgment.status)}.${judgment.score === null ? ' No complete score returned.' : ''}`}</p>${judgment.dimensions.some(item => Number.isFinite(item.score)) ? `<div class="testing-report__dimension-findings">${qualityDimensions.map(dimension => {
+        const finding = judgment.dimensions.find(item => item.id === dimension.id);
+        return `<section class="testing-report__dimension-finding" data-testing-taste-judge-dimension="${escape(dimension.id)}"><h4>${escape(dimension.label)} <span data-testing-taste-dimension-score>${tasteScore(finding?.score)}</span><small>/1 · ${number(dimension.weight)}% weight</small></h4><p data-testing-taste-dimension-reason>${escape(finding?.reason || 'No rating returned.')}</p><div data-testing-taste-dimension-evidence>${evidenceMarkup(finding?.evidence || [])}</div>${(finding?.qualifications || []).map(item => `<aside class="testing-report__qualification" data-testing-taste-qualification><h5>Evidence qualification</h5><p data-testing-taste-qualification-finding>${escape(item.finding)}</p><div>${evidenceMarkup(item.evidence)}</div></aside>`).join('')}</section>`;
+      }).join('')}</div>${authoring ? '<p>These are suite ratings; the test files above show the exact submitted code. Fault detection and runnable points come from independently checked execution.</p>' : compact ? `<section data-testing-coverage-finding><h4>Runnable coverage: ${escape(judgment.coverage.status)}</h4><p data-testing-coverage-reason>${escape(judgment.coverage.reason)}</p><div data-testing-coverage-evidence>${evidenceMarkup(judgment.coverage.evidence)}</div></section><section data-testing-protection-finding><h4>Existing protection: ${escape(judgment.protection.status)}</h4><p data-testing-protection-reason>${escape(judgment.protection.reason)}</p><div data-testing-protection-evidence>${evidenceMarkup(judgment.protection.evidence)}</div></section><p>These are suite ratings; the test files above show the exact submitted code.</p>` : '<h4>File reviews</h4><p>Each file total uses its own seven ratings. File totals do not determine the suite score.</p>'}<ul class="testing-report__file-reviews">${(judgment.files || []).map(file => `<li data-testing-taste-file="${escape(file.file)}"><strong>${escape(file.file)} · <span data-testing-taste-file-score>${tastePanelScore(file.score)}</span>/1 weighted</strong><p data-testing-taste-file-reason>${escape(file.reason)}</p><div data-testing-taste-file-evidence>${evidenceMarkup(file.evidence)}</div><details class="work-spec-assessment" data-testing-taste-file-dimensions><summary class="work-spec-assessment__summary">Seven dimension ratings</summary>${dimensionTable(file.dimensions, 'data-testing-taste-file-dimension')}</details></li>`).join('')}</ul>` : '<p>No dimension or file ratings returned.</p>'}<details class="work-spec-assessment"><summary class="work-spec-assessment__summary">Assessment identity</summary><dl class="testing-report__identity"><div><dt>Status</dt><dd>${escape(judgment.status)}</dd></div><div><dt>Review SHA-256</dt><dd>${escape(judgment.reviewSha256 || 'Not recorded')}</dd></div></dl></details></div>
+    </li>`;
+    const calculationMarkup = row => `<details class="work-spec-assessment" data-testing-score-calculation="${escape(row.id)}"><summary class="work-spec-assessment__summary">${provisional ? 'Provisional' : 'Final'} score calculation</summary><div class="work-spec-assessment__body"><p>${provisional ? 'The provisional score adds Astra’s seven weighted craft ratings and the two execution contributions. The official two-reviewer panel is pending; no Opus rating is substituted.' : authoring ? 'The final score averages both reviewers’ craft contributions and adds the two execution contributions. Execution points are the same for both reviewer calculations.' : 'Each reviewer’s score is the sum of nine weighted contributions. The final score is the mean of both reviewer scores.'}</p>${row.judgments.map(judge => `<section data-testing-score-calculation-judge="${escape(judge.judgeConfigurationId)}"><h4>${escape(judge.judgeConfigurationId)} · <span data-testing-score-final>${finalScore(judge.score)}</span>/100</h4><div class="testing-report__table-wrap"><table class="testing-report__table testing-report__table--dimensions"><thead><tr><th scope="col">Criterion</th><th scope="col">Weight</th><th scope="col">Rating /1</th><th scope="col">Points</th></tr></thead><tbody>${scoringCriteria.map(criterion => {
+      const contribution = judge.contributions.find(item => item.id === criterion.id);
+      return `<tr data-testing-score-contribution="${escape(criterion.id)}"><th scope="row">${escape(criterion.label)}</th><td data-testing-score-weight>${number(contribution.weight)}%</td><td data-testing-score-rating>${tasteScore(contribution.score)}</td><td data-testing-score-points>${tastePanelScore(contribution.points)}</td></tr>`;
+    }).join('')}</tbody></table></div></section>`).join('')}</div></details>`;
+    const comparisonFilePath = configurationId => {
+      const rows = testFiles.rows.filter(row => row.configurationId === configurationId);
+      return rows.find(row => row.condition === 'none')?.files.find(file => rows.every(row => row.files.some(other => other.path === file.path)))?.path;
+    };
+    const orderedTestFiles = row => {
+      const files = testFiles.rows.find(item => item.id === row.id).files;
+      const sharedPath = comparisonFilePath(row.configurationId);
+      return [...files].sort((first, second) => Number(second.path === sharedPath) - Number(first.path === sharedPath));
+    };
+    const testFilesMarkup = row => `<section class="model-run__section" data-testing-files-row="${escape(row.id)}"><h4>Test files</h4>${row.acceptance ? `<p data-testing-file-size-violation>Original 24 KiB limit exceeded: ${number(row.acceptance.sourceBytes)} bytes. Exact source evaluated under the selected 64 KiB analysis limit.</p>` : ''}${orderedTestFiles(row).length ? '' : '<p>No test files retained.</p>'}${orderedTestFiles(row).map((file, index) => `<details class="work-spec-assessment" data-testing-file="${escape(file.path)}" data-sha256="${escape(file.sha256)}"${index === 0 ? ' open' : ''}><summary class="work-spec-assessment__summary">${escape(file.path)}</summary><div class="work-spec-assessment__body"><button class="model-run__copy" type="button" data-testing-copy-file aria-label="Copy ${escape(file.path)}" aria-live="polite">Copy</button><pre class="model-run__text" data-testing-file-content tabindex="0" aria-label="Source for ${escape(file.path)}"><code>${escape(file.content).replace(/\r/g, '&#13;')}</code></pre></div></details>`).join('')}</section>`;
+    const tasteRowMarkup = row => {
+      const final = overall.rows.find(item => item.id === row.id);
+      const scores = final.judgments.map(judge => judge.score), resolved = scores.length === reviewerCount && scores.every(Number.isFinite);
+      return `<div data-testing-taste-row="${escape(row.id)}"><p class="model-run__aggregation-note"><strong>${provisional ? 'Provisional score' : 'Score'}: <span data-testing-taste-row-score>${finalScore(final.score)}</span>/100</strong> · ${provisional ? 'Astra judge only; Opus pending.' : `${scores.filter(Number.isFinite).length}/2 ${authoring ? 'calculated totals' : 'scores returned'} · Judge range: <span data-testing-taste-range>${resolved ? `${finalScore(Math.min(...scores))}–${finalScore(Math.max(...scores))}` : 'Unscored'}</span>. ${resolved ? 'This range describes reviewer disagreement.' : authoring ? 'The final score is unavailable until both reviews and required execution evidence are resolved.' : 'The final score is unscored because both reviews are required.'}`}</p>${calculationMarkup(final)}<details class="work-spec-assessment" data-testing-taste-row-dimensions><summary class="work-spec-assessment__summary">${provisional ? 'Criterion ratings' : 'Criterion means and reviewer ranges'}</summary>${dimensionTable(criterionReadings(final), 'data-testing-taste-row-dimension', !provisional)}</details><details class="work-spec-assessment" data-testing-taste-reviews><summary class="work-spec-assessment__summary">${provisional ? 'Read Astra’s review' : 'Read both judge reviews'}</summary><ol class="model-run__judges">${row.judgments.map((judgment, index) => tasteJudgeMarkup(judgment, index, final.judgments.find(item => item.judgeConfigurationId === judgment.judgeConfigurationId))).join('')}</ol></details></div>`;
+    };
+    const profileMarkup = summary => `<div class="testing-report__profile" data-testing-taste-profile="${escape(summary.configurationId)}"><h3>Nine-criterion profile</h3><p>${provisional ? 'Seven Astra ratings and two execution ratings on a shared 0–1 scale. Difference is Skill − Minimal.' : authoring ? 'Seven judge means and two execution ratings on a shared 0–1 scale. Difference is Skill − Minimal.' : 'Two-judge means on a shared 0–1 scale. Difference is Skill − Minimal.'}</p><div class="testing-report__table-wrap" tabindex="0" role="region" aria-label="Nine-criterion paired profile"><table class="testing-report__table testing-report__table--dimensions"><thead><tr><th scope="col">Criterion</th><th scope="col">Minimal</th><th scope="col">Skill</th><th scope="col">Difference</th></tr></thead><tbody>${scoringCriteria.map(dimension => {
+      const reading = criterionProfile(summary.configurationId).find(item => item.id === dimension.id);
+      return `<tr data-testing-taste-profile-dimension="${escape(dimension.id)}"><th scope="row">${escape(dimension.label)}<small class="work-spec-dimensions__weight">${number(dimension.weight)}% weight</small></th><td data-testing-taste-dimension-baseline>${tastePanelScore(reading?.baseline)}</td><td data-testing-taste-dimension-treatment>${tastePanelScore(reading?.treatment)}</td><td data-testing-taste-dimension-delta>${tasteDelta(reading?.delta)}</td></tr>`;
+    }).join('')}</tbody></table></div></div>`;
+    const missedBugCount = row => authoring && Number.isFinite(row.objective?.faultDetection)
+      ? row.objective.faults.filter(fault => ['survived', 'not-run'].includes(fault.status)).length : 0;
+    const missedBugLabel = count => `${count} bug${count === 1 ? '' : 's'} missed`;
+    const faultCreditLabel = missedBugLabel;
+    const missedBugNote = row => {
+      const count = missedBugCount(row);
+      return count ? `<small class="testing-report__missed-bugs" data-testing-missed-bug-note="${escape(row.condition)}">${missedBugLabel(count)}</small>` : '';
+    };
+    const missedBugMarker = row => {
+      const count = missedBugCount(row);
+      return count ? `<i class="model-preview__missed-bug model-preview__missed-bug--${row.condition === 'none' ? 'baseline' : 'treatment'}" data-testing-missed-bugs="${escape(row.condition)}" data-missed-count="${count}" title="${row.condition === 'none' ? 'Minimal' : 'Skill'}: ${faultCreditLabel(count)}" aria-hidden="true">*</i>` : '';
+    };
+    const rowMarkup = (row, condition, headingId) => `<section class="model-run__condition model-run__condition--${condition.id === 'none' ? 'baseline' : 'skill'}" data-testing-paired-row="${escape(row.id)}" data-condition="${condition.id}" aria-labelledby="${headingId}">
+      <header class="model-run__condition-header"><div class="model-run__condition-title"><span class="model-run__condition-meta">${escape(caseLabel)} · test score</span><h3 class="model-run__condition-name" id="${headingId}">${escape(condition.label)}</h3>${missedBugNote(row)}</div><strong class="model-run__condition-score" data-testing-arm-score>${finalScore(overall.rows.find(reading => reading.id === row.id)?.score)}<small class="model-run__condition-unit">/100</small></strong></header>
+      ${testFilesMarkup(row)}
+      <p class="model-run__aggregation-note" data-testing-paired-execution>Behavioral tests: ${escape(row.testStatus)} · server shutdown: ${escape(row.cleanupStatus)}.</p>
+      ${authoring ? `<details class="work-spec-assessment" data-testing-objective><summary class="work-spec-assessment__summary">Fault detection: ${Number.isFinite(row.objective.faultDetection) ? Math.round(row.objective.faultDetection * 6) + '/6' : 'Unresolved'} · runnable: ${row.objective.runnable === null ? 'Unresolved' : row.objective.runnable === 1 ? 'yes' : 'no'}</summary><div class="work-spec-assessment__body"><p data-testing-fault-credit-rule>Fault credit requires a source-adjudicated causal test failure of any error type in a case passing both healthy controls. Infrastructure, process timeouts, hook, setup, cleanup and unrelated failures are excluded.</p>${row.objective.faults.map(fault => `<section data-testing-objective-fault="${escape(fault.id)}" data-status="${escape(fault.status)}"><h4>${escape(fault.id)} · ${escape(fault.status)}</h4><p>${escape(fault.reason)}</p><div>${evidenceMarkup(fault.evidence)}</div></section>`).join('')}</div></details>` : `<p class="model-run__aggregation-note" data-testing-paired-protection>Existing test coverage: ${escape(row.protection)} (reviewer assessment).</p>`}
+      ${tasteRowMarkup(taste.rows.find(reading => reading.id === row.id))}
+      <details class="work-spec-assessment" data-testing-paired-resources><summary class="work-spec-assessment__summary">${row.origin === 'reused-baseline' ? 'Saved baseline run details' : 'Run details'}</summary><div class="work-spec-assessment__body"><dl class="testing-report__identity"><div><dt>Generation runtime</dt><dd>${duration(row.elapsedMs)}</dd></div><div><dt>Verification runtime</dt><dd>${duration(row.verificationMs)}</dd></div><div><dt>Tokens in / out</dt><dd>${number(row.inputTokens)} / ${number(row.outputTokens)}</dd></div></dl></div></details>
+    </section>`;
+    const rankedSummaries = [...overall.summaries].sort((first, second) => (second.treatment ?? -Infinity) - (first.treatment ?? -Infinity));
+    const modelMarkup = (reading, index) => {
+      const selectedRows = paired.rows.filter(row => row.configurationId === reading.configurationId);
+      const comparable = Number.isFinite(reading.baseline) && Number.isFinite(reading.treatment);
+      const missedBugDescription = selectedRows.filter(row => missedBugCount(row)).map(row => `${row.condition === 'none' ? 'Minimal' : 'Skill'}: ${faultCreditLabel(missedBugCount(row))}`).join('; ');
+      return `<li class="model-preview__item" data-testing-paired-setting="${escape(reading.configurationId)}" data-testing-taste-setting="${escape(reading.configurationId)}"><details class="model-run"><summary class="model-preview__row${reading.delta < 0 ? ' is-regression' : ''}"><span class="model-preview__identity"><strong>${escape(selectedRows[0].label)}</strong><small>${Number.isFinite(reading.treatment) ? `Testing skill rank #${index + 1} of ${rankedSummaries.length}` : 'Skill unscored'}</small></span>${comparable ? `<span class="model-preview__plot" role="img" style="--preview-start:${Math.min(reading.baseline, reading.treatment)}%;--preview-width:${Math.abs(reading.delta)}%;--preview-baseline:${reading.baseline}%;--preview-treatment:${reading.treatment}%" aria-label="Score /100: Minimal ${finalScore(reading.baseline)}, Skill ${finalScore(reading.treatment)}${missedBugDescription ? `; ${missedBugDescription}` : ''}"><i class="model-preview__axis" aria-hidden="true"></i><i class="model-preview__connector" aria-hidden="true"></i><i class="model-preview__mark model-preview__mark--baseline" aria-hidden="true"></i><i class="model-preview__mark model-preview__mark--treatment" aria-hidden="true"></i>${selectedRows.map(missedBugMarker).join('')}</span>` : '<span>Comparison incomplete</span>'}<span class="model-preview__score"><span>Minimal</span><b data-testing-score-baseline>${finalScore(reading.baseline)}</b>${missedBugNote(selectedRows.find(row => row.condition === 'none'))}${selectedRows.find(row => row.condition === 'none').protection === 'lost' ? '<small class="testing-report__coverage-note" data-testing-coverage-loss>Coverage lost</small>' : ''}</span><span class="model-preview__score model-preview__score--treatment"><span>Skill</span><b data-testing-score-treatment>${finalScore(reading.treatment)}</b>${missedBugNote(selectedRows.find(row => row.condition === treatmentCondition))}</span><span class="model-preview__delta" data-testing-taste-delta>${finalDelta(reading.delta)}</span><span class="model-preview__action">Inspect run <i class="model-preview__action-mark" aria-hidden="true">↓</i></span></summary><div class="model-run__comparison">${conditions.map((condition, conditionIndex) => rowMarkup(selectedRows.find(row => row.condition === condition.id), condition, `testing-paired-${index}-${conditionIndex}`)).join('')}</div>${profileMarkup(taste.summaries.find(item => item.configurationId === reading.configurationId))}</details></li>`;
+    };
+    document.querySelector('.report-mast__nav').innerHTML = `<a href="#${benchmarkId}/paired-check" data-report-section="paired-check">Comparison</a><a href="#${benchmarkId}/method" data-report-section="method">Method</a>`;
+    document.title = `${title} · VasirBench`;
+    document.getElementById('report-page').dataset.executableBenchmark = benchmarkId;
+    document.querySelector('.benchmark-mast__issue').textContent = `Engineering · ${title}`;
+    document.querySelector('.report-footer > span').textContent = `VasirBench · ${authoring ? title : 'Current backend testing'} · Included in Engineering and Overall`;
+    const view = document.getElementById('report-view');
+    view.innerHTML = `<div class="report-shell" data-testing-quality-report>
+      <div class="report-context"><nav class="report-breadcrumb" aria-label="Benchmark hierarchy"><a href="./index.html">VasirBench</a><span class="report-breadcrumb__separator" aria-hidden="true">→</span><a href="./index.html#capabilities/engineering/benchmarks">Engineering</a><span class="report-breadcrumb__separator" aria-hidden="true">→</span><span class="report-breadcrumb__current" aria-current="page">${escape(title)}</span></nav><a class="report-context__back" href="./index.html#capabilities/engineering/benchmarks">← All Engineering tests</a></div>
+      <section class="report-section" id="paired-check" aria-labelledby="report-title" data-testing-paired-check>
+        <header class="report-section__heading"><div><p class="ui-eyebrow">${escape(title)} · ${publication.configurations.length} model settings</p><h1 id="report-title">${authoring ? 'Writing new tests' : 'Model comparison'}</h1></div><p data-testing-taste-completion>${authoring ? escape(publication.benchmark.description) : 'Score /100 · ordered by Skill score. Open a row to inspect all nine criteria, the test files and reviews.'}</p></header>
+        ${provisional ? '<p class="model-run__aggregation-note" data-testing-review-basis>Astra judge only; Opus pending · provisional scores</p>' : ''}
+        <ul class="model-preview">${rankedSummaries.map(modelMarkup).join('')}</ul>
+      </section>
+      <section class="report-section" id="method" aria-label="Method and evidence" data-testing-paired-evidence>
+        <details class="work-spec-assessment" data-testing-method><summary class="work-spec-assessment__summary">Method and evidence</summary><div class="work-spec-assessment__body">
+          <div class="method-grid"><section><h3>Same task</h3><p>${authoring ? `Write new tests for a real Redis work queue from the same production code and task. ${publication.configurations.length} model settings, one fresh attempt per condition. Existing queue tests and fault patches are excluded from author input; the full testing skill is the only prompt difference.` : `Improve the player-save tests in an existing backend. Four model settings, one attempt with minimal instructions and one with the testing skill. Each uses the same source code${compact ? `; the four Skill attempts have a ${number(publication.provenance.authorTimeoutMs / 60000)}-minute budget. The four Minimal artifacts are reused without modification from the identical task, source and verifier.` : ' and ten-minute budget.'}`}</p></section><section><h3>Score /100</h3><p data-testing-taste-method>${provisional ? 'Provisional scores use Astra’s seven craft ratings for 70 points, independently adjudicated calibrated fault detection for 25 and clean runnable tests for 5. Opus authors and the second reviewer are pending; these are not completed two-reviewer panel scores.' : authoring ? 'Seven craft criteria contribute 70 points from two blind reviewers. Source-adjudicated detection of six calibrated faults contributes 25 points; clean nonzero tests in both healthy controls contributes 5 points. Source-adjudicated causal test failures of any error type earn credit when the matched case passes both healthy controls. Infrastructure, process timeouts, hook, setup, cleanup and unrelated failures are excluded. No preservation requirement or caps.' : 'Each reviewer’s score sums nine weighted criteria on a 0–100 scale, with preservation carrying 25% of the total. Average both reviewer scores for the final score. Lost preservation or absent runnable coverage contributes 0 to that criterion; neither imposes a ceiling on the total. Unresolved findings have no final score. Higher is better; uplift is Skill minus Minimal.'}</p>${authoring && publication.sourcePolicy ? '<p data-testing-source-policy>Analysis limit expanded from 24 to 64 KiB after authoring began; original prompts and files unchanged.</p>' : ''}<p data-testing-score-adoption>${authoring ? 'The task, rubric, weights and execution controls were frozen before authors. Native ratings, exact authored files and every attempt are retained.' : 'The user requested these final weights after the reviews. The seven native ratings and the separate preservation and runnable-coverage findings are reused exactly; no new grading was performed.'}</p>${authoring && publication.detectionCorrection ? '<p data-testing-detection-correction>Detection rule corrected after the round; original runs and reviewer ratings retained.</p>' : ''}</section><section><h3>Scope</h3><p>${authoring ? 'One real Redis service-boundary integration case, one attempt per condition. This does not establish full-app, browser or SQS behavior. Included in Engineering and Overall. Engineering averages each model’s completed benchmark pairs equally; Overall normalizes category weights across that model’s measured categories.' : 'One development case, one attempt per condition. These results do not establish performance on other tasks. Included in Engineering and Overall. Engineering averages each model’s completed benchmark pairs equally; Overall normalizes category weights across that model’s measured categories.'}</p></section></div>
+          <details class="work-spec-assessment" data-testing-rubric><summary class="work-spec-assessment__summary">Scoring rubric · nine weighted criteria</summary><div class="work-spec-assessment__body"><p data-testing-taste-naming-rule>${escape(taste.scoreBasis.namingZeroRule)}</p>${compact && !authoring ? `<p data-testing-naming-disagreement>${escape(namingDisagreement)}</p>` : ''}<p data-testing-score-definition>${escape(overall.scoreBasis.aggregation)}</p><div class="testing-report__table-wrap" tabindex="0" role="region" aria-label="Nine weighted criteria"><table class="testing-report__table"><caption>Final weights · each criterion is rated from 0 to 1</caption><thead><tr><th scope="col">Criterion / weight</th><th scope="col">What is assessed</th><th scope="col">0 / 0.5 / 1 anchors</th></tr></thead><tbody>${scoringCriteria.map(dimension => `<tr data-testing-taste-rubric-dimension="${escape(dimension.id)}"><th scope="row">${escape(dimension.label)}<small class="work-spec-dimensions__weight" data-testing-taste-rubric-weight>${number(dimension.weight)}%</small></th><td data-testing-taste-rubric-description>${escape(dimension.description)}</td><td>${Object.keys(dimension.anchors).sort((first, second) => Number(first) - Number(second)).map(value => `<p data-testing-taste-rubric-anchor="${value}"><b>${value}:</b> <span>${escape(dimension.anchors[value])}</span></p>`).join('')}</td></tr>`).join('')}</tbody></table></div></div></details>
+          <details class="work-spec-assessment" data-testing-execution><summary class="work-spec-assessment__summary">Execution and coverage findings</summary><div class="work-spec-assessment__body"><p data-testing-paired-outcomes>${paired.rows.filter(row => row.testStatus === 'pass').length}/${paired.rows.length} suites passed behavioral assertions.</p><p data-testing-paired-mechanism>${authoring ? 'Fault credit requires independent source review of causal test failures of any error type, matched to cases passing both healthy controls. Infrastructure, process timeouts, hook, setup, cleanup and unrelated failures earn no credit.' : compact ? `Reviewers assessed existing protection as lost in ${baselineProtectionLosses}/4 Minimal suites and retained in ${currentRetained}/4 Skill suites. Each assessment’s reason and cited source are available in its judge review.` : `Reviewers found that ${baselineProtectionLosses}/4 Minimal suites removed the separate test for loading an existing save; ${currentRetained}/4 Skill suites retained it. This is a coverage finding from code review.`}</p><p data-testing-paired-cleanup>Server shutdown failed in ${paired.rows.filter(row => row.cleanupStatus === 'failed').length}/${paired.rows.length} suites.${authoring ? ' Runnable credit additionally requires clean cleanup in both healthy runs.' : compact ? ' Shutdown status is recorded separately from the behavioral assertions and does not by itself establish missing runnable coverage.' : ' A shared websocket shutdown diagnostic occurred after the behavioral assertions passed. This is separate from the storage cleanup behavior tested by the suites.'}</p></div></details>
+          <details class="work-spec-assessment" data-testing-paired-resources-evidence><summary class="work-spec-assessment__summary">Review provenance and usage</summary><div class="work-spec-assessment__body"><p>Each reviewer assessed ${number(paired.rows.filter(row => row.judgments.some(judge => judge.status === 'complete')).length)} anonymous final suites. Original scores, reviewer reasons and cited file evidence are retained.</p>${compact && !authoring ? `<p data-testing-baseline-reuse>${number(publication.provenance.freshAuthorSessions)} new Skill author attempts · ${number(publication.provenance.reusedBaselineArtifacts)} unchanged Minimal artifacts · ${number(publication.provenance.reviewerSessions)} new blind reviewers. Baseline source, neutral prompt, output schema and verifier match the current task. Usage below counts the six new native sessions; saved baseline author usage is shown only in its run details.</p>` : authoring ? `<p data-testing-fresh-authors>${number(publication.provenance.freshAuthorSessions)} fresh author attempts · ${number(publication.provenance.reviewerSessions)} blind ${publication.provenance.reviewerSessions === 1 ? 'reviewer' : 'reviewers'} · no automatic retries. Both conditions receive the same production source, task and provided infrastructure.</p>` : ''}<p>${number(publication.nativeSessions)} native sessions · ${number(publication.knownTokens)} recorded tokens including cached input traffic · ${number(publication.usageMissingSessions)} sessions lack usage. Recorded usage is a subtotal, not a complete bill.</p>${taste.retry ? `<p data-testing-taste-retry data-review-attempts="${taste.nativeSessions}" data-reviewer-seats="${taste.rows[0].judgments.length}">${number(taste.nativeSessions)} native review attempts fill ${number(taste.rows[0].judgments.length)} reviewer seats. One review was retried at the user’s request after a timeout, with a ${number(taste.retry.timeoutMs / 60000)}-minute limit. Selected retry: ${escape(taste.retry.status)} · ${number(taste.retry.automaticRetries)} automatic retries. The selected two reviews determine the panel; the timeout receipt remains retained.</p>` : ''}<dl class="testing-report__identity"><div><dt>Evidence SHA-256</dt><dd>${escape(paired.sourceSha256)}</dd></div><div><dt>Current skill bundle SHA-256</dt><dd>${escape(paired.skillSha256)}</dd></div><div><dt>Dimension review SHA-256</dt><dd>${escape(taste.sourceSha256)}</dd></div><div><dt>Dimension judges</dt><dd>${[...new Set(taste.rows.flatMap(row => row.judgments.map(judgment => judgment.judgeConfigurationId)))].map(escape).join('<br>')}</dd></div>${taste.retry ? `<div><dt>Retry amendment SHA-256</dt><dd>${escape(taste.retry.amendmentSha256)}</dd></div><div><dt>Timeout receipt SHA-256</dt><dd>${escape(taste.retry.priorReviewSha256)}</dd></div><div><dt>Selected retry receipt SHA-256</dt><dd>${escape(taste.retry.reviewSha256)}</dd></div>` : ''}</dl></div></details>
+        </div></details>
+      </section>
+    </div>`;
+    view.querySelectorAll('.model-run, .model-run__judging').forEach(details => {
+      const sync = () => details.classList.toggle('is-open', details.open);
+      details.addEventListener('toggle', sync);
+      sync();
+    });
+    view.addEventListener('click', async event => {
+      const button = event.target.closest('[data-testing-copy-file]');
+      if (!button) return;
+      const content = button.closest('[data-testing-file]').querySelector('[data-testing-file-content] code').textContent;
+      try { await navigator.clipboard.writeText(content); button.textContent = 'Copied'; button.classList.add('is-confirmed'); }
+      catch { button.textContent = 'Copy failed'; button.classList.add('is-error'); }
+    });
+    navigateTestingReport(benchmarkId);
+  };
+  const initialTestingPublication = initialBenchmarkId === 'test-authoring' ? rootData?.testAuthoring : initialBenchmarkId === 'backend-testing' ? rootData?.executableTesting : null;
+  if (initialTestingPublication) {
+    try {
+      if (!window.VASIR_RESPONSES) await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = new URL('./responses.js', runtimeBase).href;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.append(script);
+      });
+      const authoring = initialBenchmarkId === 'test-authoring';
+      const compactRound = authoring ? window.VASIR_RESPONSES?.testAuthoringRound : window.VASIR_RESPONSES?.backendTestingCurrentRound;
+      renderTestingReport(initialTestingPublication, compactRound || window.VASIR_RESPONSES?.backendTestingPairedRepair, compactRound || window.VASIR_RESPONSES?.backendTestingTaste, authoring ? window.VASIR_RESPONSES?.testAuthoringFiles : window.VASIR_RESPONSES?.backendTestingFiles);
+    } catch {
+      document.getElementById('report-view').innerHTML = '<section class="development-unavailable" role="alert"><p class="ui-eyebrow">Current quality evidence unavailable</p><h1>REPORT COULD NOT BE LOADED</h1><p>Reload to try again, or <a href="./index.html">return to the benchmark index</a>.</p></section>';
+    }
+    return;
+  }
+  const isWorkflowBenchmark = (benchmarkId) => Boolean(rootData?.aiWorkflows?.benchmarks?.some((benchmark) => benchmark.id === benchmarkId));
+  const isWritingBenchmark = benchmarkId => Boolean(benchmarkId && (Array.isArray(rootData?.writing?.catalog)
+    ? rootData.writing.catalog.some(benchmark => benchmark.id === benchmarkId && !benchmark.archived && !['withdrawn', 'planned', 'unscored'].includes(benchmark.status))
+    : rootData?.writing?.benchmarkId === benchmarkId || rootData?.writing?.additionalBenchmarks?.[benchmarkId] || rootData?.writing?.compactBenchmarks?.[benchmarkId] || rootData?.writing?.benchmarkIds?.includes(benchmarkId) || rootData?.writing?.benchmarks?.some(benchmark => benchmark.id === benchmarkId)));
+  const isPublishedBenchmark = benchmarkId => (benchmarkId === 'test-authoring' && Boolean(rootData?.testAuthoring)) || (benchmarkId === 'backend-testing' && Boolean(rootData?.executableTesting)) || isWritingBenchmark(benchmarkId) || isWorkflowBenchmark(benchmarkId)
+    || Boolean(rootData?.benchmarks?.some(benchmark => benchmark.id === benchmarkId));
+  const showUnavailableReport = () => {
+    document.title = 'Benchmark unavailable · VasirBench';
+    document.getElementById('report-view').innerHTML = '<section class="development-unavailable" role="alert" data-report-unavailable><p class="ui-eyebrow">Benchmark unavailable</p><h1>REPORT NOT AVAILABLE</h1><p>This benchmark is not part of the current published collection. <a href="./index.html">Browse benchmark results</a>.</p></section>';
+  };
+  if (initialBenchmarkId && !isPublishedBenchmark(initialBenchmarkId)) {
+    showUnavailableReport();
+    return;
+  }
+  const isWorkSpec = isWorkflowBenchmark(initialBenchmarkId);
+  const isWriting = isWritingBenchmark(initialBenchmarkId);
+  const isCreation = isWriting && initialBenchmarkId === 'storytelling-magic-discovery';
+  const writingArchive = isWriting ? rootData?.writing?.responseArchives?.[initialBenchmarkId] : null;
+  const writingArchiveGlobal = writingArchive?.globalName || 'VASIR_WRITING_RESPONSES';
+  try {
+    if (isCreation && !writingArchive) throw new Error('Creation response archive descriptor missing.');
+    if (writingArchive) {
+      const archiveUrl = new URL(writingArchive.href, runtimeBase);
+      const releaseDirectory = new URL('./', runtimeBase);
+      const expectedArchives = {
+        'storytelling-magic-discovery': ['VASIR_WRITING_CREATION_RESPONSES', 'writing-creation-responses.js'],
+        'storytelling-plot-twists': ['VASIR_WRITING_TWISTS_RESPONSES', 'writing-twists-responses.js'],
+        'dungeon-master-adventure-outline': ['VASIR_WRITING_DUNGEON_MASTER_RESPONSES', 'writing-dungeon-master-responses.js']
+      };
+      const compactArchive = rootData?.writing?.compactBenchmarks?.[initialBenchmarkId]
+        || rootData?.writing?.catalog?.some(item => item.id === initialBenchmarkId && item.adapter === 'writing-compact-v1');
+      const expectedArchive = expectedArchives[initialBenchmarkId]
+        || (compactArchive ? ['VASIR_WRITING_RESPONSES', 'writing-responses.js'] : null);
+      if (!expectedArchive || writingArchiveGlobal !== expectedArchive[0] || archiveUrl.href !== new URL(expectedArchive[1], releaseDirectory).href) throw new Error('Invalid release archive descriptor.');
+    }
+    await Promise.all((isWriting
+      ? [['VASIR_WRITING', './writing-data.js'], [writingArchiveGlobal, writingArchive?.href || './writing-responses.js']]
+      : [['VASIR_RESPONSES', './responses.js']]).filter(([key]) => !window[key]).map(([, src]) => new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = new URL(src, runtimeBase).href;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.append(script);
+    })));
+  } catch {
+    document.getElementById('report-view').innerHTML = '<section class="development-unavailable" role="alert"><p class="ui-eyebrow">Response evidence unavailable</p><h1>REPORT COULD NOT BE LOADED</h1><p>Reload to try again, or <a href="./index.html">return to the benchmark index</a>.</p></section>';
+    return;
+  }
+  const writingCollection = window.VASIR_WRITING_COLLECTION || window.VASIR_WRITING;
+  const writingResponseCollection = writingArchive ? window[writingArchiveGlobal] : window.VASIR_WRITING_RESPONSES_COLLECTION || window.VASIR_WRITING_RESPONSES;
+  const writingProjectionFor = benchmarkId => writingCollection?.compactBenchmarks?.[benchmarkId] || writingCollection?.additionalBenchmarks?.[benchmarkId] || writingCollection?.benchmarkPublications?.find(item => item.benchmarkId === benchmarkId)?.projection || writingCollection;
+  const writingResponsesFor = benchmarkId => writingResponseCollection?.compactBenchmarks?.[benchmarkId] || writingResponseCollection?.additionalBenchmarks?.[benchmarkId] || writingResponseCollection?.benchmarkResponses?.find(item => item.benchmarkId === benchmarkId)?.responseBundle || writingResponseCollection;
+  const data = isWriting ? writingProjectionFor(initialBenchmarkId) : isWorkSpec ? rootData.aiWorkflows : rootData;
+  const responseData = isWriting ? writingResponsesFor(initialBenchmarkId) : isWorkSpec ? window.VASIR_RESPONSES?.aiWorkflows : window.VASIR_RESPONSES;
+  const pendingArchitecture = !isWriting && !isWorkSpec ? rootData.architecturePending : null;
+  if (isWriting) {
+    window.VASIR_WRITING_COLLECTION = writingCollection;
+    if (!writingArchive) window.VASIR_WRITING_RESPONSES_COLLECTION = writingResponseCollection;
+    window.VASIR_WRITING = data;
+    window.VASIR_WRITING_RESPONSES = responseData;
+  }
+  const writingDescriptor = rootData?.writing?.catalog?.find(item => item.id === initialBenchmarkId)
+    || rootData?.writing?.additionalBenchmarks?.[initialBenchmarkId];
+  const writingSubcategory = writingDescriptor?.trackId || writingDescriptor?.subcategory || data?.subcategory || 'storytelling';
+  const writingTitle = writingDescriptor?.trackTitle || data?.subcategoryTitle || writingDescriptor?.title || 'Storytelling';
+  const writingCaseLabel = data?.caseLabel || 'story case';
+  const writingCasePlural = writingCaseLabel === 'story' ? 'stories' : `${writingCaseLabel}s`;
+  const writingTrialCount = isWriting ? Number(data?.trialCount ?? data?.scoreBasis?.trialsPerTask ?? 1) : 1;
+  const hasWritingTrialPicker = isWriting && writingTrialCount > 1;
+  const commonCoreScope = isWriting && initialBenchmarkId === 'storytelling-core-idea'
+    && data.provisionalLeaderboard?.id === 'core-idea-astra-common-11-v1' ? data.provisionalLeaderboard : null;
+  const TREATMENT_LABEL = data?.conditions?.find((condition) => condition.id === 'skill')?.label || 'Architecture skill';
+  const BASELINE_LABEL = data?.conditions?.find(condition => condition.id === 'baseline')?.label || 'Minimal baseline';
+  const BASELINE_SHORT = data?.conditions?.find(condition => condition.id === 'baseline')?.short || 'Minimal';
+  const reportView = document.getElementById('report-view');
+  const reportPage = document.getElementById('report-page');
+  const routeSections = new Set(['overview', 'head-to-head', 'ranking', 'method', 'limitations', 'top']);
+  const REQUIRED_CONDITION_IDS = ['baseline', 'skill'];
+  const requiredCollections = ['conditions', 'benchmarks', 'benchmarkSummaries', 'benchmarkResults', 'categories', 'settings'];
+  const hasRequiredCollections = Boolean(data) && requiredCollections.every((key) => Array.isArray(data[key]));
+  const expectedResponseCount = hasRequiredCollections
+    ? (isWriting ? (data.cases?.length || 0) * writingTrialCount : data.benchmarks.length) * data.conditions.length * data.settings.length
+    : 0;
+  const returnFieldId = new URLSearchParams(window.location.search).get('from') === 'overall'
+    ? 'overall'
+    : null;
+  const hasResponseCollections = Boolean(responseData)
+    && responseData.kind === (isWriting ? 'vasirbenchmark-writing-responses' : 'vasirbenchmark-public-responses')
+    && (isWriting ? [1, 2, 3].includes(responseData.schemaVersion) : [2, 3].includes(responseData.schemaVersion))
+    && Array.isArray(responseData.messageSets)
+    && Array.isArray(responseData.responses);
+  let activeBenchmarkId = null;
+  let activeCaseId = isWriting ? data?.cases?.[0]?.id : null;
+  let activeTrialNumber = isWriting && !hasWritingTrialPicker ? data?.cases?.[0]?.trialNumber ?? 1 : 1;
+  const requestedSettingId = new URLSearchParams(window.location.search).get('setting');
+  let copyControlSequence = 0;
+  const transcriptCopyTextById = new Map();
+  const copyFeedbackTimers = new WeakMap();
+
+  if (!data || !reportView || !reportPage) return;
+  if (
+    !hasRequiredCollections
+    || data.conditions.length !== REQUIRED_CONDITION_IDS.length
+    || !REQUIRED_CONDITION_IDS.every((conditionId) => data.conditions.some((condition) => condition.id === conditionId))
+    || data.benchmarks.length === 0
+    || (isWriting && !data.benchmarks.some(benchmark => benchmark.id === initialBenchmarkId))
+    || data.settings.length === 0
+    || data.categories.length === 0
+    || data.benchmarkSummaries.length !== data.benchmarks.length
+    || (!isWriting && data.benchmarkResults.length !== expectedResponseCount)
+    || (isWriting && (!Number.isInteger(writingTrialCount) || writingTrialCount < 1 || !Array.isArray(data.cases) || !data.cases.length || !Array.isArray(data.caseResults) || !Array.isArray(data.caseSummaries) || !Array.isArray(data.scoreBasis?.dimensions) || !data.scoreBasis.dimensions.length))
+  ) {
+    reportView.innerHTML = `
+      <section class="development-unavailable" role="alert">
+        <p class="ui-eyebrow">Benchmark data unavailable</p>
+        <h1>REPORT COULD NOT BE VERIFIED</h1>
+        <p>The public dataset must provide one complete Minimal baseline and skill result for every matched setting and frozen task. No partial report is shown.</p>
+      </section>
+    `;
+    return;
+  }
+
+  const benchmarkById = new Map(data.benchmarks.map((benchmark) => [benchmark.id, benchmark]));
+  const summaryById = new Map(data.benchmarkSummaries.map((summary) => [summary.benchmarkId, summary]));
+  const categoryById = new Map(data.categories.map((category) => [category.id, category]));
+  const settingById = new Map(data.settings.map((setting) => [setting.id, setting]));
+  const settingByConfigurationId = new Map([...rootData.settings, ...data.settings].map((setting) => [setting.configurationId, setting]));
+  const expectedJudgeConfigurationIds = Array.isArray(data.scoreBasis?.judges) ? data.scoreBasis.judges : [];
+  const reviewerProfiles = Array.isArray(data.scoreBasis?.reviewers) ? data.scoreBasis.reviewers : [];
+  const reviewerProfileById = new Map(reviewerProfiles.map(profile => [profile.id, profile]));
+  const messageSetById = new Map((hasResponseCollections ? responseData.messageSets : []).map((messageSet) => [messageSet.id, messageSet]));
+  const promptFileById = new Map((responseData?.promptFiles || []).map(file => [file.id, file]));
+  const creationRequestById = new Map((responseData?.judgeRequests || []).map(request => [request.id, request]));
+  const creationSegmentByHash = new Map((responseData?.judgePromptSegments || []).map(segment => [segment.sha256, segment.content]));
+  const creationAnswerByHash = new Map((responseData?.responses || []).filter(response => response.provenance?.outputSha256).map(response => [response.provenance.outputSha256, response.outputText]));
+  const caseById = new Map((data.cases || []).map(story => [story.id, story]));
+  const caseSummaryById = new Map((data.caseSummaries || []).map(summary => [summary.caseId, summary]));
+  const trialSummaryKey = (caseId, trialNumber) => `${caseId}\u0000${trialNumber}`;
+  const trialSummaryByKey = new Map((data.trialSummaries || []).map(summary => [trialSummaryKey(summary.caseId, summary.trialNumber), summary]));
+  const actualTrialNumber = row => row.trialNumber ?? caseById.get(row.caseId)?.trialNumber ?? 1;
+  const hasValidWritingTrial = row => Number.isInteger(actualTrialNumber(row)) && (hasWritingTrialPicker
+    ? actualTrialNumber(row) >= 1 && actualTrialNumber(row) <= writingTrialCount
+    : actualTrialNumber(row) === (caseById.get(row.caseId)?.trialNumber ?? 1));
+  const responseKey = (benchmarkId, settingId, condition, caseId = activeCaseId, trialNumber = activeTrialNumber) => `${benchmarkId}\u0000${settingId}\u0000${condition}${isWriting ? `\u0000${caseId}\u0000${trialNumber}` : ''}`;
+  const responseByKey = new Map((hasResponseCollections ? responseData.responses : []).map((response) => [
+    responseKey(response.benchmarkId, response.settingId, response.condition, response.caseId, actualTrialNumber(response)),
+    response
+  ]));
+  const reportResults = isWriting ? data.caseResults : data.benchmarkResults;
+  const benchmarkResultByKey = new Map(reportResults.map((result) => [
+    responseKey(result.benchmarkId, result.settingId, result.condition, result.caseId, actualTrialNumber(result)),
+    result
+  ]));
+  const referencedMessageSetIds = new Set((hasResponseCollections ? responseData.responses : []).map((response) => response.messageSetId));
+  const hasCompleteResponseMatrix = isWriting ? hasResponseCollections
+    && expectedJudgeConfigurationIds.length === Number(data.scoreBasis?.judgeCount)
+    && expectedJudgeConfigurationIds.length > 0
+    && (!isCreation || (reviewerProfileById.size === 4 && reviewerProfiles.length === 4
+      && new Set(reviewerProfiles.map(profile => profile.configurationId)).size === 2
+      && ['naive', 'informed'].every(mode => new Set(reviewerProfiles.filter(profile => profile.contextMode === mode).map(profile => profile.configurationId)).size === 2)
+      && responseData.responses.length === expectedResponseCount && reportResults.length === expectedResponseCount))
+    && messageSetById.size === responseData.messageSets.length
+    && responseByKey.size === responseData.responses.length
+    && benchmarkResultByKey.size === reportResults.length
+    && caseById.size === data.cases.length
+    && data.cases.every(story => caseSummaryById.has(story.id))
+    && (!hasWritingTrialPicker || (trialSummaryByKey.size === data.cases.length * writingTrialCount && data.cases.every(story => Array.from({ length: writingTrialCount }, (_, index) => index + 1).every(trial => trialSummaryByKey.has(trialSummaryKey(story.id, trial))))))
+    && reportResults.every(result => hasValidWritingTrial(result))
+    && responseData.responses.every(response => (
+      benchmarkById.has(response.benchmarkId)
+      && caseById.has(response.caseId)
+      && hasValidWritingTrial(response)
+      && benchmarkResultByKey.has(responseKey(response.benchmarkId, response.settingId, response.condition, response.caseId, actualTrialNumber(response)))
+      && settingById.get(response.settingId)?.configurationId === response.configurationId
+      && REQUIRED_CONDITION_IDS.includes(response.condition)
+      && typeof response.outputText === 'string'
+      && (!response.outputText.length || messageSetById.has(response.messageSetId))
+      && Array.isArray(response.judgments)
+      && (!isCreation || (new Set(response.judgments.map(judgment => judgment.reviewerId)).size === response.judgments.length
+        && response.judgments.length === benchmarkResultByKey.get(responseKey(response.benchmarkId, response.settingId, response.condition, response.caseId, actualTrialNumber(response))).coverage?.completedJudgments
+        && (!Number.isFinite(response.score) || response.judgments.length === 4)))
+      && response.judgments.every(judgment => (
+        expectedJudgeConfigurationIds.includes(judgment.judgeConfigurationId)
+        && (!isCreation || (reviewerProfileById.get(judgment.reviewerId)?.configurationId === judgment.judgeConfigurationId
+          && reviewerProfileById.get(judgment.reviewerId)?.contextMode === judgment.contextMode
+          && creationRequestById.get(judgment.requestId)?.profileId === judgment.reviewerId))
+        && (judgment.score === null || (Number.isFinite(judgment.score) && judgment.score >= 0 && judgment.score <= 100))
+        && typeof judgment.rationale === 'string'
+        && (judgment.score === null || data.scoreBasis.dimensions.every(dimension => {
+          const reading = judgment.dimensions?.[dimension.id];
+          return Number.isFinite(reading?.rating) && reading.rating >= (data.scoreBasis.ratingMinimum ?? 0) && reading.rating <= data.scoreBasis.ratingMaximum && (reading.reason === null || typeof reading.reason === 'string');
+        }))
+      ))
+    ))
+    && responseData.messageSets.every(messageSet => Array.isArray(messageSet.messages) && messageSet.messages.every(message => (
+      typeof message.role === 'string' && (typeof message.content === 'string' || promptFileById.has(message.fileId))
+    )))
+    : hasResponseCollections
+    && expectedJudgeConfigurationIds.length > 0
+    && expectedJudgeConfigurationIds.length === Number(data.scoreBasis?.judgeCount)
+    && messageSetById.size === responseData.messageSets.length
+    && responseData.messageSets.length > 0
+    && responseData.messageSets.every((messageSet) => (
+      typeof messageSet?.id === 'string'
+      && messageSet.id.length > 0
+      && Array.isArray(messageSet.messages)
+      && messageSet.messages.length > 0
+      && messageSet.messages.every((message) => (
+        typeof message?.role === 'string'
+        && message.role.trim().length > 0
+        && typeof message.content === 'string'
+        && message.content.length > 0
+      ))
+      && referencedMessageSetIds.has(messageSet.id)
+    ))
+    && responseData.responses.length === expectedResponseCount
+    && responseData.counts?.judgments === expectedResponseCount * expectedJudgeConfigurationIds.length
+    && responseByKey.size === expectedResponseCount
+    && benchmarkResultByKey.size === expectedResponseCount
+    && responseData.responses.every((response) => {
+      const result = benchmarkResultByKey.get(responseKey(response.benchmarkId, response.settingId, response.condition));
+      const setting = settingById.get(response.settingId);
+      return Boolean(
+        result
+        && setting
+        && response.configurationId === setting.configurationId
+        && response.trialNumber === result.trials
+        && messageSetById.has(response.messageSetId)
+        && typeof response.outputText === 'string'
+        && (response.outputText.length > 0 || (isWorkSpec && response.judgments?.every(judgment => judgment.assessmentStatus === 'invalid candidate')))
+        && Array.isArray(response.judgments)
+        && response.judgments.length === expectedJudgeConfigurationIds.length
+        && response.judgments.every((judgment, judgmentIndex) => (
+          judgment?.judgeConfigurationId === expectedJudgeConfigurationIds[judgmentIndex]
+          && (isWorkSpec ? (
+            (judgment.score === null || (Number.isFinite(judgment.score) && judgment.score >= 0 && judgment.score <= 100))
+            && typeof judgment.readiness === 'string'
+            && typeof judgment.assessmentStatus === 'string'
+            && judgment.dimensions && typeof judgment.dimensions === 'object'
+            && ['V', 'G', 'A', 'D', 'S', 'C'].every((id) => Object.hasOwn(judgment.dimensions, id))
+          ) : (
+            settingByConfigurationId.has(judgment.judgeConfigurationId)
+            && Number.isFinite(judgment.score)
+            && judgment.score >= 0
+            && judgment.score <= 100
+            && Number.isFinite(judgment.rawScore)
+            && judgment.rawScore >= 0
+            && judgment.rawScore <= 100
+            && Number.isFinite(judgment.gateCap)
+            && judgment.gateCap >= 0
+            && judgment.gateCap <= 100
+            && Array.isArray(judgment.failedGates)
+            && judgment.failedGates.every((gateId) => typeof gateId === 'string' && gateId.length > 0)
+          ))
+          && typeof judgment.rationale === 'string'
+          && judgment.rationale.trim().length > 0
+        ))
+      );
+    })
+    && data.benchmarkResults.every((result) => responseByKey.has(responseKey(
+      result.benchmarkId,
+      result.settingId,
+      result.condition
+    )));
+
+  if (!hasCompleteResponseMatrix) {
+    reportView.innerHTML = `
+      <section class="development-unavailable" role="alert">
+        <p class="ui-eyebrow">Response evidence unavailable</p>
+        <h1>EXACT RUN MATRIX IS INCOMPLETE</h1>
+        <p>This report requires one complete Minimal baseline and skill transcript for every published model setting and benchmark. No partial response evidence is shown.</p>
+      </section>
+    `;
+    return;
+  }
+
+  const pendingArchitectureResponses = pendingArchitecture?.status === 'pending-review'
+    ? responseData.architecturePending : null;
+  if (pendingArchitectureResponses) {
+    for (const messages of pendingArchitectureResponses.messageSets) messageSetById.set(messages.id, messages);
+    for (const response of pendingArchitectureResponses.responses) responseByKey.set(responseKey(response.benchmarkId, response.settingId, response.condition), response);
+  }
+
+  const SETTING_COUNT = data.settings.length;
+  const CONDITION_COUNT = data.conditions.length;
+  const scoreBasis = data.scoreBasis && typeof data.scoreBasis === 'object' ? data.scoreBasis : {};
+  const writingDimensions = () => {
+    const rubric = caseById.get(activeCaseId)?.rubric;
+    return Array.isArray(rubric) && rubric.length ? rubric.map(criterion => ({ ...criterion,
+      id: criterion.dimensionId || criterion.id, criterionId: criterion.criterionId || criterion.id,
+      label: criterion.label || criterion.criterion, description: criterion.description || criterion.criterion || '',
+      anchors: criterion.anchors || data.methodology?.ratingAnchors
+    })) : scoreBasis.dimensions;
+  };
+  const TASK_COUNT = Number.isFinite(Number(scoreBasis.taskCount)) && Number(scoreBasis.taskCount) > 0
+    ? Number(scoreBasis.taskCount)
+    : data.benchmarks.length;
+  const SCORE_MAXIMUM = Number.isFinite(Number(scoreBasis.range?.maximum)) ? Number(scoreBasis.range.maximum) : 100;
+  const TRIALS_PER_TASK = isWriting && data.cohortSummaries ? 1 : Number.isFinite(Number(scoreBasis.trialsPerTask)) && Number(scoreBasis.trialsPerTask) > 0
+    ? Number(scoreBasis.trialsPerTask)
+    : Number.isFinite(Number(data.meta?.trials)) && Number(data.meta.trials) > 0
+      ? Number(data.meta.trials)
+      : 1;
+  const JUDGE_COUNT = Number.isInteger(Number(scoreBasis.judgeCount)) && Number(scoreBasis.judgeCount) > 0
+    ? Number(scoreBasis.judgeCount)
+    : 2;
+  const SCORE_EDITION_LABEL = typeof scoreBasis.label === 'string' && scoreBasis.label.trim()
+    ? scoreBasis.label.trim()
+    : 'Engineering v2';
+  const UNCERTAINTY_REASON = typeof scoreBasis.uncertainty?.reason === 'string' && scoreBasis.uncertainty.reason.trim()
+    ? scoreBasis.uncertainty.reason.trim()
+    : 'Only one trial per task and condition is published.';
+  const taskCoverageLabel = commonCoreScope ? `${data.cases.length} archived stories · ${commonCoreScope.expectedCaseCount}-story aggregate` : isWriting && data.cohortSummaries ? `${data.coverage.promptCount} prompts · ${data.coverage.expectedPairs} matched pairs` : `${isWriting ? data.cases.length : TASK_COUNT} ${isWriting ? writingCasePlural : TASK_COUNT === 1 ? 'task' : 'tasks'} × ${TRIALS_PER_TASK} ${TRIALS_PER_TASK === 1 ? 'trial' : 'trials'}`;
+  const developmentDisclosure = commonCoreScope ? `Core idea · ${taskCoverageLabel} · 1 Astra xhigh judge · Uncalibrated`
+    : `${SCORE_EDITION_LABEL} · ${taskCoverageLabel} · ${JUDGE_COUNT} judges${isWorkSpec || isWriting ? ' · Uncalibrated development' : ''}`;
+  const writingInProgress = isWriting && (typeof data.coverage.executionComplete === 'boolean' ? !data.coverage.executionComplete : data.coverage.judgmentCount < data.coverage.expectedJudgmentCount || data.coverage.completedSettingCount < data.coverage.settingCount);
+  const writingFinalExclusions = isWriting && data.coverage.executionStatus === 'complete-with-exclusions';
+  const writingProgressStatus = writingFinalExclusions ? isCreation ? 'FINAL SNAPSHOT · INCOMPLETE PANELS RETAINED' : `FINAL SNAPSHOT · ${data.coverage.terminallyExcludedPairCount} EXCLUDED ${data.coverage.terminallyExcludedPairCount === 1 ? 'PAIR' : 'PAIRS'}` : writingInProgress ? 'INCOMPLETE SNAPSHOT' : 'COMPLETE SNAPSHOT';
+  const usesConsensusScoring = scoreBasis.aggregation === 'unanimity-gates-mean-dimensions-v1';
+  const panelMethod = isWriting ? data.scoreBasis.panelMethod || 'Each answer is scored on the published rubric. Inspect the independent ratings and reasons below.' : isWorkSpec
+    ? 'Each judge rates value (25%), grounding (15%), acceptance (20%), delivery (15%), scope (15%), and coherence (10%) from 0 to 4. Their weighted totals are averaged only when both assessments and all dimensions are assessable. Readiness is a separate verdict; judge disagreement remains unresolved.'
+    : usesConsensusScoring
+    ? 'Both judges must pass each gate; either failure applies its gate ceiling. Dimension ratings use the arithmetic mean, including half points. The task rubric recomputes the score before applying the lowest failed-gate ceiling.'
+    : 'Gates use majority vote and dimension ratings use the median. The task rubric recomputes the score before applying the lowest majority-failed gate ceiling.';
+  const panelLabel = isCreation ? reviewerProfiles.map(profile => profile.label || profile.id).join(' + ') : expectedJudgeConfigurationIds
+    .map((configurationId) => settingByConfigurationId.get(configurationId)?.label || configurationId)
+    .join(' + ');
+
+  const escapeHTML = (value) => String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+
+  const formatScore = (value) => Number.isFinite(value) ? value.toFixed(1) : isWriting ? '—' : 'Not assessable';
+  const dimensionLabels = { V: 'Value', G: 'Grounding', A: 'Acceptance', D: 'Delivery', S: 'Scope', C: 'Coherence' };
+
+  const copyButtonMarkup = (value, accessibleLabel) => {
+    if (typeof value !== 'string') return '';
+    copyControlSequence += 1;
+    const copyId = `transcript-copy-${copyControlSequence}`;
+    transcriptCopyTextById.set(copyId, value);
+    return `<button class="model-run__copy" type="button" data-copy-id="${copyId}" data-copy-accessible-label="${escapeHTML(accessibleLabel)}" aria-label="${escapeHTML(accessibleLabel)}" aria-live="polite">Copy</button>`;
+  };
+
+  const writeClipboardText = async (value) => {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(value);
+        return;
+      } catch {
+        // Fall through to the selection-based path for restricted browser contexts.
+      }
+    }
+
+    const helper = document.createElement('textarea');
+    helper.className = 'visually-hidden';
+    helper.value = value;
+    helper.setAttribute('readonly', '');
+    document.body.append(helper);
+    helper.select();
+    const copied = document.execCommand('copy');
+    helper.remove();
+    if (!copied) throw new Error('Clipboard copy failed.');
+  };
+
+  const showCopyFeedback = (control, label, stateClass) => {
+    const previousTimer = copyFeedbackTimers.get(control);
+    if (previousTimer) window.clearTimeout(previousTimer);
+    control.classList.remove('is-confirmed', 'is-error');
+    control.classList.add(stateClass);
+    control.textContent = label;
+    const timer = window.setTimeout(() => {
+      if (!control.isConnected) return;
+      control.classList.remove('is-confirmed', 'is-error');
+      control.textContent = 'Copy';
+      control.setAttribute('aria-label', control.dataset.copyAccessibleLabel || 'Copy exact text');
+      copyFeedbackTimers.delete(control);
+    }, 1600);
+    copyFeedbackTimers.set(control, timer);
+  };
+
+  const signed = (value) => Number.isFinite(value) ? `${value > 0 ? '+' : ''}${value.toFixed(1)}` : isWriting ? '—' : 'Not assessable';
+  const selectedTrialFor = (caseId, trialNumber) => hasWritingTrialPicker
+    ? Number.isInteger(trialNumber) && trialNumber >= 1 && trialNumber <= writingTrialCount ? trialNumber : 1
+    : caseById.get(caseId)?.trialNumber ?? 1;
+  const reportHash = (benchmarkId, caseId = activeCaseId, trialNumber = activeTrialNumber, section = null) => `#${benchmarkId}${isWriting ? `/${caseId}${hasWritingTrialPicker && !isCreation ? `/trial-${trialNumber}` : ''}` : ''}${section ? `/${section}` : ''}`;
+  const parseRoute = () => {
+    const [benchmarkId, caseOrSection, caseSection, trialSection] = decodeURIComponent(window.location.hash.slice(1)).split('/');
+    const caseId = isWriting && caseById.has(caseOrSection) ? caseOrSection : null;
+    const hasTrialSegment = Boolean(caseId && caseSection?.startsWith('trial-'));
+    const trialNumber = hasTrialSegment && /^trial-[1-9]\d*$/.test(caseSection) ? Number(caseSection.slice(6)) : null;
+    const candidateSection = caseId ? hasTrialSegment ? trialSection : caseSection : caseOrSection;
+    return {
+      benchmarkId,
+      caseId,
+      trialNumber: selectedTrialFor(caseId || activeCaseId, trialNumber),
+      section: routeSections.has(candidateSection) ? candidateSection : null
+    };
+  };
+  const categoryBenchmarks = (categoryId) => data.benchmarks.filter((benchmark) => benchmark.category === categoryId);
+
+  const hydrateSectionLinks = (benchmarkId, requestedSection = 'overview') => {
+    const currentSection = ['head-to-head', 'ranking', 'method', 'limitations'].includes(requestedSection)
+      ? requestedSection
+      : 'overview';
+    document.querySelectorAll('[data-report-section]').forEach((link) => {
+      link.href = reportHash(benchmarkId, activeCaseId, activeTrialNumber, link.dataset.reportSection);
+      if (!link.closest('.report-mast__nav')) return;
+      if (link.dataset.reportSection === currentSection) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  };
+
+  const revealReportTarget = (target) => {
+    for (let disclosure = target?.parentElement?.closest('details'); disclosure; disclosure = disclosure.parentElement?.closest('details')) {
+      disclosure.open = true;
+    }
+    return target;
+  };
+
+  const scrollToSection = (section) => {
+    window.requestAnimationFrame(() => {
+      if (section === 'top') {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        return;
+      }
+      revealReportTarget(document.getElementById(section))?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    });
+  };
+
+  // Display-only view of the approved common corpus. Original panel cells and
+  // all answer/review records remain untouched and independently validated.
+  const commonCoreResults = commonCoreScope ? reportResults.filter(cell => commonCoreScope.caseIds.includes(cell.caseId)).map(cell => {
+    const answer = responseByKey.get(responseKey(cell.benchmarkId, cell.settingId, cell.condition, cell.caseId, actualTrialNumber(cell)));
+    const reviews = (answer?.judgments || []).filter(judge => judge.judgeConfigurationId === 'codex:gpt-6-astra@xhigh');
+    const exactScore = reviews.length === 1 && scoreBasis.dimensions.every(dimension => Number.isInteger(reviews[0].dimensions?.[dimension.id]?.rating))
+      ? scoreBasis.dimensions.reduce((sum, dimension) => sum + reviews[0].dimensions[dimension.id].rating * dimension.weight / 10, 0) : null;
+    return { ...cell, exactScore, score: Number.isFinite(exactScore) ? Math.round((exactScore + Number.EPSILON) * 10) / 10 : null };
+  }) : [];
+  const commonCoreSummary = caseId => {
+    if (!commonCoreScope?.caseIds.includes(caseId)) return null;
+    const pairs = data.settings.map(setting => Object.fromEntries(REQUIRED_CONDITION_IDS.map(condition => [condition,
+      commonCoreResults.find(cell => cell.caseId === caseId && cell.settingId === setting.id && cell.condition === condition)?.exactScore ?? null])))
+      .filter(pair => REQUIRED_CONDITION_IDS.every(condition => Number.isFinite(pair[condition])));
+    const average = values => values.length ? Math.round((values.reduce((sum, value) => sum + value, 0) / values.length + Number.EPSILON) * 10) / 10 : null;
+    return { baseline: average(pairs.map(pair => pair.baseline)), treatment: average(pairs.map(pair => pair.skill)), delta: average(pairs.map(pair => pair.skill - pair.baseline)),
+      wins: pairs.filter(pair => pair.skill > pair.baseline).length, ties: pairs.filter(pair => pair.skill === pair.baseline).length,
+      losses: pairs.filter(pair => pair.skill < pair.baseline).length, usablePairs: pairs.length, expectedPairs: data.settings.length };
+  };
+
+  const modelPreviewRows = (benchmark) => {
+    const displayResults = isCreation ? data.benchmarkResults : commonCoreScope?.caseIds.includes(activeCaseId) ? commonCoreResults : reportResults;
+    const baselineRows = displayResults.filter((result) => (
+      result.benchmarkId === benchmark.id && result.condition === 'baseline' && (!isWriting || isCreation || (result.caseId === activeCaseId && actualTrialNumber(result) === activeTrialNumber))
+    ));
+    const treatmentRows = displayResults.filter((result) => (
+      result.benchmarkId === benchmark.id && result.condition === 'skill' && (!isWriting || isCreation || (result.caseId === activeCaseId && actualTrialNumber(result) === activeTrialNumber))
+    ));
+
+    const rows = isWriting ? data.settings.map(setting => treatmentRows.find(result => result.settingId === setting.id) || { settingId: setting.id, score: null, exactScore: null }) : treatmentRows;
+    const scoredRows = rows.map((treatment) => {
+      const baseline = baselineRows.find((candidate) => candidate.settingId === treatment.settingId) || (isWriting ? { score: null, exactScore: null } : null);
+      const setting = settingById.get(treatment.settingId);
+      if (!baseline || !setting) return null;
+      return {
+        setting,
+        baselineResponse: responseByKey.get(responseKey(benchmark.id, setting.id, 'baseline')) || null,
+        treatmentResponse: responseByKey.get(responseKey(benchmark.id, setting.id, 'skill')) || null,
+        baseline: baseline.score,
+        treatment: treatment.score,
+        baselineRankingScore: isCreation ? data.benchmarkResults.find(result => result.settingId === setting.id && result.condition === 'baseline')?.exactScore ?? null : isWorkSpec || isWriting ? baseline.exactScore ?? baseline.score : baseline.score,
+        treatmentRankingScore: isCreation ? data.benchmarkResults.find(result => result.settingId === setting.id && result.condition === 'skill')?.exactScore ?? null : isWorkSpec || isWriting ? treatment.exactScore ?? treatment.score : treatment.score,
+        delta: Number.isFinite(treatment.score) && Number.isFinite(baseline.score)
+          ? isWriting ? Math.round(((treatment.exactScore ?? treatment.score) - (baseline.exactScore ?? baseline.score)) * 10) / 10 : isWorkSpec ? setting.deltas.skill : Math.round((treatment.score - baseline.score) * 10) / 10
+          : null
+      };
+    }).filter(Boolean).sort((a, b) => (
+      (b.treatmentRankingScore ?? -1) - (a.treatmentRankingScore ?? -1)
+      || (b.baselineRankingScore ?? -1) - (a.baselineRankingScore ?? -1)
+      || a.setting.label.localeCompare(b.setting.label)
+    )).map((row, index, rows) => ({
+      ...row,
+      rank: Number.isFinite(row.treatmentRankingScore)
+        ? isWorkSpec || isWriting ? rows.findIndex(candidate => candidate.treatmentRankingScore === row.treatmentRankingScore) + 1 : index + 1
+        : null
+    }));
+    if (!pendingArchitectureResponses || !pendingArchitecture.benchmarkIds.includes(benchmark.id)) return scoredRows;
+    return [...scoredRows, {
+      setting: { id: pendingArchitecture.settingId, configurationId: pendingArchitecture.configurationId, label: pendingArchitecture.label },
+      baselineResponse: responseByKey.get(responseKey(benchmark.id, pendingArchitecture.settingId, 'baseline')),
+      treatmentResponse: responseByKey.get(responseKey(benchmark.id, pendingArchitecture.settingId, 'skill')),
+      baseline: null, treatment: null, delta: null, rank: null, pendingPanel: true
+    }];
+  };
+
+  const truthMarkup = () => `
+    <aside class="evidence-truth" aria-label="${escapeHTML(developmentDisclosure)}">
+      <strong class="evidence-truth__kind">${escapeHTML(developmentDisclosure)}</strong>
+      <p>${escapeHTML(TREATMENT_LABEL)} vs ${escapeHTML(BASELINE_LABEL)} · fixed rubric /${SCORE_MAXIMUM}</p>
+      <span aria-hidden="true"></span>
+    </aside>
+  `;
+
+  const writingCohortsMarkup = () => {
+    if (!isWriting || !data.cohortSummaries) return '';
+    const labels = { primary: 'Primary prompt · available pairs', transfer: 'Secondary prompts · all', fantasyTransfer: 'Secondary · fantasy', otherGenreTransfer: 'Secondary · other genres' };
+    const primaryPrompt = data.cases.find(story => story.cohort === 'primary')?.prompt || '';
+    return `<section class="writing-cohorts" data-writing-cohorts aria-labelledby="writing-cohorts-title"><h3 id="writing-cohorts-title">Primary and secondary results</h3><p data-primary-question>${escapeHTML(primaryPrompt)}</p><p data-writing-design>${data.coverage.promptCount} distinct prompts · ${data.cases.length} matched pairs per model · ${SETTING_COUNT} model settings. The primary prompt has ${data.cases.filter(story => story.cohort === 'primary').length} repetitions; each of ${data.cohortSummaries.transfer.sourcePromptCount} secondary prompts has ${data.cases.filter(story => story.cohort === 'transfer').length / data.cohortSummaries.transfer.sourcePromptCount} repetitions.</p><p>The headline uses the primary prompt only. Each mean uses complete paired repetitions, with equal weight per available source prompt. The two secondary subgroups partition the secondary results.</p><div class="writing-cohorts__table" role="region" aria-label="Primary and secondary score comparison" tabindex="0"><table><thead><tr><th scope="col">Prompt group</th><th scope="col">${escapeHTML(BASELINE_LABEL)} /100</th><th scope="col">${escapeHTML(TREATMENT_LABEL)} /100</th><th scope="col">Paired difference</th><th scope="col">Complete pairs</th></tr></thead><tbody>${Object.entries(labels).filter(([id]) => data.cohortSummaries[id]).map(([id, label]) => {
+      const cohort = data.cohortSummaries[id];
+      return `<tr data-writing-cohort="${id}"><th scope="row">${escapeHTML(label)}</th><td data-cohort-baseline>${formatScore(cohort.baseline)}</td><td data-cohort-treatment>${formatScore(cohort.treatment)}</td><td data-cohort-delta>${signed(cohort.delta)}</td><td data-cohort-coverage>${cohort.usablePairs}/${cohort.expectedPairs}${cohort.complete ? '' : ' · incomplete'}</td></tr>`;
+    }).join('')}</tbody></table></div>${data.adherenceCoverage ? `<p data-writing-adherence>Reference-read proof: ${data.adherenceCoverage.verifiedTreatmentAnswers}/${data.adherenceCoverage.returnedTreatmentAnswers} returned treatment answers have complete recorded proof; ${data.adherenceCoverage.observedChunkCount}/${data.adherenceCoverage.requiredChunkCount} required chunks have recorded byte evidence. Answers with incomplete proof remain in the invocation comparison. Missing proof does not establish refusal.</p>` : ''}<p>Repetitions are the writing samples; judge votes are repeated assessments of those samples. These results describe this prompt set and the declared model settings.</p></section>`;
+  };
+
+  const writingProgressMarkup = () => {
+    if (!isWriting) return '';
+    if (commonCoreScope) {
+      const expected = commonCoreScope.expectedCaseCount * SETTING_COUNT * CONDITION_COUNT;
+      const assessed = commonCoreResults.filter(cell => Number.isFinite(cell.exactScore)).length;
+      return `<aside class="writing-progress" data-writing-progress data-writing-derived-scope="${escapeHTML(commonCoreScope.id)}" aria-label="Core idea scoring scope">
+        <div class="writing-progress__heading"><strong class="writing-progress__status" data-writing-progress-status>${assessed === expected ? 'COMPLETE' : 'INCOMPLETE'} · 1 ASTRA JUDGE</strong><a class="writing-progress__link" data-writing-browse-answers href="#ranking" data-report-section="ranking">Browse answers &amp; reviews ↓</a></div>
+        <p class="writing-progress__counts"><span data-writing-progress-count="answers">${commonCoreResults.filter(cell => responseByKey.get(responseKey(cell.benchmarkId, cell.settingId, cell.condition, cell.caseId, actualTrialNumber(cell)))?.outputText).length}/${expected} scored-corpus answers</span><span data-writing-progress-count="reviews">${assessed}/${expected} Astra reviews</span><span data-writing-progress-count="panels">${commonCoreScope.rankedSettingCount}/${SETTING_COUNT} complete ${commonCoreScope.expectedCaseCount}-story settings</span></p>
+        <p data-writing-progress-disclosure>The same ${commonCoreScope.expectedCaseCount} stories and one Astra xhigh review per answer determine every Core idea aggregate. The Matrix is globally excluded after a post-run user-approved decision. All ${data.cases.length} original stories and all saved panel reviews remain archived; additional Fable reviews do not determine this score.</p>
+      </aside>`;
+    }
+    const coverage = data.coverage;
+    const pairedTwists = data.scoreBasis?.edition === 'storytelling-plot-twists-paired-v2';
+    const pending = data.caseResults.filter(cell => cell.status === 'pending').length;
+    const failures = data.caseResults.filter(cell => ['error', 'unavailable'].includes(cell.status)).length;
+    const exclusionDisclosure = writingFinalExclusions ? isCreation
+      ? `${coverage.validResponseCount} valid final answers; ${coverage.terminalGenerationFailureCount || 0} terminal generation failures are retained. ${coverage.judgmentCount} completed answer assessments, ${coverage.terminalJudgmentFailureCount || 0} failed assessments, and ${coverage.terminallyExcludedJudgmentCount || 0} assessments excluded with their generation pair account for all ${coverage.expectedJudgmentCount} planned assessments. No judge reviews are pending. Missing scores remain unassigned. `
+      : `${coverage.validResponseCount} valid final answers; ${coverage.terminalGenerationFailureCount} failed full-read verifications are retained. ${coverage.judgmentCount} completed judge reviews and ${coverage.terminallyExcludedJudgmentCount} terminally excluded reviews account for all ${coverage.expectedJudgmentCount} planned reviews. No judge reviews are pending. ` : '';
+    return `<aside class="writing-progress" data-writing-progress aria-label="Writing benchmark progress">
+      <div class="writing-progress__heading"><strong class="writing-progress__status" data-writing-progress-status>${escapeHTML(writingProgressStatus)}</strong><a class="writing-progress__link" data-writing-browse-answers href="#ranking" data-report-section="ranking">Browse answers &amp; reviews ↓</a></div>
+      <p class="writing-progress__counts"><span data-writing-progress-count="answers">${coverage.responseCount}/${coverage.expectedResponseCount} final answers</span><span data-writing-progress-count="reviews">${coverage.judgmentCount}/${coverage.expectedJudgmentCount} ${data.cohortSummaries || pairedTwists ? 'planned answer assessments' : 'planned judge reviews'}</span>${data.cohortSummaries || pairedTwists ? `<span data-writing-progress-count="pair-reviews">${pairedTwists ? coverage.pairedJudgeCallCount : data.pairwisePreferences.length}/${coverage.expectedPairs * JUDGE_COUNT} blind pair reviews</span>` : ''}<span data-writing-progress-count="panels">${coverage.scoredResponseCount}/${coverage.expectedResponseCount} complete ${JUDGE_COUNT}-judge answer panels</span></p>
+      <p data-writing-progress-disclosure>${exclusionDisclosure}${writingInProgress ? 'Judging incomplete; available answers and reviews are published. ' : ''}Case scores require the full judge panel. Incomplete configurations are not ranked.${pending && !writingFinalExclusions ? ` ${pending} generation${pending === 1 ? ' is' : 's are'} pending.` : ''}${failures && !writingFinalExclusions ? ` ${failures} failed generations are retained; planned totals include unavailable slots.` : ''}</p>
+    </aside>`;
+  };
+
+  const creationContextComparisonMarkup = () => {
+    if (!isCreation) return '';
+    const aggregate = (settingId, condition) => data.benchmarkResults.find(result => result.settingId === settingId && result.condition === condition);
+    const effects = new Map((data.trialEffects || []).map(effect => [effect.settingId, effect]));
+    const contextCells = (setting, mode) => {
+      const score = condition => {
+        const result = aggregate(setting.id, condition);
+        if (!setting.eligibleForRank || !result?.eligibleForRank) return null;
+        return mode === 'balanced' ? result.exactScore : result.contextScores?.[mode];
+      };
+      const plain = score('baseline'), skill = score('skill');
+      const delta = Number.isFinite(plain) && Number.isFinite(skill) ? skill - plain : null;
+      return `<td data-creation-context="${mode}" data-context-score="baseline">${formatScore(plain)}</td><td data-creation-context="${mode}" data-context-score="skill">${formatScore(skill)}</td><td data-creation-context="${mode}" data-context-score="delta">${signed(delta)}</td>`;
+    };
+    return `<section class="writing-cohorts" data-creation-context-comparison aria-labelledby="creation-context-title">
+      <h3 id="creation-context-title">Three-trial scores by judge context</h3>
+      <p>Balanced scores average all four fresh review seats: Astra xhigh and Sol xhigh, each with and without supplied skill context. Naive means no skill context was supplied; informed means the frozen skill root and eight references were supplied. Each context mean weights the same two models equally.</p>
+      <p>These configuration averages require all three paired trials and all four reviews per answer. Incomplete configurations show no aggregate or rank. The selected trial’s answers and reviews appear below.</p>
+      <div class="writing-cohorts__table" role="region" aria-label="Three-trial scores by model setting and judge context" tabindex="0"><table>
+        <thead><tr><th scope="col" rowspan="2">Model setting</th><th scope="colgroup" colspan="3">Balanced · four seats</th><th scope="colgroup" colspan="3">Naive · two models</th><th scope="colgroup" colspan="3">Informed · two models</th><th scope="col" rowspan="2">Trial variation</th></tr><tr>${['balanced', 'naive', 'informed'].map(() => '<th scope="col">Plain /100</th><th scope="col">Skill /100</th><th scope="col">Uplift</th>').join('')}</tr></thead>
+        <tbody>${data.settings.map(setting => {
+          const effect = effects.get(setting.id);
+          return `<tr data-creation-setting="${escapeHTML(setting.id)}"><th scope="row">${escapeHTML(setting.label)}${setting.eligibleForRank ? '' : '<small> · incomplete</small>'}</th>${['balanced', 'naive', 'informed'].map(mode => contextCells(setting, mode)).join('')}<td><details class="writing-rubric-anchors" data-creation-trial-variation="${escapeHTML(setting.id)}"><summary>${effect?.count ?? 0}/3 paired trials</summary><dl>${[1, 2, 3].map(trialNumber => {
+            const trial = effect?.trials?.find(item => item.trialNumber === trialNumber);
+            return `<div><dt>Trial ${trialNumber} uplift</dt><dd data-creation-trial-delta="${trialNumber}">${signed(trial?.delta)}</dd></div>`;
+          }).join('')}<div><dt>Mean uplift</dt><dd data-creation-trial-mean>${signed(effect?.mean)}</dd></div><div><dt>Sample standard deviation</dt><dd data-creation-trial-sd>${formatScore(effect?.sampleStandardDeviation)}</dd></div><div><dt>Range · minimum to maximum</dt><dd data-creation-trial-range>${formatScore(effect?.range)} · ${signed(effect?.minimum)} to ${signed(effect?.maximum)}</dd></div></dl></details></td></tr>`;
+        }).join('')}</tbody></table></div>
+      <p>Trial deltas are skill minus plain after averaging the four reviews. Standard deviation and range describe only these three writing samples; they are not confidence intervals or significance tests. The judge models share a provider and overlap with generator families.</p>
+    </section>`;
+  };
+
+  const creationAggregateSummary = (benchmark) => {
+    const pairs = modelPreviewRows(benchmark).filter(row => Number.isFinite(row.baselineRankingScore) && Number.isFinite(row.treatmentRankingScore));
+    const mean = values => values.length ? Math.round((values.reduce((sum, value) => sum + value, 0) / values.length + Number.EPSILON) * 10) / 10 : null;
+    return { baseline: mean(pairs.map(row => row.baselineRankingScore)), treatment: mean(pairs.map(row => row.treatmentRankingScore)),
+      delta: mean(pairs.map(row => row.treatmentRankingScore - row.baselineRankingScore)),
+      wins: pairs.filter(row => row.treatmentRankingScore > row.baselineRankingScore).length,
+      ties: pairs.filter(row => row.treatmentRankingScore === row.baselineRankingScore).length,
+      losses: pairs.filter(row => row.treatmentRankingScore < row.baselineRankingScore).length };
+  };
+
+  const heroMarkup = (benchmark, summary) => {
+    const record = `${summary.wins}W · ${summary.ties}T · ${summary.losses}L`;
+    const regressionClass = summary.delta < 0 ? ' is-regression' : '';
+    const story = isWriting ? caseById.get(activeCaseId) : null;
+    const sampleLabel = isCreation ? `${writingTrialCount}-trial average` : hasWritingTrialPicker ? 'trial' : data.cohortSummaries ? 'repetition' : writingCaseLabel;
+    const measuredSettingCount = isWriting ? modelPreviewRows(benchmark).filter(row => Number.isFinite(row.baseline) && Number.isFinite(row.treatment)).length : SETTING_COUNT;
+    return `
+      <section class="evidence-hero" id="overview" aria-labelledby="report-title">
+        <div class="evidence-hero__identity">
+          <p class="evidence-hero__eyebrow">${escapeHTML(benchmark.suite)} · ${commonCoreScope ? commonCoreScope.caseIds.includes(activeCaseId) ? 'Story result · 1 Astra judge' : 'archived story · excluded from aggregate' : 'benchmark result'}</p>
+          <h1 id="report-title">${escapeHTML(benchmark.name)}</h1>
+          ${story ? `<p class="writing-case-title" data-writing-case-title>${escapeHTML(story.title)}</p>` : ''}
+          <p class="evidence-hero__description">${escapeHTML(commonCoreScope?.caseIds.includes(activeCaseId)
+            ? `An open-knowledge comparison of explanations of a story’s core idea. The aggregate uses the same ${commonCoreScope.expectedCaseCount} stories for every setting; the original ${data.cases.length}-story archive is retained.` : benchmark.description)}</p>
+          <p class="evidence-hero__prompt" data-exact-question><span>Prompt under test</span>${escapeHTML(story?.prompt || benchmark.prompt)}</p>
+        </div>
+
+        <div class="evidence-hero__result" aria-label="Matched condition result">
+          <div class="matched-result">
+            <dl class="matched-result__condition matched-result__condition--baseline">
+              <dt>${escapeHTML(summary.baselineLabel)}</dt>
+              <dd><strong>${formatScore(summary.baseline)}</strong><small>${isWriting ? `${escapeHTML(sampleLabel)} ` : ''}field mean /${SCORE_MAXIMUM} · n=${measuredSettingCount}</small></dd>
+            </dl>
+            <span class="matched-result__arrow" aria-hidden="true">→</span>
+            <dl class="matched-result__condition matched-result__condition--treatment">
+              <dt>${escapeHTML(summary.treatmentLabel)}</dt>
+              <dd><strong>${formatScore(summary.treatment)}</strong><small>${isWriting ? `${escapeHTML(sampleLabel)} ` : ''}field mean /${SCORE_MAXIMUM} · n=${measuredSettingCount}</small></dd>
+            </dl>
+          </div>
+          <dl class="matched-result__delta${regressionClass}">
+            <dt>Mean paired uplift</dt>
+            <dd>${signed(summary.delta)} pts</dd>
+          </dl>
+          <dl class="evidence-facts">
+            <div><dt>Coverage</dt><dd>${SETTING_COUNT} settings × ${CONDITION_COUNT} conditions × ${hasWritingTrialPicker && !isCreation ? '1 selected trial' : `${TRIALS_PER_TASK} ${TRIALS_PER_TASK === 1 ? 'trial' : 'trials'}`}${isCreation ? ` · ${measuredSettingCount} complete model comparisons` : isWriting ? ` · ${measuredSettingCount} assessable pairs on this ${escapeHTML(sampleLabel)}` : ''}</dd></div>
+            <div><dt>Matched record</dt><dd>${record}</dd></div>
+            <div><dt>Source run</dt><dd>${escapeHTML(summary.runId || 'Not published')}</dd></div>
+            ${hasWritingTrialPicker && !isCreation ? `<div><dt>${escapeHTML(data.trialLabel || 'Trial')}</dt><dd data-writing-trial-title>${activeTrialNumber} of ${writingTrialCount}</dd></div>` : ''}
+            ${story && data.cohortSummaries ? `<div><dt>Prompt group</dt><dd>${escapeHTML(story.cohort || story.group || 'See study summaries')}</dd></div><div><dt>${escapeHTML(data.trialLabel || 'Repetition')}</dt><dd>${escapeHTML(story.trialNumber)}</dd></div>` : ''}
+            ${story && !data.cohortSummaries && !['story-outline', 'compact-writing'].includes(benchmark.taskKind) ? `<div><dt>Story version</dt><dd>${escapeHTML([story.creator, story.medium, story.version].filter(Boolean).join(' · '))}</dd></div><div><dt>Corpus stratum</dt><dd>${escapeHTML(story.familiarity || 'Not classified')}${story.familiarityBasis ? ` · ${escapeHTML(story.familiarityBasis)}` : ''}. Training exposure: ${escapeHTML(story.trainingExposure || 'unknown')}.</dd></div>` : ''}
+          </dl>
+        </div>
+      </section>
+    `;
+  };
+
+  const overviewMarkup = (benchmark) => `
+      <section class="report-section" aria-labelledby="intent-title">
+        <header class="report-section__heading">
+          <div>
+            <p class="ui-eyebrow">Test definition</p>
+            <h2 id="intent-title">What this benchmark tests</h2>
+          </div>
+          <p>${escapeHTML(benchmark.suite)} is one track inside the ${escapeHTML(categoryById.get(benchmark.category).name)} capability.</p>
+        </header>
+        <div class="report-overview">
+          <section class="report-overview__intent">
+            <h3>Task scope</h3>
+            <p>${escapeHTML(benchmark.description)} This score covers this prompt and track, not every ${escapeHTML(categoryById.get(benchmark.category).name.toLowerCase())} task.</p>
+          </section>
+          <section class="report-overview__source">
+            <h3>How scoring works</h3>
+            <p>${JUDGE_COUNT} fixed judges—${escapeHTML(panelLabel)}—score each answer against this task's ${isWriting ? scoreBasis.range.minimum : 0}–${SCORE_MAXIMUM} rubric. ${escapeHTML(panelMethod)} There is no synthesizer. Adding a model within this edition can change rank, while its existing scores stay fixed.</p>
+          </section>
+        </div>
+      </section>
+  `;
+
+  const messageMarkup = ({ message, messageIndex, conditionLabel, settingLabel }) => {
+    const role = typeof message?.role === 'string' && message.role.trim() ? message.role.trim() : 'message';
+    const content = typeof message?.content === 'string' ? message.content : '';
+    return `
+      <li class="model-run__message">
+        <header class="model-run__message-header">
+          <span class="model-run__role">${String(messageIndex + 1).padStart(2, '0')} · ${escapeHTML(role)}</span>
+          ${copyButtonMarkup(content, `Copy ${role} input for ${settingLabel}, ${conditionLabel}`)}
+        </header>
+        <pre class="model-run__text" data-message-content><code>${escapeHTML(content)}</code></pre>
+        ${isWriting && promptFileById.has(message.fileId) ? `<button class="writing-prompt-reference" type="button" data-open-prompt-file="${escapeHTML(message.fileId)}">Read shared ${escapeHTML(promptFileById.get(message.fileId).title || 'frozen prompt file')} ↗</button>` : ''}
+      </li>
+    `;
+  };
+
+  const gateLabel = (gateId) => String(gateId)
+    .split('-')
+    .filter(Boolean)
+    .map((part, partIndex) => partIndex === 0 ? `${part.charAt(0).toUpperCase()}${part.slice(1)}` : part)
+    .join(' ');
+
+  const writingEvidenceFieldsMarkup = (source, fields, attribute) => fields
+    .filter(([key]) => source && Object.hasOwn(source, key))
+    .map(([key, label]) => `<div><dt>${escapeHTML(label)}</dt><dd ${attribute}="${escapeHTML(key)}"><code>${escapeHTML(source[key] === null ? 'Not reported' : String(source[key]))}</code></dd></div>`)
+    .join('');
+
+  const writingExecutionFieldsMarkup = execution => {
+    const labels = {
+      runnerVersion: 'Runner version', runtimeVersion: 'Runtime version', harnessVersion: 'Harness version',
+      trialCount: 'Trials per condition', primaryRepetitions: 'Primary prompt repetitions',
+      transferRepetitions: 'Repetitions per secondary prompt', generationOrderPolicy: 'Generation order policy',
+      generationOrderSeed: 'Generation order seed', hostAutomaticRetries: 'Automatic host retries',
+      creatorNetworkRetries: 'Creator network retries', creatorOutputLimitRecoveryAttempts: 'Creator output-limit recovery attempts',
+      creatorOutputTokenLimitPerSegment: 'Creator output-token limit per segment',
+      creatorWholeSessionTokenCap: 'Creator whole-session token cap', deliveryMode: 'Skill delivery mode'
+    };
+    const fields = Object.keys(execution || {}).map(key => [key, labels[key] || key
+      .replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
+      .replace(/[_-]+/g, ' ').replace(/^./, character => character.toUpperCase())]);
+    return writingEvidenceFieldsMarkup(execution, fields, 'data-method-execution-field');
+  };
+
+  const writingUsageMarkup = usage => usage ? `<h4>Saved CLI-normalized token usage</h4><dl class="writing-evidence-fields">${writingEvidenceFieldsMarkup(usage, [
+    ['inputTokens', 'Input tokens'], ['cachedInputTokens', 'Cached input tokens'], ['cacheWriteInputTokens', 'Cache-write input tokens'],
+    ['cacheCreationInputTokens', 'Cache-creation input tokens'], ['cacheReadInputTokens', 'Cache-read input tokens'],
+    ['outputTokens', 'Output tokens'], ['reasoningOutputTokens', 'Reasoning output tokens'], ['totalTokens', 'Reported total tokens']
+  ], 'data-resource-usage')}</dl><p>Counts use provider-native tokenizers and are not directly comparable. Existing CLI normalizers may fill missing components with zero, so a saved zero does not prove the provider reported zero. Cached and reasoning counts are components, not extra amounts to add to totals. “Not reported” means absent from the saved receipt.</p>` : '';
+
+  const writingRequiredReadsMarkup = receipt => !receipt ? '' : `<section data-required-skill-reads>
+    <h4>Required frozen-file read verification</h4>
+    <p>Saved verification status: <strong data-required-read-status>${escapeHTML(receipt.status)}</strong>. Only successful tool output matching every required frozen chunk establishes a complete read.</p>
+    <dl class="writing-evidence-fields">${writingEvidenceFieldsMarkup(receipt, [['policyVersion', 'Verification policy'], ['evidence', 'Evidence method']], 'data-required-read-field')}</dl>
+    ${(receipt.files || []).map(file => `<details class="work-spec-assessment" data-required-read-file="${escapeHTML(file.relativePath)}"><summary class="work-spec-assessment__summary">${escapeHTML(file.relativePath)} · ${file.observedChunks.length}/${file.requiredChunkCount} required chunks · ${file.complete ? 'complete' : 'incomplete'}</summary><div class="work-spec-assessment__body"><dl class="writing-evidence-fields">${writingEvidenceFieldsMarkup(file, [['bytes', 'Frozen file bytes'], ['sha256', 'Frozen file SHA-256'], ['requiredChunkCount', 'Required chunks']], 'data-required-read-file-field')}<div><dt>Verified chunks</dt><dd data-required-read-observed-count>${file.observedChunks.length}</dd></div></dl><h4>Recorded matching chunks</h4><dl class="writing-evidence-fields">${file.observedChunks.map(chunk => `<div data-required-read-chunk="${chunk.index}"><dt>Chunk ${chunk.index} · ${chunk.bytes} bytes</dt><dd><code>${escapeHTML(chunk.sha256)}</code></dd></div>`).join('')}</dl></div></details>`).join('')}
+  </section>`;
+
+  const writingInvocationReadProofMarkup = receipt => !receipt ? '' : `<details class="work-spec-assessment" data-writing-required-reads><summary class="work-spec-assessment__summary">Required reference-read evidence · ${escapeHTML(receipt.status)}</summary><div class="work-spec-assessment__body"><p data-required-read-coverage>${receipt.observedChunkCount}/${receipt.requiredChunkCount} required chunks have recorded byte evidence. ${receipt.status === 'complete' ? 'The required-read proof is complete.' : 'The required-read proof is incomplete; this valid answer remains in the invocation comparison. Missing proof does not establish refusal.'}</p><dl class="writing-evidence-fields">${writingEvidenceFieldsMarkup(receipt, [['policyVersion', 'Read policy'], ['status', 'Proof status']], 'data-required-read-field')}</dl>${writingRequiredReadsMarkup(receipt)}</div></details>`;
+
+  const writingExecutionMarkup = response => {
+    const runtime = response?.runtime;
+    if (!isWriting || !runtime) return '';
+    return `<details class="work-spec-assessment writing-execution" data-writing-execution>
+      <summary class="work-spec-assessment__summary">Recorded execution evidence</summary>
+      <div class="work-spec-assessment__body">
+        <p>These are the saved execution labels. A CLI request is not provider confirmation of the model or effort. Observed collaboration events do not establish the number of underlying agents; zero means no such events were recorded.</p>
+        <dl class="writing-evidence-fields">${writingEvidenceFieldsMarkup(runtime, [
+          ['freshSession', 'Fresh session'], ['executionMode', 'Execution mode'], ['modelVerification', 'Model verification'],
+          ['reasoningVerification', 'Reasoning verification'], ['observedCollaborationEvents', 'Observed collaboration events'],
+          ['rawProviderStreamRetained', 'Raw provider stream retained'], ['durationMs', 'Generation duration (ms)']
+        ], 'data-runtime-field')}${writingEvidenceFieldsMarkup(response, [['characterCount', 'Answer characters (Unicode code points)']], 'data-response-field')}</dl>
+        ${writingUsageMarkup(runtime.usage)}
+        ${data.cohortSummaries ? writingInvocationReadProofMarkup(runtime.requiredSkillReads) : writingRequiredReadsMarkup(runtime.requiredSkillReads)}
+        ${Array.isArray(runtime.referenceFilesRead) ? `<h4>Recorded reference-file reads</h4>${runtime.referenceFilesRead.length ? `<ul class="writing-reference-reads" data-reference-files-read>${runtime.referenceFilesRead.map(reference => {
+          const file = reference === 'SKILL.md' ? promptFileById.get(response.provenance?.completion?.instructionFileId || 'frozen-skill-root') : [...promptFileById.values()].find(file => file.title === reference || file.title?.startsWith(`${reference} · `));
+          return `<li>${file ? `<button class="writing-prompt-reference" type="button" data-open-prompt-file="${escapeHTML(file.id)}" aria-label="Read archived ${escapeHTML(reference)}"><code data-reference-path>${escapeHTML(reference)}</code> <span aria-hidden="true">↗</span></button>` : `<code data-reference-path>${escapeHTML(reference)}</code>`}</li>`;
+        }).join('')}</ul>` : '<p data-reference-files-read>No reference-file reads recorded.</p>'}` : ''}
+      </div>
+    </details>`;
+  };
+
+  const writingJudgeResourcesMarkup = judgment => judgment.resources ? `<details class="work-spec-assessment writing-judge-resources" data-judge-resources><summary class="work-spec-assessment__summary">Shared judge-batch resources</summary><div class="work-spec-assessment__body"><p>These resources cover the entire matched-pair batch, not this answer alone. The same batch is recorded on both answers; count each judge and prompt SHA-256 once when totaling resources.</p><dl class="writing-evidence-fields">${writingEvidenceFieldsMarkup(judgment.resources, [['scope', 'Resource scope'], ['candidateCount', 'Candidates in batch'], ['durationMs', 'Batch duration (ms)']], 'data-judge-resource')}${writingEvidenceFieldsMarkup(judgment, [['promptSha256', 'Judge prompt SHA-256']], 'data-judge-resource')}</dl>${writingUsageMarkup(judgment.resources.usage)}</div></details>` : '';
+
+  const writingPredecessorArchiveMarkup = () => {
+    if (!isWriting || data.benchmarks[0]?.id !== 'storytelling-plot-twists') return '';
+    const predecessors = responseData.supersededResponses || [];
+    if (!predecessors.length) return '';
+    return `<details class="work-spec-assessment" data-writing-predecessor-archive>
+      <summary class="work-spec-assessment__summary">Earlier failed attempts · ${predecessors.length} retained, not scored</summary>
+      <div class="work-spec-assessment__body"><p>The completion edition keeps these original failed-read answers separately from the current trial answers. They remain unscored and do not count as additional trials. Their valid paired plain answers were not regenerated.</p>
+      ${predecessors.map(response => {
+        const label = settingById.get(response.settingId)?.label || response.configurationId;
+        return `<details class="work-spec-assessment" data-writing-predecessor="${escapeHTML(response.configurationId)}" data-predecessor-trial="${response.trialNumber}" data-predecessor-output-sha256="${escapeHTML(response.provenance.outputSha256)}">
+          <summary class="work-spec-assessment__summary">${escapeHTML(label)} · Trial ${response.trialNumber} · skill · not scored</summary>
+          <div class="work-spec-assessment__body"><p data-writing-predecessor-reason>${escapeHTML(response.failureReason || 'The required frozen-file reads were not fully verified.')}</p>
+            <dl class="writing-evidence-fields">${writingEvidenceFieldsMarkup(response.provenance, [['sourceSha256', 'Original source SHA-256'], ['outputSha256', 'Original answer SHA-256']], 'data-predecessor-provenance')}</dl>
+            ${writingExecutionMarkup(response)}
+            ${copyButtonMarkup(response.outputText, `Copy original failed attempt for ${label}, trial ${response.trialNumber}`)}
+            <pre class="model-run__text model-run__text--output" data-writing-predecessor-output><code>${escapeHTML(response.outputText)}</code></pre>
+          </div>
+        </details>`;
+      }).join('')}</div>
+    </details>`;
+  };
+
+  const creationEvidenceMarkup = requestId => !isWriting || !creationRequestById.has(requestId) ? '' : `<details class="work-spec-assessment" data-creation-judge-evidence="${escapeHTML(requestId)}"><summary class="work-spec-assessment__summary">Original final review and exact judge prompt</summary><div class="work-spec-assessment__body" data-creation-evidence-body></div></details>`;
+
+  const creationPromptText = request => {
+    if (typeof request?.promptText === 'string') return request.promptText;
+    if (!Array.isArray(request?.promptParts)) return null;
+    const parts = request.promptParts.map(part => {
+      if (part.textSha256) return creationSegmentByHash.get(part.textSha256);
+      if (part.encoding === 'json-string' && creationAnswerByHash.has(part.outputSha256)) return JSON.stringify(creationAnswerByHash.get(part.outputSha256));
+      return null;
+    });
+    return parts.every(part => typeof part === 'string') ? parts.join('') : null;
+  };
+
+  const hydrateCreationEvidence = details => {
+    if (!isWriting || !details?.open) return;
+    const requestId = details.dataset?.creationJudgeEvidence || details.dataset?.creationJudgePrompt;
+    const request = creationRequestById.get(requestId);
+    if (!request) return;
+    const isPrompt = Boolean(details.dataset.creationJudgePrompt);
+    const body = details.querySelector(isPrompt ? '[data-creation-prompt-body]' : '[data-creation-evidence-body]');
+    if (!body || body.dataset.hydrated === 'true') return;
+    const profile = reviewerProfileById.get(request.profileId), label = profile?.label || request.profileId || request.judgeConfigurationId;
+    if (isPrompt) {
+      const prompt = creationPromptText(request);
+      body.innerHTML = prompt === null ? '<p role="alert">The exact archived prompt could not be reconstructed.</p>' : `${copyButtonMarkup(prompt, `Copy exact judge prompt for ${label}`)}<p>Original prompt SHA-256: <code>${escapeHTML(request.promptSha256)}</code></p><pre class="model-run__text" data-creation-original-prompt><code>${escapeHTML(prompt)}</code></pre>`;
+    } else {
+      body.innerHTML = `<p>This is the original final response for both anonymous candidates in one shared judge request. The exact prompt includes both answers and the context supplied to this seat.</p><p>Reviewer: ${escapeHTML(label)}</p>${request.failureReason ? `<p>${escapeHTML(request.failureReason)}</p>` : ''}${typeof request.outputText === 'string' ? `${copyButtonMarkup(request.outputText, `Copy original final judge response for ${label}`)}<p>Original final response SHA-256: <code>${escapeHTML(request.outputSha256)}</code></p><pre class="model-run__text" data-creation-original-review><code>${escapeHTML(request.outputText)}</code></pre>` : '<p>No final response was returned by this judge request.</p>'}<details class="work-spec-assessment" data-creation-judge-prompt="${escapeHTML(requestId)}"><summary class="work-spec-assessment__summary">Exact judge prompt · ${escapeHTML(profile?.contextMode || 'recorded')} context</summary><div class="work-spec-assessment__body" data-creation-prompt-body></div></details>`;
+    }
+    body.dataset.hydrated = 'true';
+  };
+
+  const writingCitationsMarkup = evidence => typeof evidence === 'string' ? `<p data-cited-evidence>${escapeHTML(evidence)}</p>` : !Array.isArray(evidence) || !evidence.length ? '' : `<ul data-cited-evidence>${evidence.map(item => `<li>${typeof item === 'string' ? `<span data-evidence-reference>${escapeHTML(item)}</span>` : `${item.quote ? `<blockquote data-evidence-quote>${escapeHTML(item.quote)}</blockquote>` : ''}${item.reference ? `<span data-evidence-reference>${escapeHTML(item.reference)}</span>` : ''}`}</li>`).join('')}</ul>`;
+
+  const writingFlagLabel = id => ({ fundamentalRepairRequired: 'Fundamental repair required', taskNoncompletion: 'Task noncompletion' })[id] || gateLabel(id.replaceAll('_', '-'));
+  const writingFlagsMarkup = flags => !flags || !Object.keys(flags).length ? '' : `<details class="work-spec-assessment" data-judge-flags><summary class="work-spec-assessment__summary">Completion and repair flags</summary><div class="work-spec-assessment__body"><dl>${Object.entries(flags).map(([id, flag]) => `<div data-judge-flag="${escapeHTML(id)}"><dt>${escapeHTML(writingFlagLabel(id))}</dt><dd>${escapeHTML(typeof flag === 'boolean' ? flag ? 'Flagged' : 'Not flagged' : flag?.value ? 'Flagged' : 'Not flagged')}${flag?.reason || flag?.rationale ? ` · <span data-flag-reason>${escapeHTML(flag.reason || flag.rationale)}</span>` : ''}</dd></div>`).join('')}</dl></div></details>`;
+
+  const writingPairwiseMarkup = () => {
+    if (!isWriting || !Array.isArray(data.pairwisePreferences)) return '';
+    const preferences = data.pairwisePreferences.filter(preference => preference.caseId === activeCaseId).map(preference => ({ ...preference,
+      winner: preference.winner ?? preference.preferredCondition,
+      confidence: preference.confidence ?? preference.preference?.confidence,
+      reason: preference.reason ?? preference.preference?.reason,
+      candidateACondition: preference.candidateACondition ?? preference.candidateMap?.A,
+      candidateBCondition: preference.candidateBCondition ?? preference.candidateMap?.B
+    }));
+    const label = condition => data.conditions.find(item => item.id === condition)?.label || condition;
+    return `<section class="report-section" data-writing-pairwise><h3>Direct pairwise preferences</h3><p>These preferences are separate from the rubric totals. Both anonymous candidates were visible while each judge scored them; the judges received opposite candidate orders.</p>${preferences.length ? preferences.map(preference => `<details class="work-spec-assessment" data-pairwise-review="${escapeHTML(preference.reviewerId)}" data-pairwise-setting="${escapeHTML(preference.settingId || '')}"><summary class="work-spec-assessment__summary">${preference.configurationId ? escapeHTML(preference.configurationId) + ' · ' : ''}${escapeHTML(preference.reviewerId)} · ${preference.winner === 'tie' ? 'Tie' : escapeHTML(label(preference.winner))} · ${escapeHTML(preference.confidence)} confidence</summary><div class="work-spec-assessment__body">${preference.candidateACondition && preference.candidateBCondition ? `<p data-candidate-order>A: ${escapeHTML(label(preference.candidateACondition))} · B: ${escapeHTML(label(preference.candidateBCondition))}</p>` : ''}<p data-preference-reason>${escapeHTML(preference.reason)}</p></div></details>`).join('') : '<p>Pairwise reviews are not available for this repetition.</p>'}</section>`;
+  };
+
+  const writingFlagRatesMarkup = () => !isWriting || !Array.isArray(data.flagRates) ? '' : `<details class="work-spec-assessment" data-writing-flag-rates><summary class="work-spec-assessment__summary">Completion and repair flags across reviewed answers</summary><div class="work-spec-assessment__body"><p>An answer is counted when either judge raises the flag. Counts use answers with both reviews; flags do not impose score caps.</p><dl>${data.flagRates.map(row => `<div><dt>${escapeHTML(data.conditions.find(condition => condition.id === row.condition)?.label || row.condition)}</dt><dd>${['fundamentalRepairRequired', 'taskNoncompletion'].map(id => `${escapeHTML(writingFlagLabel(id))}: ${row[id]}/${row.reviewedAnswers}`).join(' · ')}</dd></div>`).join('')}</dl></div></details>`;
+
+  const judgeReviewMarkup = ({ judgment, judgmentIndex }) => {
+    const judgeSetting = settingByConfigurationId.get(judgment.judgeConfigurationId);
+    const judgeLabel = judgment.judgeLabel || judgeSetting?.label || judgment.judgeConfigurationId;
+    if (isWriting) {
+      const dimensions = writingDimensions();
+      return `<li class="model-run__judge" data-judge-review${judgment.reviewerId ? ` data-reviewer-id="${escapeHTML(judgment.reviewerId)}"` : ''}>
+        <header class="model-run__judge-header"><span class="model-run__judge-identity"><strong class="model-run__judge-index">${commonCoreScope?.caseIds.includes(activeCaseId) ? judgment.judgeConfigurationId === 'codex:gpt-6-astra@xhigh' ? 'Score source' : 'Archived review' : `Judge ${String(judgmentIndex + 1).padStart(2, '0')}`}</strong><span class="model-run__judge-configuration" data-judge-configuration>${escapeHTML(judgeLabel)}</span></span><span class="model-run__judge-score"><strong class="model-run__judge-score-value" data-judge-score>${formatScore(judgment.score)}</strong>${Number.isFinite(judgment.score) ? `<small class="model-run__judge-score-unit">/${SCORE_MAXIMUM}</small>` : ''}</span></header>
+        ${judgment.contextMode ? `<p class="model-run__aggregation-note" data-judge-context="${escapeHTML(judgment.contextMode)}">${judgment.contextMode === 'informed' ? 'Skill-informed: the frozen skill root and eight references were supplied.' : 'Skill-naive: no storytelling skill context was supplied.'}</p>` : ''}
+        ${judgment.assessmentStatus ? `<p class="model-run__aggregation-note">${escapeHTML(judgment.assessmentStatus)}</p>` : ''}
+        ${!isCreation && dimensions.every(dimension => !judgment.dimensions?.[dimension.id]?.reason) ? '<p class="model-run__aggregation-note">This saved review has one overall rationale, shown below the ratings. Separate dimension reasons were not recorded.</p>' : ''}
+        <div class="work-spec-dimensions"><table class="work-spec-dimensions__table writing-dimensions"><caption class="visually-hidden">${dimensions.length} rubric dimensions and this judge’s reasons</caption><thead><tr><th scope="col">Dimension</th><th scope="col">Rating /${scoreBasis.ratingMaximum}</th><th scope="col">Reason and evidence</th></tr></thead><tbody>${dimensions.map(dimension => {
+          const reading = judgment.dimensions?.[dimension.id];
+          return `<tr data-dimension-id="${escapeHTML(dimension.id)}"><th scope="row">${escapeHTML(dimension.label)}${Number.isFinite(dimension.weight) ? `<small class="work-spec-dimensions__weight">${Number(dimension.weight.toFixed(2))}% weight</small>` : ''}</th><td>${Number.isFinite(reading?.rating) ? reading.rating : 'Not assessed'}</td><td><span data-dimension-reason>${escapeHTML(reading?.reason || '—')}</span>${writingCitationsMarkup(reading?.evidence)}</td></tr>`;
+        }).join('')}</tbody></table></div><p class="model-run__judge-rationale" data-judge-rationale>${escapeHTML(judgment.rationale)}</p>${writingFlagsMarkup(judgment.flags)}${writingJudgeResourcesMarkup(judgment)}${creationEvidenceMarkup(judgment.requestId)}
+      </li>`;
+    }
+    if (isWorkSpec) {
+      const fullAssessment = typeof judgment.fullAssessment === 'string'
+        ? judgment.fullAssessment
+        : JSON.stringify(judgment.assessment || judgment, null, 2);
+      return `
+        <li class="model-run__judge" data-judge-review>
+          <header class="model-run__judge-header">
+            <span class="model-run__judge-identity">
+              <strong class="model-run__judge-index">Judge ${String(judgmentIndex + 1).padStart(2, '0')}</strong>
+              <span class="model-run__judge-configuration" data-judge-configuration>${escapeHTML(judgeLabel)}</span>
+            </span>
+            <span class="model-run__judge-score"><strong class="model-run__judge-score-value" data-judge-score>${formatScore(judgment.score)}</strong>${Number.isFinite(judgment.score) ? `<small class="model-run__judge-score-unit">/${SCORE_MAXIMUM}</small>` : ''}</span>
+          </header>
+          <p class="work-spec-verdict" data-judge-readiness>${escapeHTML(judgment.readiness)}</p>
+          <p class="model-run__aggregation-note" data-judge-assessment-status>${escapeHTML(judgment.assessmentStatus)}</p>
+          <div class="work-spec-dimensions">
+            <table class="work-spec-dimensions__table">
+              <caption class="visually-hidden">Six weighted rubric dimensions and this judge's reasons</caption>
+              <thead><tr><th scope="col">Dimension</th><th scope="col">Rating /4</th><th scope="col">Reason</th></tr></thead>
+              <tbody>${Object.entries(dimensionLabels).map(([id, label]) => {
+                const dimension = judgment.dimensions[id];
+                return `<tr data-dimension-id="${escapeHTML(id)}">
+                  <th scope="row">${escapeHTML(id)} · ${escapeHTML(label)}<small class="work-spec-dimensions__weight">${escapeHTML(scoreBasis.weights[id])}% weight</small></th>
+                  <td>${Number.isInteger(dimension.rating) ? dimension.rating : 'Not assessable'}</td>
+                  <td>${escapeHTML(dimension.reason)}</td>
+                </tr>`;
+              }).join('')}
+              </tbody>
+            </table>
+          </div>
+          <p class="model-run__judge-rationale" data-judge-rationale>${escapeHTML(judgment.rationale)}</p>
+          <details class="work-spec-assessment">
+            <summary class="work-spec-assessment__summary">Full judge assessment and cited evidence</summary>
+            <div class="work-spec-assessment__body">
+              ${copyButtonMarkup(fullAssessment, `Copy full assessment from ${judgeLabel}`)}
+              <pre class="model-run__text" data-full-assessment><code>${escapeHTML(fullAssessment)}</code></pre>
+            </div>
+          </details>
+        </li>
+      `;
+    }
+    const failedGateText = judgment.failedGates.length > 0
+      ? judgment.failedGates.map(gateLabel).join(' · ')
+      : 'None';
+    return `
+      <li class="model-run__judge" data-judge-review>
+        <header class="model-run__judge-header">
+          <span class="model-run__judge-identity">
+            <strong class="model-run__judge-index">Judge ${String(judgmentIndex + 1).padStart(2, '0')}</strong>
+            <span class="model-run__judge-configuration" data-judge-configuration>${escapeHTML(judgeLabel)}</span>
+          </span>
+          <span class="model-run__judge-score"><strong class="model-run__judge-score-value" data-judge-score>${judgment.score.toFixed(1)}</strong><small class="model-run__judge-score-unit">/${SCORE_MAXIMUM}</small></span>
+        </header>
+        <dl class="model-run__judge-mechanics" data-judge-mechanics>
+          <div class="model-run__judge-mechanic"><dt class="model-run__judge-mechanic-label">Uncapped</dt><dd class="model-run__judge-mechanic-value" data-judge-raw-score>${judgment.rawScore.toFixed(1)}</dd></div>
+          <div class="model-run__judge-mechanic"><dt class="model-run__judge-mechanic-label">Gate ceiling</dt><dd class="model-run__judge-mechanic-value" data-judge-gate-cap>${judgment.gateCap.toFixed(1)}</dd></div>
+          <div class="model-run__judge-mechanic"><dt class="model-run__judge-mechanic-label">Failed gates</dt><dd class="model-run__judge-mechanic-value" data-judge-failed-gates>${escapeHTML(failedGateText)}</dd></div>
+        </dl>
+        <p class="model-run__judge-rationale" data-judge-rationale>${escapeHTML(judgment.rationale)}</p>
+      </li>
+    `;
+  };
+
+  const judgingMarkup = ({ judgments, notScored = false, response }) => {
+    const pendingPanel = !isWriting && response?.status === 'unscored';
+    const commonActive = commonCoreScope?.caseIds.includes(activeCaseId);
+    const scores = judgments.map((judgment) => judgment.score).filter(Number.isFinite);
+    const scoreRange = scores.length > 0 && scores.length === judgments.length
+      ? `${Math.min(...scores).toFixed(1)}–${Math.max(...scores).toFixed(1)}`
+      : 'Assessment incomplete';
+    return `
+      <details class="model-run__judging">
+        <summary class="model-run__judging-summary">
+          <strong class="model-run__judging-title">${pendingPanel ? 'Saved Astra review' : isWriting ? judgments.length ? 'Saved judge reviews' : notScored ? 'Not scored' : 'Judgments pending' : 'Why this score'}</strong>
+          <span class="model-run__judging-meta">${pendingPanel ? `${judgments.length}/${JUDGE_COUNT} judges · Fable pending` : commonActive ? `Score: 1 Astra judge · ${judgments.length} saved ${judgments.length === 1 ? 'review' : 'reviews'}` : isWriting ? `${judgments.length}/${JUDGE_COUNT} judges · ${judgments.length === JUDGE_COUNT ? scoreRange : 'Panel incomplete'}` : `${judgments.length} judges · ${scoreRange}`}</span>
+          <i class="model-run__judging-mark" aria-hidden="true">↓</i>
+        </summary>
+        <div class="model-run__judging-body">
+          <p class="model-run__aggregation-note">${pendingPanel ? 'The saved Astra review is shown below. The final task score requires both original reviewers; Fable is pending. These answers do not change task scores or Engineering and Overall rankings until the panel completes.' : `${commonActive ? 'The displayed score uses the original Astra xhigh review only, on the same basis as the 11-story Core idea aggregate. Additional saved panel reviews are archived evidence and do not change that score.' : escapeHTML(panelMethod)} There is no synthesizer. ${isWorkSpec || isWriting ? 'The independent assessments and cited reasons remain available below. Findings are each judge’s conclusions. Judge spread is disagreement, not a confidence interval.' : 'Each note is the saved answer-specific rationale from one independent review, bounded to 600 characters.'}`}</p>
+          ${isWriting ? `<p class="model-run__aggregation-note" data-judge-coverage>${commonActive ? 'One Astra xhigh review determines this score; all saved reviews are preserved below.' : `${judgments.length}/${JUDGE_COUNT} saved assessments. ${scores.length === JUDGE_COUNT ? `Score disagreement: ${(Math.max(...scores) - Math.min(...scores)).toFixed(1)} rubric points.` : 'A complete score requires the full panel.'}`}</p>` : ''}
+          <ol class="model-run__judges">
+            ${judgments.map((judgment, judgmentIndex) => judgeReviewMarkup({ judgment, judgmentIndex })).join('')}
+          </ol>
+          ${isCreation ? [...creationRequestById.values()].filter(request => request.status === 'error' && request.candidateOrder?.some(candidate => candidate.outputSha256 === response?.provenance?.outputSha256)).map(request => `<section data-creation-review-failure><p>${escapeHTML(reviewerProfileById.get(request.profileId)?.label || request.profileId)}: this request did not produce a valid assessment. Its missing score was not imputed.</p>${creationEvidenceMarkup(request.id)}</section>`).join('') : ''}
+        </div>
+      </details>
+    `;
+  };
+
+  const conditionTranscriptMarkup = ({ condition, response, pairedResponse, score, rowIndex, settingLabel }) => {
+    const pendingPanel = !isWriting && response?.status === 'unscored';
+    const isBaseline = condition === 'baseline';
+    const conditionLabel = isBaseline ? data.conditions.find(condition => condition.id === 'baseline').label : TREATMENT_LABEL;
+    const messageSet = messageSetById.get(response?.messageSetId);
+    const messages = messageSet?.messages || [];
+    const outputText = response?.outputText || '';
+    const terminalFailure = candidate => ['error', 'unavailable'].includes(candidate?.status);
+    const terminalExcluded = response?.judgingDisposition === 'terminal-excluded' || (isCreation && response?.reviewerStatuses?.some(review => review.disposition === 'terminal-excluded'));
+    const notScored = isWriting && (terminalExcluded || terminalFailure(response) || (outputText.length > 0 && terminalFailure(pairedResponse)) || (isCreation && response?.reviewerStatuses?.some(review => review.disposition === 'terminal-failure')));
+    const headingId = `model-run-${rowIndex}-${condition}`;
+    const modifier = isBaseline ? 'model-run__condition--baseline' : 'model-run__condition--skill';
+    const trialLabel = Number.isInteger(response?.trialNumber) ? `${isWriting ? data.trialLabel || 'Trial' : 'Trial'} ${response.trialNumber}` : 'Recorded trial';
+
+    return `
+      <section class="model-run__condition ${modifier}" data-condition="${condition}" aria-labelledby="${headingId}">
+        <header class="model-run__condition-header">
+          <div class="model-run__condition-title">
+            <span class="model-run__condition-meta">${escapeHTML(settingLabel)} · ${escapeHTML(trialLabel)} · ${isWriting ? 'saved question and final answer' : 'exact saved exchange'}</span>
+            <h3 class="model-run__condition-name" id="${headingId}">${conditionLabel}</h3>
+          </div>
+          <strong class="model-run__condition-score">${pendingPanel ? '—' : formatScore(score)}${Number.isFinite(score) ? `<small class="model-run__condition-unit">/${SCORE_MAXIMUM}</small>` : ''}</strong>
+        </header>
+        ${pendingPanel ? '<p class="model-run__aggregation-note" data-architecture-review-status>Answer saved · Astra review complete · Awaiting Fable review. Final score is not available.</p>' : ''}
+        ${isWorkSpec ? `<p class="work-spec-verdict" data-condition-readiness>${escapeHTML(response.readinessLabel || 'Readiness not reported')}</p>` : ''}
+        ${isWriting ? `<p class="writing-answer-status" data-output-word-count="${outputText.trim() ? outputText.trim().split(/\s+/u).length : 0}">${outputText.trim() ? `${outputText.trim().split(/\s+/u).length.toLocaleString()} words · exact final answer` : escapeHTML(response?.failureReason || response?.status || 'No completed answer recorded')}${response?.status && outputText.length ? ` · ${escapeHTML(response.status)}` : ''}</p>` : ''}
+        ${terminalExcluded ? `<p class="writing-answer-status" data-writing-exclusion>${isCreation ? 'Not scored: this original generation pair did not complete. Returned answers remain available; missing scores were not imputed.' : `Not scored: this pair was excluded because ${terminalFailure(response) ? 'this answer' : 'its paired answer'} failed the required full-read verification. Both saved answers remain available; no further judge reviews are planned.`}${response?.failureReason ? ` ${escapeHTML(response.failureReason)}` : ''}</p>` : ''}
+        <details class="model-run__prompt">
+          <summary class="model-run__prompt-summary">
+            <strong class="model-run__prompt-title">${isWriting ? 'Question &amp; skill context' : 'Input prompt'}</strong>
+            <span class="model-run__prompt-meta">${messages.length} ${messages.length === 1 ? 'message' : 'messages'} · ordered</span>
+            <i class="model-run__prompt-mark" aria-hidden="true">↓</i>
+          </summary>
+          <div class="model-run__prompt-body">
+            <ol class="model-run__messages">
+              ${messages.map((message, messageIndex) => messageMarkup({ message, messageIndex, conditionLabel, settingLabel })).join('')}
+            </ol>
+          </div>
+        </details>
+        ${judgingMarkup({ judgments: response?.judgments || [], notScored, response })}
+        ${writingExecutionMarkup(response)}
+        <section class="model-run__section" aria-label="Full model output">
+          <header class="model-run__section-header">
+            <h4 class="model-run__section-title">Full output</h4>
+            ${outputText.length ? copyButtonMarkup(outputText, `Copy full output for ${settingLabel}, ${conditionLabel}`) : ''}
+          </header>
+          ${outputText.length ? `<pre class="model-run__text model-run__text--output" data-output-text><code>${escapeHTML(outputText)}</code></pre>` : `<p class="model-run__judge-rationale" data-output-absence>${isWriting ? 'No completed answer is available for this case and condition.' : 'No work spec was returned for this run. Both independent judgments recorded an invalid candidate.'}</p>`}
+        </section>
+      </section>
+    `;
+  };
+
+  const trialComparisonsMarkup = (row, index) => `<div class="writing-trial-answers" data-writing-trial-answers>
+    <p class="writing-trial-answers__intro">The score above averages all ${writingTrialCount} trials. Open a trial to read its original answers and reviews.</p>
+    ${Array.from({ length: writingTrialCount }, (_, trialIndex) => {
+      const trialNumber = trialIndex + 1;
+      const key = condition => responseKey(activeBenchmarkId, row.setting.id, condition, activeCaseId, trialNumber);
+      const baseline = responseByKey.get(key('baseline')), treatment = responseByKey.get(key('skill'));
+      const trialScore = condition => benchmarkResultByKey.get(key(condition))?.score ?? null;
+      return `<details class="work-spec-assessment writing-trial-answers__trial" data-report-trial="${trialNumber}">
+        <summary class="work-spec-assessment__summary">Trial ${trialNumber}<span>${escapeHTML(BASELINE_SHORT)} ${formatScore(trialScore('baseline'))} → Skill ${formatScore(trialScore('skill'))}</span></summary>
+        <div class="model-run__comparison">${conditionTranscriptMarkup({ condition: 'baseline', response: baseline, pairedResponse: treatment,
+          score: trialScore('baseline'), rowIndex: `${index}-trial-${trialNumber}`, settingLabel: row.setting.label })}
+        ${conditionTranscriptMarkup({ condition: 'skill', response: treatment, pairedResponse: baseline,
+          score: trialScore('skill'), rowIndex: `${index}-trial-${trialNumber}`, settingLabel: row.setting.label })}</div>
+      </details>`;
+    }).join('')}</div>`;
+
+  const modelRowMarkup = (row, index) => {
+    const comparable = Number.isFinite(row.baseline) && Number.isFinite(row.treatment);
+    const start = Math.min(row.baseline, row.treatment);
+    const width = Math.abs(row.treatment - row.baseline);
+    const regressionClass = row.delta < 0 ? ' is-regression' : '';
+    const settingLabel = row.setting.label || `${row.setting.family} · ${row.setting.reasoning}`;
+    return `
+      <li class="model-preview__item" data-report-setting-id="${escapeHTML(row.setting.id)}"${row.pendingPanel ? ' data-architecture-pending-setting' : ''}>
+        <details class="model-run"${requestedSettingId === row.setting.id ? ' open' : ''}>
+          <summary class="model-preview__row${regressionClass}">
+            <span class="model-preview__identity"><strong>${escapeHTML(settingLabel)}</strong><small>${row.pendingPanel ? 'Awaiting Fable review' : row.rank ? `${isCreation ? 'Three-trial balanced skill' : escapeHTML(TREATMENT_LABEL)} rank #${row.rank} of ${SETTING_COUNT}` : isCreation ? 'Three-trial aggregate incomplete' : 'Panel total not assessable'}</small></span>
+            ${comparable ? `<span
+              class="model-preview__plot"
+              style="--preview-start:${start}%;--preview-width:${width}%;--preview-baseline:${row.baseline}%;--preview-treatment:${row.treatment}%"
+              aria-label="${escapeHTML(BASELINE_LABEL)} ${formatScore(row.baseline)}, ${escapeHTML(TREATMENT_LABEL)} ${formatScore(row.treatment)}"
+            >
+              <i class="model-preview__axis" aria-hidden="true"></i>
+              <i class="model-preview__connector" aria-hidden="true"></i>
+              <i class="model-preview__mark model-preview__mark--baseline" aria-hidden="true"></i>
+              <i class="model-preview__mark model-preview__mark--treatment" aria-hidden="true"></i>
+            </span>` : `<span class="work-spec-unassessable">${row.pendingPanel ? 'Awaiting review' : 'Panel total not assessable'}</span>`}
+            <span class="model-preview__score"><span>${escapeHTML(BASELINE_SHORT)}</span>${row.pendingPanel ? '—' : formatScore(row.baseline)}${isWorkSpec ? `<small class="work-spec-summary-readiness" data-summary-readiness="baseline">${escapeHTML(row.baselineResponse.readinessLabel)}</small>` : ''}</span>
+            <span class="model-preview__score model-preview__score--treatment"><span>Skill</span>${row.pendingPanel ? '—' : formatScore(row.treatment)}${isWorkSpec ? `<small class="work-spec-summary-readiness" data-summary-readiness="skill">${escapeHTML(row.treatmentResponse.readinessLabel)}</small>` : ''}</span>
+            <span class="model-preview__delta">${row.pendingPanel ? '—' : `${signed(row.delta)} pts`}</span>
+            <span class="model-preview__action">Inspect run <i class="model-preview__action-mark" aria-hidden="true">↓</i></span>
+          </summary>
+          ${isCreation ? trialComparisonsMarkup(row, index) : `<div class="model-run__comparison">
+            ${conditionTranscriptMarkup({
+              condition: 'baseline',
+              response: row.baselineResponse,
+              pairedResponse: row.treatmentResponse,
+              score: row.baseline,
+              rowIndex: index,
+              settingLabel
+            })}
+            ${conditionTranscriptMarkup({
+              condition: 'skill',
+              response: row.treatmentResponse,
+              pairedResponse: row.baselineResponse,
+              score: row.treatment,
+              rowIndex: index,
+              settingLabel
+            })}
+          </div>`}
+        </details>
+      </li>
+    `;
+  };
+
+  const headToHeadMarkup = (benchmark) => {
+    const comparisons = (responseData.headToHeads || []).filter(comparison => comparison.benchmarkId === benchmark.id
+      && (!isWriting || comparison.caseId === activeCaseId));
+    if (!comparisons.length) return '';
+    return `<section class="report-section report-head-to-head" id="head-to-head" aria-labelledby="head-to-head-title">
+      <header class="report-section__heading"><div><p class="ui-eyebrow">Blind head-to-head · judge preferences</p>
+        <h2 id="head-to-head-title">Which story did the judges prefer?</h2></div>
+        <p>Same prompt, anonymous answers. Each judge read both answer orders in separate sessions.</p></header>
+      ${comparisons.map(comparison => {
+        const candidates = new Map(comparison.candidates.map(candidate => [candidate.id, candidate]));
+        const preferenceLabel = id => id === 'tie' ? 'Tie' : candidates.get(id)?.label || 'No preference stated';
+        return `<article data-head-to-head="${escapeHTML(comparison.id)}">
+          <p class="head-to-head__pair">${comparison.candidates.map(candidate => escapeHTML(candidate.label)).join('<span aria-label="versus"> vs </span>')}</p>
+          <p class="head-to-head__scope">${comparison.condition === 'skill' ? 'Both answers used the skill.' : 'Both answers used the same condition.'} One saved story per model; these preferences do not change the rubric scores below or establish an overall model winner.</p>
+          <table class="head-to-head__table"><caption class="visually-hidden">Judge preferences with the answer order reversed</caption>
+            <thead><tr><th scope="col">Judge</th>${comparison.candidates.map(candidate => `<th scope="col">${escapeHTML(candidate.label)}<small>shown first</small></th>`).join('')}</tr></thead>
+            <tbody>${comparison.judges.map(judge => `<tr data-head-to-head-judge="${escapeHTML(judge.id)}"><th scope="row">${escapeHTML(judge.label)}<small>${judge.orderConsistent ? 'Same choice in both orders' : 'No consistent choice across orders'}</small></th>
+              ${comparison.candidates.map(candidate => {
+                const review = comparison.reviews.find(review => review.judgeId === judge.id && review.firstCandidateId === candidate.id);
+                return `<td data-head-to-head-order="${escapeHTML(candidate.id)}" data-head-to-head-preference="${escapeHTML(review?.preferredCandidateId || '')}"><strong>${escapeHTML(preferenceLabel(review?.preferredCandidateId))}</strong></td>`;
+              }).join('')}</tr>`).join('')}</tbody>
+          </table>
+          <details class="work-spec-assessment head-to-head__reasons"><summary class="work-spec-assessment__summary">Why each judge chose it · read the reviews</summary>
+            <div class="work-spec-assessment__body">${comparison.judges.map(judge => `<section class="head-to-head__judge-reasons"><h3>${escapeHTML(judge.label)}</h3>
+              ${comparison.reviews.filter(review => review.judgeId === judge.id).map(review => `<article data-head-to-head-review="${escapeHTML(review.id)}">
+                <h4>${escapeHTML(preferenceLabel(review.preferredCandidateId))}${review.preferredCandidateId === 'tie' ? '' : ' preferred'}</h4>
+                <p class="head-to-head__scope">${escapeHTML(candidates.get(review.firstCandidateId)?.label || '')} shown first${review.confidence ? ` · ${escapeHTML(review.confidence)} confidence` : ''}</p>
+                <p data-head-to-head-reason>${escapeHTML(review.reason)}</p>
+                <details class="work-spec-assessment"><summary class="work-spec-assessment__summary">Original judge response</summary><div class="work-spec-assessment__body">
+                  ${review.interpretation === 'explicit-text-transcription' ? '<p>Preference and reason transcribed from the judge’s explicit answer. Its JSON formatting was malformed; no new review was generated and the original text is retained below.</p>' : ''}
+                  <pre class="model-run__text" data-head-to-head-original><code>${escapeHTML(review.rawText)}</code></pre>
+                </div></details></article>`).join('')}</section>`).join('')}</div>
+          </details>
+          <details class="work-spec-assessment head-to-head__stories"><summary class="work-spec-assessment__summary">Read the two stories</summary>
+            <div class="model-run__comparison">${comparison.candidates.map(candidate => {
+              const response = responseByKey.get(responseKey(comparison.benchmarkId, candidate.settingId, comparison.condition, comparison.caseId));
+              return `<section class="model-run__condition"><h3>${escapeHTML(candidate.label)}</h3><p>${escapeHTML(candidate.title)} · ${candidate.wordCount} words</p>
+                <pre class="model-run__text model-run__text--output" data-head-to-head-story="${escapeHTML(candidate.id)}"><code>${escapeHTML(response?.outputText || 'Original answer unavailable.')}</code></pre></section>`;
+            }).join('')}</div>
+          </details>
+        </article>`;
+      }).join('')}
+    </section>`;
+  };
+
+  const rankingMarkup = (benchmark) => `
+    <section class="report-section" id="ranking" aria-labelledby="ranking-title">
+      ${headToHeadMarkup(benchmark)}
+      <header class="report-section__heading">
+        <div>
+          <p class="ui-eyebrow">${escapeHTML(SCORE_EDITION_LABEL)} field · all ${SETTING_COUNT} settings</p>
+          <h2 id="ranking-title">Model comparison</h2>
+        </div>
+        <p>${isCreation ? `One score per model, averaged across all ${writingTrialCount} trials. Open a model to read the individual trials and judge reviews.` : `All ${SETTING_COUNT} settings, ordered by ${escapeHTML(TREATMENT_LABEL)} task score. Rank is secondary and can change as the field grows.`}</p>
+      </header>
+      <details class="preview-disclosure" open>
+        <summary class="preview-disclosure__summary">${pendingArchitectureResponses ? `${SETTING_COUNT} scored settings · 1 awaiting review` : `All ${SETTING_COUNT} settings · ${isCreation ? `${writingTrialCount}-trial average` : 'task'} score /${SCORE_MAXIMUM}`}</summary>
+        <ol class="model-preview" aria-label="All ${SETTING_COUNT} settings for ${escapeHTML(TREATMENT_LABEL)} and ${escapeHTML(BASELINE_LABEL)}, ordered by ${isCreation ? 'three-trial balanced skill score' : `${escapeHTML(TREATMENT_LABEL)} task score`}">
+          ${modelPreviewRows(benchmark).map(modelRowMarkup).join('')}
+        </ol>
+      </details>
+    </section>
+  `;
+
+  const writingCaseEvidenceMarkup = () => {
+    if (!isWriting) return '';
+    const evidence = caseById.get(activeCaseId)?.evidence;
+    if (!evidence) return '';
+    const sourceLink = source => {
+      let url;
+      try { url = new URL(source.url); } catch { return escapeHTML(source.title || source.id); }
+      if (!['http:', 'https:'].includes(url.protocol)) return escapeHTML(source.title || source.id);
+      return `<a href="${escapeHTML(url.href)}" target="_blank" rel="noreferrer">${escapeHTML(source.title || source.id)} ↗</a>`;
+    };
+    return `<details class="work-spec-assessment writing-case-evidence" data-writing-case-evidence>
+      <summary class="work-spec-assessment__summary">Story evidence supplied to judges</summary>
+      <div class="work-spec-assessment__body">
+        <p>${escapeHTML(evidence.scope || '')}</p>
+        <section><h4>Factual anchors</h4><ul>${(evidence.facts || []).map(fact => `<li>${escapeHTML(fact.statement)}${fact.sourceIds?.length ? `<small>Sources: ${escapeHTML(fact.sourceIds.join(', '))}</small>` : ''}</li>`).join('')}</ul></section>
+        ${evidence.admissibleReadings?.length ? `<section><h4>Admissible readings</h4><ul>${evidence.admissibleReadings.map(reading => `<li>${escapeHTML(reading)}</li>`).join('')}</ul></section>` : ''}
+        ${evidence.landmines?.length ? `<section><h4>Claims the evidence does not support</h4><ul>${evidence.landmines.map(item => `<li><strong>${escapeHTML(item.claim)}</strong> ${escapeHTML(item.reason)}</li>`).join('')}</ul></section>` : ''}
+        <section><h4>Sources and limits</h4><ul>${(evidence.sources || []).map(source => `<li>${sourceLink(source)}<small>${escapeHTML([source.id, source.authority, source.locator, source.verification].filter(Boolean).join(' · '))}</small></li>`).join('')}${(evidence.evidenceLimitations || []).map(limitation => `<li>${escapeHTML(limitation)}</li>`).join('')}</ul></section>
+      </div>
+    </details>`;
+  };
+
+  const methodMarkup = (benchmark, summary) => {
+    const limitations = Array.isArray(benchmark.limitations) ? benchmark.limitations : [];
+    const scoreBasis = isWriting ? { ...data.scoreBasis, dimensions: writingDimensions() } : data.scoreBasis;
+    const writingScoreScope = !isWriting ? '' : commonCoreScope
+      ? `For the ${commonCoreScope.expectedCaseCount} included stories, the hero and model rows use each original Astra xhigh review, on the same single-judge basis as the Core idea aggregate. The Matrix archive view retains its original panel scores and is excluded globally. All ${data.cases.length} original stories and every saved review remain available here.` : data.cohortSummaries
+      ? 'The hero shows the selected repetition. The leaderboard uses the primary prompt only; secondary prompts are summarized separately below. Each answer needs the complete judge panel.'
+      : isCreation ? `The hero averages the same complete ${writingTrialCount}-trial scores shown for each model. Individual trial answers and reviews remain inside each model's details.` : hasWritingTrialPicker
+        ? `The hero shows the selected trial’s field means over assessable pairs; each row shows one model setting. The ${writingTitle} leaderboard requires all ${writingTrialCount} predeclared trials in both conditions.`
+        : `The hero shows the selected ${writingCaseLabel}’s field means over assessable pairs; each row shows one model setting. The ${writingTitle} leaderboard requires scored coverage across the same complete corpus in both conditions.`;
+    const writingRubricScope = !isWriting ? '' : commonCoreScope
+      ? `The Core idea aggregate covers ${commonCoreScope.expectedCaseCount} common stories, following a post-run user-approved exclusion of The Matrix for every setting. This report preserves all ${data.cases.length} original stories, including the excluded evidence. These results do not establish general writing ability. ${writingOverallScope}` : data.cohortSummaries
+      ? `Scores cover the published adventure prompts and repetitions. The primary prompt and secondary prompts are reported separately. ${writingOverallScope}`
+      : `Scores cover ${benchmark.name.toLowerCase()} on ${data.cases.length} published ${data.cases.length === 1 ? writingCaseLabel : writingCasePlural}${hasWritingTrialPicker ? ` with ${writingTrialCount} trials per condition` : ''}. They do not establish general writing ability. ${writingOverallScope}`;
+    const judgingScope = summary.judgingScope;
+    const judgingScopeCopy = isWriting ? '' : judgingScope?.strategy === 'appended-rows-only-v1'
+      ? `${judgingScope.incumbentResponseCount} incumbent responses kept their published scores; ${judgingScope.appendedResponseCount} new responses were scored with the fixed ${JUDGE_COUNT}-judge panel.`
+      : judgingScope
+        ? `All ${judgingScope.responseCount} saved model responses were rescored with the fixed ${JUDGE_COUNT}-judge panel; generation was reused unchanged.`
+        : '';
+    return `
+      <section class="report-section" id="method" aria-labelledby="method-title">
+        <header class="report-section__heading">
+          <div>
+            <p class="ui-eyebrow">Method</p>
+            <h2 id="method-title">How scores are calculated</h2>
+          </div>
+          <p>Scores are task-local. Rank is derived and secondary.</p>
+        </header>
+        <div class="method-grid">
+          <section>
+            <h3>Matched conditions</h3>
+            <p>The same task, output contract, and model setting are compared under ${escapeHTML(summary.baselineLabel)} and ${escapeHTML(summary.treatmentLabel)}.</p>
+          </section>
+          <section>
+            <h3>Score /${SCORE_MAXIMUM}</h3>
+            <p>${commonCoreScope ? 'Included stories use one original Astra xhigh review per answer; additional panel reviews do not enter the displayed score.' : `Each value is the fixed ${JUDGE_COUNT}-judge panel result for this benchmark's rubric and does not depend on which other models are displayed.`} ${isWriting ? escapeHTML(writingScoreScope) : `The hero shows field means across ${SETTING_COUNT} settings; each row shows one model setting.`}${isWorkSpec || isWriting ? ' Scores and paired uplifts are rounded separately from the underlying totals.' : ''}</p>
+          </section>
+          <section>
+            <h3>Run details</h3>
+            <p>${escapeHTML(UNCERTAINTY_REASON)} Source run ${escapeHTML(summary.runId || 'not published')}.</p>
+            ${judgingScopeCopy ? `<p data-judging-scope>${escapeHTML(judgingScopeCopy)}</p>` : ''}
+          </section>
+        </div>
+        ${isWriting ? `<section class="writing-rubric" data-writing-rubric><h3>${scoreBasis.dimensions.length}-dimension rubric</h3><p>${escapeHTML(panelMethod)}</p>${scoreBasis.blinding ? `<p data-writing-blinding>${escapeHTML(typeof scoreBasis.blinding === 'string' ? scoreBasis.blinding : scoreBasis.blinding.description || '')}</p>` : ''}<dl>${scoreBasis.dimensions.map(dimension => `<div data-rubric-dimension="${escapeHTML(dimension.id)}"><dt>${escapeHTML(dimension.label)}${Number.isFinite(dimension.weight) ? ` <span>${Number(dimension.weight.toFixed(2))}%</span>` : ''}</dt><dd><p data-rubric-description>${escapeHTML(dimension.description || '')}</p>${dimension.anchors ? `<details class="writing-rubric-anchors" data-rubric-anchors="${escapeHTML(dimension.id)}"><summary>Rating anchors · ${Object.keys(dimension.anchors).sort((a, b) => Number(a) - Number(b)).join(' / ')}</summary><dl>${Object.keys(dimension.anchors).sort((a, b) => Number(a) - Number(b)).filter(rating => typeof dimension.anchors[rating] === 'string').map(rating => `<div><dt>${escapeHTML(rating)} / ${scoreBasis.ratingMaximum}</dt><dd data-rubric-anchor="${rating}">${escapeHTML(dimension.anchors[rating])}</dd></div>`).join('')}</dl></details>` : ''}</dd></div>`).join('')}</dl><p>${escapeHTML(writingRubricScope)} Word counts are whitespace-delimited counts of the saved final answers; answer length is available for inspection alongside quality.</p></section>
+          ${data.methodology?.execution || data.methodology?.resourceAccounting ? `<details class="work-spec-assessment writing-method-execution" data-method-execution><summary class="work-spec-assessment__summary">Execution and resource accounting</summary><div class="work-spec-assessment__body">${data.methodology.resourceAccounting ? `<p data-resource-accounting>${escapeHTML(data.methodology.resourceAccounting)}</p>` : ''}${data.methodology.execution ? `<dl class="writing-evidence-fields">${writingExecutionFieldsMarkup(data.methodology.execution)}</dl>` : ''}</div></details>` : ''}
+          ${writingCaseEvidenceMarkup()}
+          ${data.methodology ? `<details class="work-spec-assessment writing-method-inputs"><summary class="work-spec-assessment__summary">Frozen inputs and corpus fingerprints</summary><div class="work-spec-assessment__body">${data.methodology.generationContract ? `<p>${escapeHTML(data.methodology.generationContract)}</p>` : ''}${data.methodology.blinding ? `<p>${escapeHTML(data.methodology.blinding)}</p>` : ''}${data.methodology.requiredReadPolicy ? `<p data-method-required-read-policy>${escapeHTML(data.methodology.requiredReadPolicy)}</p>` : ''}<dl>${[['Corpus', data.methodology.corpusSha256], ['Rubric', data.methodology.rubricSha256], [`${writingTitle} skill`, data.methodology.skillSha256]].filter(([, digest]) => /^[a-f0-9]{64}$/i.test(digest || '')).map(([label, digest]) => `<div><dt>${label} SHA-256</dt><dd><code>${escapeHTML(digest)}</code></dd></div>`).join('')}${(data.methodology.corpus || []).map(story => `<div><dt>${escapeHTML(story.title)} · question SHA-256</dt><dd>${/^[a-f0-9]{64}$/i.test(story.sha256 || '') ? `<code>${escapeHTML(story.sha256)}</code>` : escapeHTML(story.id)}</dd></div>`).join('')}${(data.methodology.skillFiles || []).filter(file => typeof file.path === 'string' && !file.path.startsWith('/') && /^[a-f0-9]{64}$/i.test(file.sha256 || '')).map(file => `<div><dt>${escapeHTML(file.path)} · skill file SHA-256</dt><dd><code>${escapeHTML(file.sha256)}</code></dd></div>`).join('')}</dl></div></details>` : ''}
+          ${[...promptFileById.values()].map(file => `<details class="work-spec-assessment writing-prompt-file" id="writing-prompt-${escapeHTML(file.id)}" data-prompt-file="${escapeHTML(file.id)}"><summary class="work-spec-assessment__summary">${escapeHTML(file.title || 'Shared frozen prompt file')}</summary><div class="work-spec-assessment__body">${copyButtonMarkup(file.content, `Copy ${file.title || 'shared frozen prompt file'}`)}<pre class="model-run__text" data-prompt-file-content><code>${escapeHTML(file.content)}</code></pre></div></details>`).join('')}` : ''}
+        <section class="report-limitations" id="limitations" aria-labelledby="limitations-title">
+          <h3 id="limitations-title">Benchmark limitations</h3>
+          <ul>
+            ${limitations.map((limitation) => `<li>${escapeHTML(limitation)}</li>`).join('')}
+          </ul>
+        </section>
+      </section>
+    `;
+  };
+
+  const paginationMarkup = (benchmark) => {
+    const siblings = categoryBenchmarks(benchmark.category);
+    if (siblings.length < 2) return '';
+    const index = siblings.findIndex((candidate) => candidate.id === benchmark.id);
+    const previous = siblings[(index - 1 + siblings.length) % siblings.length];
+    const next = siblings[(index + 1) % siblings.length];
+    return `
+      <nav class="report-pagination" aria-label="Other ${escapeHTML(categoryById.get(benchmark.category).name)} benchmarks">
+        <a class="report-pagination__link" href="#${escapeHTML(previous.id)}"><span>← Previous benchmark</span><strong>${escapeHTML(previous.name)}</strong></a>
+        <a class="report-pagination__link" href="#${escapeHTML(next.id)}"><span>Next benchmark →</span><strong>${escapeHTML(next.name)}</strong></a>
+      </nav>
+    `;
+  };
+
+  const judgeTrialDetailsMarkup = (benchmark, summary) => `
+    <details class="report-judge-details" data-report-judge-trial-details>
+      <summary class="work-spec-assessment__summary">Judge &amp; trial details</summary>
+      <div class="report-judge-details__body">
+        ${writingProgressMarkup()}
+        ${truthMarkup()}
+        ${overviewMarkup(benchmark)}
+        ${writingCohortsMarkup()}
+        ${creationContextComparisonMarkup()}
+        ${writingPredecessorArchiveMarkup()}
+        ${writingPairwiseMarkup()}
+        ${writingFlagRatesMarkup()}
+        ${methodMarkup(benchmark, summary)}
+      </div>
+    </details>
+  `;
+
+  const writingCasePickerMarkup = benchmark => {
+    if (!isWriting || isCreation) return '';
+    const cases = data.cases.filter(story => story.benchmarkId === benchmark.id);
+    const hasCasePicker = cases.length > 1;
+    if (!hasCasePicker && !hasWritingTrialPicker) return '';
+    return `<section class="writing-case-picker" aria-label="${escapeHTML(hasCasePicker ? writingCaseLabel : 'Trial')}">
+      ${hasCasePicker ? `<label class="field-control field-control--wide"><span>${escapeHTML(writingCaseLabel.charAt(0).toUpperCase() + writingCaseLabel.slice(1))}</span><select data-writing-case aria-label="Choose a ${escapeHTML(writingCaseLabel)}">${cases.map(story => `<option value="${escapeHTML(story.id)}"${story.id === activeCaseId ? ' selected' : ''}>${escapeHTML(story.title)}${commonCoreScope && !commonCoreScope.caseIds.includes(story.id) ? ' · archived, excluded' : ''}</option>`).join('')}</select></label>` : ''}
+      ${hasWritingTrialPicker ? `<label class="field-control"><span>${escapeHTML(data.trialLabel || 'Trial')}</span><select data-writing-trial aria-label="Choose a trial">${Array.from({ length: writingTrialCount }, (_, index) => index + 1).map(trial => `<option value="${trial}"${trial === activeTrialNumber ? ' selected' : ''}>Trial ${trial} of ${writingTrialCount}</option>`).join('')}</select></label>` : ''}
+      <p>One ${escapeHTML(benchmark.name)} benchmark · ${commonCoreScope ? `${commonCoreScope.expectedCaseCount}-story aggregate · 1 Astra judge · ${cases.length} archived stories` : data.cohortSummaries ? `${data.coverage.promptCount} prompts · ${data.coverage.expectedPairs} matched pairs` : `${cases.length} ${escapeHTML(cases.length === 1 ? writingCaseLabel : writingCasePlural)}`}${hasWritingTrialPicker ? ` · ${writingTrialCount} trials per condition` : ''} · ${SETTING_COUNT} model settings. Choose a ${hasCasePicker ? `${escapeHTML(writingCaseLabel)}${hasWritingTrialPicker ? ' and trial' : ''}` : 'trial'} to inspect its paired answers and judgments.</p>
+    </section>`;
+  };
+
+  const render = (benchmarkId, options = {}) => {
+    const benchmark = benchmarkId ? benchmarkById.get(benchmarkId) : data.benchmarks[0];
+    if (!benchmark) {
+      showUnavailableReport();
+      return;
+    }
+    if (isWriting) {
+      activeCaseId = caseById.has(options.caseId) ? options.caseId : activeCaseId;
+      activeTrialNumber = selectedTrialFor(activeCaseId, options.trialNumber);
+    }
+    const selectedWritingSummary = isCreation ? creationAggregateSummary(benchmark) : trialSummaryByKey.get(trialSummaryKey(activeCaseId, activeTrialNumber)) || (!hasWritingTrialPicker ? caseSummaryById.get(activeCaseId) : null);
+    const summary = isWriting ? { ...summaryById.get(benchmark.id), ...selectedWritingSummary, ...commonCoreSummary(activeCaseId) } : summaryById.get(benchmark.id);
+    const category = categoryById.get(benchmark.category);
+    const returnContext = returnFieldId === 'overall'
+      ? { id: 'overall', name: 'Overall' }
+      : category;
+    const returnHref = `./index.html#capabilities/${returnContext.id}/benchmarks`;
+    activeBenchmarkId = benchmark.id;
+    copyControlSequence = 0;
+    transcriptCopyTextById.clear();
+
+    reportPage.style.setProperty('--report-category', isWriting ? 'var(--category-writing)' : category.color);
+    if (isWriting) {
+      reportPage.dataset.activeWritingBenchmark = benchmark.id;
+      reportPage.dataset.writingSubcategory = writingSubcategory;
+      reportPage.dataset.activeWritingCase = activeCaseId;
+      reportPage.dataset.activeWritingTrial = isCreation ? 'all' : String(activeTrialNumber);
+      if (commonCoreScope) reportPage.dataset.writingScoreScope = commonCoreScope.caseIds.includes(activeCaseId) ? commonCoreScope.id : 'archived-excluded';
+    }
+    document.title = `${benchmark.name} · VasirBench`;
+    if (isWriting) document.title = isCreation ? `${benchmark.name} · ${writingTrialCount}-trial average · VasirBench` : `${caseById.get(activeCaseId).title}${hasWritingTrialPicker ? ` · Trial ${activeTrialNumber}` : ''} · ${benchmark.name} · VasirBench`;
+    if (isWriting) document.querySelector('.benchmark-mast__issue').textContent = commonCoreScope
+      ? commonCoreScope.caseIds.includes(activeCaseId) ? `Writing · 1 Astra judge · ${commonCoreScope.rankedSettingCount}/${SETTING_COUNT} complete settings` : 'Writing · Archived story · excluded from aggregate'
+      : `Writing · ${writingFinalExclusions ? 'Final snapshot with exclusions' : writingInProgress ? 'Incomplete snapshot' : 'Complete snapshot'}`;
+
+    reportView.innerHTML = `
+      <div class="report-shell">
+        <div class="report-context">
+          <nav class="report-breadcrumb" aria-label="Benchmark hierarchy">
+            <a href="./index.html">VasirBench</a>
+            <span class="report-breadcrumb__separator" aria-hidden="true">→</span>
+            <a href="${escapeHTML(returnHref)}">${escapeHTML(returnContext.name)}</a>
+            <span class="report-breadcrumb__separator" aria-hidden="true">→</span>
+            <span>${escapeHTML(benchmark.suite)}</span>
+            <span class="report-breadcrumb__separator" aria-hidden="true">→</span>
+            <span class="report-breadcrumb__current" aria-current="page">${escapeHTML(benchmark.name)}</span>
+          </nav>
+          <a class="report-context__back" href="${escapeHTML(returnHref)}">
+            <span class="report-context__back-long">← All ${escapeHTML(returnContext.name)} tests</span>
+            <span class="report-context__back-short">← ${escapeHTML(benchmark.suite)}</span>
+          </a>
+        </div>
+        ${writingCasePickerMarkup(benchmark)}
+        ${heroMarkup(benchmark, summary)}
+        ${rankingMarkup(benchmark)}
+        ${judgeTrialDetailsMarkup(benchmark, summary)}
+        ${paginationMarkup(benchmark)}
+      </div>
+    `;
+
+    reportView.querySelectorAll('.model-run, .model-run__prompt, .model-run__judging').forEach((details) => {
+      const syncOpenState = () => details.classList.toggle('is-open', details.open);
+      details.addEventListener('toggle', syncOpenState);
+      syncOpenState();
+    });
+
+    const preferenceLink = document.querySelector('.report-mast__nav [data-report-section="head-to-head"]');
+    if (preferenceLink) preferenceLink.hidden = !reportView.querySelector('[data-head-to-head]');
+    const canonicalHash = reportHash(benchmark.id, activeCaseId, activeTrialNumber, options.section);
+    if (!benchmarkById.has(benchmarkId) || (isWriting && window.location.hash !== canonicalHash)) {
+      window.history.replaceState(null, '', canonicalHash);
+    }
+    hydrateSectionLinks(benchmark.id, options.section || 'overview');
+    if (options.scroll) scrollToSection(options.section || 'top');
+    if (requestedSettingId && !options.section) {
+      window.requestAnimationFrame(() => reportView.querySelector(`[data-report-setting-id="${CSS.escape(requestedSettingId)}"]`)?.scrollIntoView({ block: 'start', behavior: 'instant' }));
+    }
+  };
+
+  window.addEventListener('hashchange', () => {
+    const route = parseRoute();
+    if (route.benchmarkId && !isPublishedBenchmark(route.benchmarkId)) {
+      activeBenchmarkId = null;
+      showUnavailableReport();
+      return;
+    }
+    if (['backend-testing', 'test-authoring'].includes(route.benchmarkId) || isWorkflowBenchmark(route.benchmarkId) !== isWorkSpec || isWritingBenchmark(route.benchmarkId) !== isWriting || (isWriting && writingProjectionFor(route.benchmarkId) !== data)) {
+      window.location.reload();
+      return;
+    }
+    if (route.benchmarkId === activeBenchmarkId && benchmarkById.has(route.benchmarkId) && (!isWriting || (route.caseId === activeCaseId && route.trialNumber === activeTrialNumber && window.location.hash === reportHash(route.benchmarkId, route.caseId, route.trialNumber, route.section)))) {
+      hydrateSectionLinks(route.benchmarkId, route.section || 'overview');
+      scrollToSection(route.section || 'top');
+      return;
+    }
+    render(route.benchmarkId, { scroll: true, section: route.section, caseId: route.caseId, trialNumber: route.trialNumber });
+  });
+
+  reportView.addEventListener('change', event => {
+    if (!isWriting) return;
+    const section = parseRoute().section;
+    if (event.target.matches('[data-writing-case]') && caseById.has(event.target.value)) {
+      window.location.hash = reportHash(activeBenchmarkId, event.target.value, selectedTrialFor(event.target.value, activeTrialNumber), section);
+    } else if (hasWritingTrialPicker && event.target.matches('[data-writing-trial]')) {
+      window.location.hash = reportHash(activeBenchmarkId, activeCaseId, selectedTrialFor(activeCaseId, Number(event.target.value)), section);
+    }
+  });
+
+  reportView.addEventListener('toggle', event => hydrateCreationEvidence(event.target), true);
+
+  reportView.addEventListener('click', async (event) => {
+    const promptReference = event.target.closest('[data-open-prompt-file]');
+    if (promptReference && isWriting) {
+      const promptFile = document.getElementById(`writing-prompt-${promptReference.dataset.openPromptFile}`);
+      if (promptFile) {
+        promptFile.open = true;
+        revealReportTarget(promptFile).scrollIntoView({ block: 'start', behavior: 'instant' });
+        promptFile.querySelector('summary')?.focus({ preventScroll: true });
+      }
+      return;
+    }
+    const control = event.target.closest('.model-run__copy');
+    if (!control || !reportView.contains(control)) return;
+    const value = transcriptCopyTextById.get(control.dataset.copyId);
+    if (typeof value !== 'string') return;
+
+    const accessibleLabel = control.dataset.copyAccessibleLabel || control.getAttribute('aria-label') || 'Copy exact text';
+    try {
+      await writeClipboardText(value);
+      control.focus({ preventScroll: true });
+      control.setAttribute('aria-label', `${accessibleLabel}. Copied.`);
+      showCopyFeedback(control, 'Copied', 'is-confirmed');
+    } catch {
+      control.focus({ preventScroll: true });
+      control.setAttribute('aria-label', `${accessibleLabel}. Copy failed.`);
+      showCopyFeedback(control, 'Retry', 'is-error');
+    }
+  });
+
+  const initialRoute = parseRoute();
+  render(initialRoute.benchmarkId, { scroll: Boolean(initialRoute.section), section: initialRoute.section, caseId: initialRoute.caseId, trialNumber: initialRoute.trialNumber });
+}());

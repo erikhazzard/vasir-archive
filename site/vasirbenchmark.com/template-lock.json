@@ -1,0 +1,1872 @@
+{
+  "kind": "vasirbenchmark-site-template-lock",
+  "version": "2026-10-10-test-authoring-86432f37049f-sol-architecture-final-e19a3461f213-manual-inspection-d4bdee89dbc3-writing-sol61-writing-refresh-071c75e0c0b9",
+  "status": "accepted",
+  "canonicalPath": "site/vasirbenchmark.com",
+  "acceptance": {
+    "authority": "user",
+    "acceptedAt": "2026-10-13T03:11:14.142Z",
+    "response": "User authorized the complete current Writing skill benchmark run and publication with “great lets do it all”; existing benchmark layout remains accepted.",
+    "basis": "Two additive current-skill reports reuse the existing report and table UI. The only frontend copy change is “three published” to “three established” for the unchanged Writing aggregate. No new layout or human visual review is claimed.",
+    "verdict": "Candidate browser proof passes both new reports at desktop and mobile widths, including every case, exact displayed scores and raw answers, original reviews, closed inspection disclosures, five catalog reports, and the unchanged three-benchmark aggregate.",
+    "criterion": "Publish the complete frozen snapshot under separate report IDs; preserve all established benchmarks and aggregate score bases; retain raw answer, rubric, review and exact delivered skill evidence.",
+    "scope": {
+      "kind": "writing-skill-refresh",
+      "schemaVersion": 1,
+      "benchmarkIds": [
+        "storytelling-core-idea-refresh",
+        "storytelling-mmorpg-narrative"
+      ],
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ]
+    },
+    "verification": {
+      "previousAcceptance": {
+        "path": "reviews/test-authoring/2026-10-10/prior-current/template-lock.json",
+        "bytes": 39988,
+        "sha256": "5117fb8ad38430c66308089c23aa347e749fce0c54ee73ec08b6eba547b4cf81"
+      },
+      "previousData": {
+        "path": "reviews/test-authoring/2026-10-10/prior-current/data.js",
+        "bytes": 996021,
+        "sha256": "18883dec0a57343184c073f4a62233a66d0a673fe6d9e19ca7e2f0e749c2be43"
+      },
+      "previousResponses": {
+        "path": "reviews/test-authoring/2026-10-10/prior-current/responses.js",
+        "bytes": 7050358,
+        "sha256": "c80606a7d60a81c79d2b8ee09a61d578407061eb462ced2c008b227f5a19c6e5"
+      },
+      "previousSelection": {
+        "path": "reviews/test-authoring/2026-10-10/prior-current/publication.json",
+        "bytes": 10389,
+        "sha256": "64de5b7b55e70e4f4d1d895bd55ff6eaac146dcf65e9870eca66d57c341ccb17"
+      },
+      "previousFiles": [
+        {
+          "sourcePath": "app.js",
+          "path": "reviews/test-authoring/2026-10-10/prior-current/app.js",
+          "bytes": 220249,
+          "sha256": "c1c1826889244247ca17c181c7a26d8d61014d85d2c24ec66fef8e4e5f1b9bc5"
+        },
+        {
+          "sourcePath": "benchmark-report.css",
+          "path": "reviews/test-authoring/2026-10-10/prior-current/benchmark-report.css",
+          "bytes": 40542,
+          "sha256": "f80ccbf04b4cb6375182e9b9faf28146d62d87d7490567ffdb8e22b41dd9ec55"
+        },
+        {
+          "sourcePath": "benchmark-report.js",
+          "path": "reviews/test-authoring/2026-10-10/prior-current/benchmark-report.js",
+          "bytes": 154067,
+          "sha256": "92f39754d2013dd4807cd495cfd3032b675b80215b9d8bb741b6cb7d552a313a"
+        },
+        {
+          "sourcePath": "deployment.json",
+          "path": "reviews/test-authoring/2026-10-10/prior-available-coverage/deployment.json",
+          "bytes": 3577,
+          "sha256": "cb3de1995306a55867530a5c251f2a3d20e4d057c47a10e782ebe3cc43136e1e"
+        },
+        {
+          "sourcePath": "style.css",
+          "path": "reviews/test-authoring/2026-10-10/prior-current/style.css",
+          "bytes": 153357,
+          "sha256": "579c5ef001ded84385c21368a957767a2b7efd5a7d52883a41bfd699ade393e9"
+        },
+        {
+          "sourcePath": "backend-testing-browsercheck.mjs",
+          "path": "reviews/test-authoring/2026-10-10/prior-current/backend-testing-browsercheck.mjs",
+          "bytes": 59572,
+          "sha256": "1bf06f44e1b752c0ed511fdbbfd0ffe957418f00f915ca9af09a6894a8d0f046"
+        }
+      ],
+      "selection": {
+        "path": "benchmarks/test-authoring/publication.json",
+        "bytes": 16398,
+        "sha256": "d86eac3ddb942fc980b716c3638bf90e3006513a5a0589df21f884311369b855"
+      },
+      "sourcePins": [
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/full-plan.json",
+          "bytes": 8155,
+          "sha256": "35e8cd86d8ebdf398b9d0246b214bfed64195edf9a4d952a3a15b333c876eeae"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/skill.json",
+          "bytes": 37508,
+          "sha256": "8f4a47844c844e947741d1137e238554a424e9345a21302a77ee75fbe35b095c"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/taste-rubric.json",
+          "bytes": 8684,
+          "sha256": "17b325aee914a513463ec694d3acd1f95392e8e5af5a4b1a71d41f502fbeb328"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/calibration/calibration.json",
+          "bytes": 68777,
+          "sha256": "803b11c2b439f69bfc9af2c4c2caabbd4e2bae5597d07cb0e7c62faaf3672d77"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/generation-summary-full-analysis.json",
+          "bytes": 31742,
+          "sha256": "46655ea5a8834c5f22c899ccb7ea5b75ce2749adb9924a263b2db3be0c0d8dec"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/review-plan.json",
+          "bytes": 7371,
+          "sha256": "ad8e0e0bea4b08c14cfa646dcd1f157ca903bf68a82743216a5fe03dd2f583e8"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/packet.json",
+          "bytes": 364389,
+          "sha256": "ba42f4b77a4119f81a518c843c59cbda892b6599ea2c8aa802fd0494e6d2a753"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/mapping.json",
+          "bytes": 219,
+          "sha256": "8663c3d77acdd7bb7b4f39a7f5b3720410464d1fbcc838382eb4f9c8f1dd789f"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/objective-adjudication.json",
+          "bytes": 30687,
+          "sha256": "ecf4cd5af5e5b19f4f35a17a5dd199d4ad4a2400a365d437e3308f94b4fc56c3"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/review-summary.json",
+          "bytes": 58203,
+          "sha256": "8b0b906ef150f97c2f1a3c851e29792e08bf5465c9dfed3406f17a3846cb453e"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/analysis-policy-full.json",
+          "bytes": 2218,
+          "sha256": "2c76f96c1a975abceaf1c2d1730da2ce72a12e444b4cd3b5628708822e372c89"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/generation-summary-full-strict.json",
+          "bytes": 21785,
+          "sha256": "3c89c78758d0e0c2265931738c507fe5966f4f29f607ba3355ab5e592bbc7dca"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/opus-resume.json",
+          "bytes": 1466,
+          "sha256": "b3f2344fa97a72105f94fb5455c41f6dfbe82bcbd8a17c0e4e35787bc12ff7c3"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/sol-current-continuation.json",
+          "bytes": 1310,
+          "sha256": "700559ecbc1dd2e39fa6a29349a3aba40c59c42cff2e3da9f5444d6760041796"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/detection-correction.json",
+          "bytes": 7019,
+          "sha256": "a79e7760d8bdd65df078496c46f44815e46d496ee07c7ff38c18549b6c15b2ca"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/plan.json",
+          "bytes": 6058,
+          "sha256": "d4525c7ee39597e0ce68c46d73113f1f5a0d25a5ab2fd4092a7b64066a745f77"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only-plan.json",
+          "bytes": 7758,
+          "sha256": "22246c7846c523a00e541d546375bc1ce0e8664e8a4b66ca921fea70226b1f09"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/fixture/manifest.json",
+          "bytes": 2689,
+          "sha256": "45258bb5635afaea66b09750354d4fc5df85e981a4f0c00b428fca6a7bb476f9"
+        },
+        {
+          "path": "benchmarks/backend-testing/run.mjs",
+          "bytes": 55052,
+          "sha256": "e4ab70588845c62fffb424c1e71c92a3a732a1e2d4660fbecb6481d864bdd52a"
+        },
+        {
+          "path": "benchmarks/backend-testing/verify.mjs",
+          "bytes": 30876,
+          "sha256": "aeb6480bea54d9d580e4dd1d9a7263e96ae262efccaca03db2a2dfd09ec38240"
+        },
+        {
+          "path": "benchmarks/backend-testing/fixture.mjs",
+          "bytes": 8892,
+          "sha256": "25b77f1858fcb5b2656c99550602796f89db0c5adcc9177e9127234ef6600164"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-25a30e4488f6/native/result.json",
+          "bytes": 26601,
+          "sha256": "0c9d8641740cdb1da313f97a1feb3126b03cce164c6f2eab3620fbeac88600a4"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-25a30e4488f6/native/launch.json",
+          "bytes": 3570,
+          "sha256": "080ca7f78c1dfe10c3ffb7f21bd205695f40b8fbc5c37db84254c37da6540992"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-25a30e4488f6/analysis/outcome.json",
+          "bytes": 3047,
+          "sha256": "40509675a36937edcdadf4c1286f4268940ad9a190cc8203a392be6989edc838"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-25a30e4488f6/analysis/submission/test/domains/platform/runtime/queue/redis-work-queue__authored.spec.js",
+          "bytes": 24068,
+          "sha256": "e66295e0c72eebf415b62d9efb036c99aa391aa2798c63659520258f9e3c7e82"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-25a30e4488f6/verification/evaluation.json",
+          "bytes": 120677,
+          "sha256": "aae8879b87793dfe67a3ff5f3e53af71485208891dfc4bd01945dda07c102fdb"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-25a30e4488f6/outcome.json",
+          "bytes": 2432,
+          "sha256": "90bb4ef8c64f9e0d751ace0e926d38a13bf9eed8b76a152c07e6f6be476531ab"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-77dd17fd8595/native/result.json",
+          "bytes": 28985,
+          "sha256": "b6097c637e1f55e7203c288996ae469f3c9155346470839c2fb0999b9a9b7edf"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-77dd17fd8595/native/launch.json",
+          "bytes": 3570,
+          "sha256": "721822993ea53ebab35018b242274c4d8a57e874802703a040a27f71fb57aa85"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-77dd17fd8595/analysis/outcome.json",
+          "bytes": 3066,
+          "sha256": "239c3f281f32cffafb82154b5eb60d7c0c651693a7a6101cdd3bc57db66fe4c8"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-77dd17fd8595/analysis/submission/test/domains/platform/runtime/queue/redis-work-queue__authored.spec.js",
+          "bytes": 26416,
+          "sha256": "1f6e9a86d3cb35ee83cd70be3832b21fc6325aa49279bb66868dad4a9aeb1717"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-77dd17fd8595/analysis/verification/evaluation.json",
+          "bytes": 96123,
+          "sha256": "187d72dfa208e21bdf21b5791787b54cb26629bd0925645b53111ee09755200c"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-77dd17fd8595/outcome.json",
+          "bytes": 1919,
+          "sha256": "0c678977df0faefa377c76eb77bf5a94e923024e2bf14902cae57ea2dbd168e5"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-1b88e2a6ada4/native/result.json",
+          "bytes": 26511,
+          "sha256": "339d25709186e45a21c493ba6a171ce23b099c97e83912ba8e802c0d06fd2759"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-1b88e2a6ada4/native/launch.json",
+          "bytes": 3570,
+          "sha256": "d9cf0df8dcaf8825c74e1ebe045ce9b3d0b5b56981c3a2667cc0cfc06266e9cc"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-1b88e2a6ada4/analysis/outcome.json",
+          "bytes": 3051,
+          "sha256": "e1c2b2ecb0ec7fbac0278a466960b6f23d1a408db14347180b9e5fa5b49998b0"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-1b88e2a6ada4/analysis/submission/test/domains/platform/runtime/queue/redis-work-queue__authored.spec.js",
+          "bytes": 24060,
+          "sha256": "0166b2afb065d791c9ddd04cbbad0ff4e85459a5671dc18209c1629fe196d17f"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-1b88e2a6ada4/verification/evaluation.json",
+          "bytes": 147089,
+          "sha256": "318a46b7a79a6b5ac633444ae6a47fdfd203111f081c4089e754edfe0ba54e7d"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-1b88e2a6ada4/outcome.json",
+          "bytes": 2436,
+          "sha256": "a083ed5608f4f7f4e3730c237ecdcf6ae86defee35dcf4a3d4e00a61d3cbecbf"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-c3a81b835076/native/result.json",
+          "bytes": 29253,
+          "sha256": "aeb3ed968b41faa4b7c732965a0c007768f4cee8fbddcb77b24f09bacf97ffe9"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-c3a81b835076/native/launch.json",
+          "bytes": 3570,
+          "sha256": "9928b080a0f4108c18fb5a38431520557ccfcb17b139683c778af6e29648bf84"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-c3a81b835076/analysis/outcome.json",
+          "bytes": 3061,
+          "sha256": "0643ca670a1d2ddf8ac4e1fa9cb088c50e3a6526c94d96a23b9fe652a7a8a5fd"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-c3a81b835076/analysis/submission/test/domains/platform/runtime/queue/redis-work-queue__authored.spec.js",
+          "bytes": 26553,
+          "sha256": "0a7a7e7b06c621fe04bdec47a70214f592b6e4f52ac9eaaeab58e7bf0853f4b3"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-c3a81b835076/analysis/verification/evaluation.json",
+          "bytes": 110673,
+          "sha256": "646244097b3c216ca47306abdb2d5abfdf2f0424cac7694791d4e2c40a53a784"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-c3a81b835076/outcome.json",
+          "bytes": 1914,
+          "sha256": "264ec46a5d8337cda2ac6599c122d6055b287dc070d0b5d0ea8ac9b64a693344"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-f9430bf93b93/native/result.json",
+          "bytes": 28717,
+          "sha256": "980596767d411b104be87fd42741e2c3a1cde06d4d62c101ca088db7e0cfb328"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-f9430bf93b93/native/launch.json",
+          "bytes": 3570,
+          "sha256": "22ae9b3f9d584df063d7ad9c7ecd00ec16e7d4aba26ec43c5cb17da623fde7f6"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-f9430bf93b93/analysis/outcome.json",
+          "bytes": 3059,
+          "sha256": "bcabc731c3e6d6f99c5d7bba024c8583fb445b2e03da3a2f8856db9a5dffb9f6"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-f9430bf93b93/analysis/submission/test/domains/platform/runtime/queue/redis-work-queue__authored.spec.js",
+          "bytes": 26175,
+          "sha256": "5a6b88490c59307a21c3b8452bb146271124241a54002f7917cac9f7e27d3e4e"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-f9430bf93b93/analysis/verification/evaluation.json",
+          "bytes": 129423,
+          "sha256": "fa87a997d6a4b828c7897817704eca048061721d46d478480adf1437f9aa8573"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-f9430bf93b93/outcome.json",
+          "bytes": 1912,
+          "sha256": "a6db78fe37ef92387d6583504b38ab34fc8182b9bc1443084695decd2c3bec66"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-538a61122878/native/result.json",
+          "bytes": 29261,
+          "sha256": "1f5aa282aaa750cb2c92d7d811e6e4b6ae9ae2ce6d72449b5d67de98663d216f"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-538a61122878/native/launch.json",
+          "bytes": 3570,
+          "sha256": "210f983b87bb1b4c086bc538db9a0033e96391e4ba79b126af9c7b755ce65d0f"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-538a61122878/analysis/outcome.json",
+          "bytes": 3065,
+          "sha256": "153bbe57bfab7fc909b4827448a00e9d89cec1b8c541997a6654df032c8a1c6f"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-538a61122878/analysis/submission/test/domains/platform/runtime/queue/redis-work-queue__authored.spec.js",
+          "bytes": 26666,
+          "sha256": "ead94e215d576c7b8edbb92a614ea9b6ec0bdc43e0a455ee77a47781c7fe4fcf"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-538a61122878/analysis/verification/evaluation.json",
+          "bytes": 108496,
+          "sha256": "e39af179a69496ca24d9d96d4a270799353f4840261fcb9759aa224339130f99"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/row-538a61122878/outcome.continued.json",
+          "bytes": 1755,
+          "sha256": "dd2d7ec213c73452fd57824c6cfb17e0de68f0b6d18813f5765a1287c407a07e"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-63fff6ecd1e6/native/result.json",
+          "bytes": 40097,
+          "sha256": "4049848a7b0996b4a9463987ae926a0dce9517e82f6af375be26cb6fecd86e3d"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-63fff6ecd1e6/native/launch.json",
+          "bytes": 2943,
+          "sha256": "695b3f6d3e1eb57a66b467b03db3fe980ca22f9cba7b2ca0dc6ac2a5d4976475"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-63fff6ecd1e6/analysis/outcome.json",
+          "bytes": 3501,
+          "sha256": "b733c75ddebe3b1e479e86a3e8fe4afc915cabb3a1bca92776d5cb2ba527f833"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-63fff6ecd1e6/analysis/submission/test/domains/platform/runtime/queue/redis-work-queue__authored.spec.js",
+          "bytes": 18058,
+          "sha256": "82f0271cd2e6f19287b7d2825c4129a9425bdd56d50e2dbe5dea979347093ec9"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-63fff6ecd1e6/verification/evaluation.json",
+          "bytes": 100610,
+          "sha256": "78212e1e7ccc67919a840951e95ee2adbe682bc8846c76ff47bff15e4fc3c6db"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-63fff6ecd1e6/outcome.json",
+          "bytes": 2869,
+          "sha256": "5b92803c3fbeb4b3b528908a8cc24a7be5291109697f681af34cec920b77e7b8"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-59076bbf5dd7/native/result.json",
+          "bytes": 53758,
+          "sha256": "6d5b12070e363d4faf6d723dd41ff7b33f49d28c8e5193aeb5c6c49225db064b"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-59076bbf5dd7/native/launch.json",
+          "bytes": 2943,
+          "sha256": "ca30bb1e8ae23f5be0eda45da535033d70d0058b5b18cbbe9b5063cae273a0b9"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-59076bbf5dd7/analysis/outcome.json",
+          "bytes": 3529,
+          "sha256": "f156de8e9ba340df919e4cd28686066c3d4053f3229879648aaf28a00a5da6e2"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-59076bbf5dd7/analysis/submission/test/domains/platform/runtime/queue/redis-work-queue__authored.spec.js",
+          "bytes": 24887,
+          "sha256": "b717dab9e727934bba01ee39b6273c12337f6b3edf4674d509ae945b89a5d26f"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-59076bbf5dd7/analysis/verification/evaluation.json",
+          "bytes": 83517,
+          "sha256": "9b185930f7a4d3675cb4039dad062b57e8931848ecbb69305f6e4ebcb037e175"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/opus-resume/row-59076bbf5dd7/outcome.json",
+          "bytes": 2202,
+          "sha256": "f183619ef14f76cc62245f6dd5251479cd2f94030d6f42f463e337ca695b4769"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/judge-1/result.json",
+          "bytes": 21820,
+          "sha256": "a42fae4ac8b4e3bff521c26fe088f5ba3eadfee2c77da6b02becf9f84ddf840e"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/judge-1/launch.json",
+          "bytes": 3535,
+          "sha256": "b444e91fe2d7ef6bf2c35527efefa4a3096ec0a5170558ac238262c57566ba21"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/judge-1/validated.json",
+          "bytes": 25972,
+          "sha256": "fbc1761314adb2db10ea732d985d996e67a53993d4ec732efed46c5add55be10"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/judge-2/result.json",
+          "bytes": 43215,
+          "sha256": "35116bea58b16e6b923273052941fb12d7e17ba8bd7b64aca3b68c2353eb5718"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/judge-2/launch.json",
+          "bytes": 4332,
+          "sha256": "9d716b9913eafd2a1d926d0d99b8218f550a1a9a7ba58d75b06cb3f7f48553da"
+        },
+        {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/codex-only/judge-2/validated.json",
+          "bytes": 24821,
+          "sha256": "aeb5e3007a68a4250fe3c7fd150977f98bd1c3693bb31bc1050a32a533ca5d4a"
+        }
+      ],
+      "generatedFiles": [
+        {
+          "path": "data.js",
+          "bytes": 1325352,
+          "sha256": "9c389b27b93e006a4f6353c0b2229461477d25152bb496c00939998eb77fa7e7"
+        },
+        {
+          "path": "responses.js",
+          "bytes": 7347249,
+          "sha256": "bd493f1f7fa1d9b61f47903e1133a1b463bef023feb2cfe0931ae5375341904d"
+        },
+        {
+          "path": "writing-data.js",
+          "bytes": 2241856,
+          "sha256": "fdef2369d61cf7ba4efb3d66ba4eab891a40b8af9e9010877a83e16e6d84d581"
+        },
+        {
+          "path": "writing-responses.js",
+          "bytes": 5055227,
+          "sha256": "ab7fb41d3ae2b2f19d5f6ab4ca85237ca46e7ded5aa798cf22306f29712fb4b6"
+        },
+        {
+          "path": "writing-creation-responses.js",
+          "bytes": 6728396,
+          "sha256": "1043ad0376c9a68dd819e86a14c560fc169a91f3f31eef8c248a7ee4b9bd74ee"
+        },
+        {
+          "path": "writing-twists-responses.js",
+          "bytes": 1726774,
+          "sha256": "f6492895ce5d0737ddeb9f505b02e1d26ffeeceb055c6f245e70c500bb91ec5b"
+        },
+        {
+          "path": "writing-dungeon-master-responses.js",
+          "bytes": 104,
+          "sha256": "3192148f7e1877e3f20f1f67b17764e964d6599b30b8221b0578167e7094faa4"
+        }
+      ],
+      "candidate": {
+        "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc347c77ca15e1c124aba8cd26524a485c5592054cb3ea9d5583123.json",
+        "bytes": 400268,
+        "sha256": "78a540a48c4ba1f60401ec155e9872b808ae3cfcef6d1bf953584e6c7b6bc2fd"
+      },
+      "browserHarness": {
+        "path": "backend-testing-browsercheck.mjs",
+        "bytes": 131683,
+        "sha256": "3ab1534ef59ce2b10202b04823be3dcbd145c1ca396eb289f711edf3d3ce7e1e"
+      },
+      "browserProofs": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/backend-testing-browsercheck.json",
+          "bytes": 156060,
+          "sha256": "23f79e6487439ea15e4a8f6cdeede0c607dd9da0e9248c955a35a1e89179bf26"
+        },
+        {
+          "width": 820,
+          "height": 1000,
+          "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/backend-testing-browsercheck.json",
+          "bytes": 155926,
+          "sha256": "43d9ecf88902a0f51a5580ddfcb5c71ba91c57a9fb0d119aecc4bc93a404ab8a"
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/backend-testing-browsercheck.json",
+          "bytes": 155870,
+          "sha256": "bde196838d783d373d1ac5c88036bca602476c96c2ff4262afb437ced6bb2d7b"
+        }
+      ],
+      "visualReview": {
+        "authority": "agent",
+        "capturePaths": [
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/testing-ledger-track-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/backend-testing-ledger-chart-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-ledger-chart-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-engineering-ledger-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-combined-leaderboard-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-default-ranking-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-default-selected-url-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-sol-main-ranking-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-score-breakdown-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-available-resource-comparison-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-resource-unavailable-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-overview-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-detection-method-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-rubric-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-test-files-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-score-calculation-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-fault-evidence-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-dimension-profile-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-review-reasons-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/overall-combined-engineering-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/overall-sol-available-profile-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/writing-sol-complete-scores-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/writing-sol-storytelling-core-idea-answers-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/writing-sol-storytelling-plot-twists-answers-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/writing-sol-storytelling-magic-discovery-answers-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/overall-to-engineering-sol-coverage-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/backend-testing-hyper-scale-chat-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-hyper-scale-chat-row-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-hyper-scale-chat-answer-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-hyper-scale-chat-judges-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-personalized-home-feed-row-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-personalized-home-feed-answer-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-personalized-home-feed-judges-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-device-telemetry-row-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-device-telemetry-answer-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-device-telemetry-judges-1440.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/testing-ledger-track-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/backend-testing-ledger-chart-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-ledger-chart-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-engineering-ledger-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-combined-leaderboard-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-default-ranking-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-default-selected-url-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-sol-main-ranking-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-score-breakdown-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-available-resource-comparison-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-resource-unavailable-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-overview-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-detection-method-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-rubric-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-test-files-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-score-calculation-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-fault-evidence-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-dimension-profile-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-review-reasons-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/overall-combined-engineering-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/overall-sol-available-profile-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/writing-sol-complete-scores-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/writing-sol-storytelling-core-idea-answers-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/writing-sol-storytelling-plot-twists-answers-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/writing-sol-storytelling-magic-discovery-answers-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/overall-to-engineering-sol-coverage-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/backend-testing-hyper-scale-chat-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-hyper-scale-chat-row-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-hyper-scale-chat-answer-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-hyper-scale-chat-judges-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-personalized-home-feed-row-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-personalized-home-feed-answer-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-personalized-home-feed-judges-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-device-telemetry-row-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-device-telemetry-answer-390.png",
+          "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-device-telemetry-judges-390.png"
+        ],
+        "verdict": "Existing Writing tables show Sol complete under all three original task bases; exact answers and reviews are reachable from its Overall Writing segment. Overall shows 8/9 and the actual Engineering/Writing weights. Engineering retains every score and starts without a model-inspection strip; native manual disclosures, copy, routing and responsive checks pass."
+      },
+      "aggregateBaseline": {
+        "data": {
+          "path": "reviews/test-authoring/2026-10-10/prior-sol-architecture-final/data.js",
+          "bytes": 1316154,
+          "sha256": "0da8ea2992046e79e312c436376180d9f183c55118e0ba79d6c678501fc937ec"
+        },
+        "responses": {
+          "path": "reviews/test-authoring/2026-10-10/prior-sol-architecture-final/responses.js",
+          "bytes": 7395428,
+          "sha256": "f741af0da1aa97701f43dfa6d1ebefa5a9c2c8d76d39624690b2a8f4f6b6626a"
+        },
+        "selection": {
+          "path": "site/vasirbenchmark.com/reviews/test-authoring/2026-10-10/prior-sol-architecture-final/publication.json",
+          "bytes": 16398,
+          "sha256": "d86eac3ddb942fc980b716c3638bf90e3006513a5a0589df21f884311369b855"
+        },
+        "backendSelection": {
+          "path": "site/vasirbenchmark.com/reviews/test-authoring/2026-10-10/prior-sol-architecture-final/backend-publication.json",
+          "bytes": 10389,
+          "sha256": "64de5b7b55e70e4f4d1d895bd55ff6eaac146dcf65e9870eca66d57c341ccb17"
+        },
+        "acceptance": {
+          "path": "reviews/test-authoring/2026-10-10/prior-sol-architecture-final/template-lock.json",
+          "bytes": 66352,
+          "sha256": "dfaf1959d91febf7fa3024900c17b8dbdb46121805563a1141b4a0c98dc289cd"
+        }
+      },
+      "landingBudget": {
+        "previousLimit": 320000,
+        "currentLimit": 344000,
+        "sourceMeasuredCompressedLandingBytes": 335327,
+        "previousReleaseCompressedLandingBytes": 312913,
+        "reason": "Restoring all 53 Engineering and 56 Overall settings adds measured aggregate projections while preserving native task evidence. Exact duplicate serialization was removed; only the compressed landing allowance changes, with approximately 8.6 KiB headroom.",
+        "measuredCompressedLandingBytes": 336399,
+        "headroomBytes": 8603,
+        "before": {
+          "path": "reviews/test-authoring/2026-10-10/prior-available-coverage/deployment.json",
+          "bytes": 3577,
+          "sha256": "cb3de1995306a55867530a5c251f2a3d20e4d057c47a10e782ebe3cc43136e1e"
+        },
+        "after": {
+          "path": "deployment.json",
+          "bytes": 3577,
+          "sha256": "30c7ee7f40776733359d37e735159b089d0291956d7f951281753da4b48686ab"
+        }
+      },
+      "architectureAppend": {
+        "configurationId": "codex:gpt-6.1-sol@xhigh",
+        "benchmarkIds": [
+          "hyper-scale-chat",
+          "personalized-home-feed",
+          "device-telemetry"
+        ],
+        "selection": {
+          "path": "benchmarks/public-results.json",
+          "bytes": 1086,
+          "sha256": "911949029032eb0d94b8c7c3e79a37ad2b5c396a85d9af5bfb3658029a425e04"
+        },
+        "previousSelection": {
+          "path": "reviews/test-authoring/2026-10-10/prior-sol-architecture-final/public-results.json",
+          "bytes": 1943,
+          "sha256": "cff84665c4b112d4457169f5ee96c7c3cc712c229b4292d68b9d62c1effb21ee"
+        },
+        "plan": {
+          "path": ".agents/vasir-evals/architecture-sol-6.1-xhigh/round-2026-10-11/plan.json",
+          "bytes": 11976,
+          "sha256": "32c4d1fc5169bc3cfe68340b8f69c859009810a8a91285f142ac3293f8c731c6"
+        }
+      },
+      "manualInspection": {
+        "previousAcceptance": {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/manual-inspection/prior/template-lock.json",
+          "bytes": 65865,
+          "sha256": "4aa4d8237ff4d628c734893a593f32184ea1446b18cde62a21d7d530b01e35aa"
+        },
+        "data": {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/manual-inspection/prior/data.js",
+          "bytes": 1320878,
+          "sha256": "6f0f550219f76ee9d6bf2a2e78c71f52126362f18719089f26684b626218f3a5"
+        },
+        "responses": {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/manual-inspection/prior/responses.js",
+          "bytes": 7347249,
+          "sha256": "bd493f1f7fa1d9b61f47903e1133a1b463bef023feb2cfe0931ae5375341904d"
+        },
+        "selection": {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/manual-inspection/prior/public-results.json",
+          "bytes": 1086,
+          "sha256": "911949029032eb0d94b8c7c3e79a37ad2b5c396a85d9af5bfb3658029a425e04"
+        }
+      },
+      "writingAppend": {
+        "configurationId": "codex:gpt-6.1-sol@xhigh",
+        "benchmarkIds": [
+          "storytelling-core-idea",
+          "storytelling-plot-twists",
+          "storytelling-magic-discovery"
+        ],
+        "baseline": {
+          "acceptance": {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/template-lock.json",
+            "bytes": 68984,
+            "sha256": "e2d2ccf7e3c07ab8be9f7d08867b0c7e2b7d127128086b4d58c1f7595efcf981"
+          },
+          "data": {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/data.js",
+            "bytes": 1320878,
+            "sha256": "6f0f550219f76ee9d6bf2a2e78c71f52126362f18719089f26684b626218f3a5"
+          },
+          "responses": {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/responses.js",
+            "bytes": 7347249,
+            "sha256": "bd493f1f7fa1d9b61f47903e1133a1b463bef023feb2cfe0931ae5375341904d"
+          },
+          "writingData": {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/writing-data.js",
+            "bytes": 2177044,
+            "sha256": "48b50fd439056adfe4fcf48b76d1e890bcaf2dd2831ae926546018112f41f77b"
+          },
+          "writingResponses": {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/writing-responses.js",
+            "bytes": 4967761,
+            "sha256": "4c35ae4ca7dd70a09e09d01062046bda6a5f369dedb55defe956441cd555a919"
+          },
+          "twistsResponses": {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/writing-twists-responses.js",
+            "bytes": 1672116,
+            "sha256": "df483b62adc636f031eca013d72c3eceb534cd6135b72833d0a46ba3d943d6f3"
+          },
+          "creationResponses": {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/writing-creation-responses.js",
+            "bytes": 6561951,
+            "sha256": "5ecca79e69f9ff8123c7f187d61736c7cbd0485d555d7f2a06dbca5ab9685b7e"
+          },
+          "dungeonResponses": {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/writing-dungeon-master-responses.js",
+            "bytes": 104,
+            "sha256": "3192148f7e1877e3f20f1f67b17764e964d6599b30b8221b0578167e7094faa4"
+          },
+          "architectureSelection": {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/public-results.json",
+            "bytes": 1086,
+            "sha256": "911949029032eb0d94b8c7c3e79a37ad2b5c396a85d9af5bfb3658029a425e04"
+          }
+        },
+        "parentSourcePins": [
+          {
+            "path": ".agents/vasir-evals/storytelling-core-idea/publication-snapshots/bdf31f6ba88a720057da05d31597dd80a35606201dff7c73a6a741a4cefe4280/run.json",
+            "bytes": 60128493,
+            "sha256": "bdf31f6ba88a720057da05d31597dd80a35606201dff7c73a6a741a4cefe4280"
+          },
+          {
+            "path": ".agents/vasir-evals/storytelling-core-idea/publication-snapshots/bdf31f6ba88a720057da05d31597dd80a35606201dff7c73a6a741a4cefe4280/skill-snapshot.json",
+            "bytes": 453845,
+            "sha256": "a4db1b5ea3ae79e9655be2ab793fa71e153571359a88d098a383bf94cd4667e5"
+          },
+          {
+            "path": ".agents/vasir-evals/storytelling-plot-twists-paired-v2/publication-snapshots/f50472e807d05802ee2f62e1e29d4aef425c3b1c776d253e9e4fa7ba7fb048e7/snapshot.json",
+            "bytes": 65441159,
+            "sha256": "f50472e807d05802ee2f62e1e29d4aef425c3b1c776d253e9e4fa7ba7fb048e7"
+          },
+          {
+            "path": ".agents/vasir-evals/storytelling-magic-discovery/publication-snapshots/48fadf69fb9904e198ebfc61d892db9e6f4a8ea2e36c35c2ad72c8e7853b7168/run.json",
+            "bytes": 2306274,
+            "sha256": "233db3f8cf5c4db8ddd6432ff7323d7be567a46654213f9a00a148e04329a18f"
+          },
+          {
+            "path": ".agents/vasir-evals/storytelling-magic-discovery/publication-snapshots/48fadf69fb9904e198ebfc61d892db9e6f4a8ea2e36c35c2ad72c8e7853b7168/skill-snapshot.json",
+            "bytes": 470201,
+            "sha256": "bd95674e5a5dfd99b4b47571bf08742f7c736bd1465d21ba8357bc42638f07e4"
+          },
+          {
+            "path": ".agents/vasir-evals/storytelling-magic-discovery/publication-snapshots/48fadf69fb9904e198ebfc61d892db9e6f4a8ea2e36c35c2ad72c8e7853b7168/creation-judging.json",
+            "bytes": 54200034,
+            "sha256": "927abaeb682628de190bc609bd999c23a5be33e260ce3a989b10283a2b49f138"
+          },
+          {
+            "path": ".agents/vasir-evals/storytelling-magic-discovery/publication-snapshots/48fadf69fb9904e198ebfc61d892db9e6f4a8ea2e36c35c2ad72c8e7853b7168/creation-judge-context.json",
+            "bytes": 316721,
+            "sha256": "ecbc9f56410245065b6d160c0a6f411ed2a5dcafab13a805efd1950b43d3e9fe"
+          }
+        ],
+        "previousSelections": [
+          {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/storytelling-core-idea-publication.json",
+            "bytes": 638,
+            "sha256": "6f7e93ef1c4154fa2c4c6c1857cee0ee3044b498eb03c380ff28a288e91d7904"
+          },
+          {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/storytelling-plot-twists-publication.json",
+            "bytes": 403,
+            "sha256": "5b1c9286bafc2455594cfc6608887781d24f22dc5778a48dc65893ff025db482"
+          },
+          {
+            "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/prior/storytelling-magic-discovery-publication.json",
+            "bytes": 1217,
+            "sha256": "3dc61c105531ed538f0f72a8c74b563bf48c7cfe3b667dd5c9720b8df28739ee"
+          }
+        ],
+        "selections": [
+          {
+            "path": "benchmarks/storytelling-core-idea/publication.json",
+            "bytes": 638,
+            "sha256": "31bf36e9d58c88165e66e2af8fa3b705fb37e4fcacebe682ce4f0c57bf8ba972"
+          },
+          {
+            "path": "benchmarks/storytelling-plot-twists/publication.json",
+            "bytes": 403,
+            "sha256": "8b8a92fc01f66dec74962cb82171e468eeedbcf3cf4b345769affd65d988aa0a"
+          },
+          {
+            "path": "benchmarks/storytelling-magic-discovery/publication.json",
+            "bytes": 1217,
+            "sha256": "bb3b377c18e9de360f43d064569705a17cb97dc8cde8883164b1270167600f96"
+          }
+        ],
+        "handoffs": [
+          {
+            "path": ".agents/vasir-evals/storytelling-core-idea/core-idea-sol61-xhigh-2026-10-12-merged/merge-report.json",
+            "bytes": 5799,
+            "sha256": "3a12aa8d5249589cb76114950bdf04b226e4bc9322fd44ceb37479a6da973a5a"
+          },
+          {
+            "path": ".agents/vasir-evals/storytelling-plot-twists-paired-v2/sol-6-1-xhigh-20261012/handoff.json",
+            "bytes": 5235,
+            "sha256": "9ea5f033d78fb580620b658b5a47e60f01186a41bb52c91d86c42399fc4d99cb"
+          },
+          {
+            "path": ".agents/vasir-evals/storytelling-magic-discovery/gpt61-sol-xhigh-append-20261012/handoff.json",
+            "bytes": 9427,
+            "sha256": "83b52d7fb13e86c0c9af2879f0395e83bdc6e19a0099946f1fde9a27c64871d0"
+          }
+        ],
+        "taskUsage": {
+          "path": ".agents/vasir-evals/test-authoring/prepared-round/publication/writing-sol61/task-usage.json",
+          "bytes": 4108,
+          "sha256": "2757f0d5b78607f2253ddf18b2ff4a4dbe2479096ad23eee79c8fc34d8da45a2"
+        }
+      },
+      "writingRefresh": {
+        "previousAcceptance": {
+          "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/prior-template-lock.json",
+          "bytes": 82402,
+          "sha256": "fabad84cf33099474fe81386a70c216673c7a03ecae58d9f91cb66a3f9b88f84"
+        },
+        "previousApp": {
+          "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/prior-app.js",
+          "bytes": 232357,
+          "sha256": "3afad8f1e7f8e01505ea203bcf123c89b34e2d9b0a42591d2085c8f7ae5e4a74"
+        },
+        "selection": {
+          "path": "benchmarks/storytelling-skill-refresh/publication.json",
+          "bytes": 341,
+          "sha256": "9e47d11c52537503bb1ce0ad029a3cd8922607d7cd166ae874633a14e7eb977e"
+        },
+        "snapshot": {
+          "path": ".agents/vasir-evals/storytelling-skill-refresh/publication-snapshots/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/snapshot.json",
+          "sha256": "071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e"
+        },
+        "browserHarness": {
+          "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/browsercheck.mjs",
+          "bytes": 10510,
+          "sha256": "f21bafe21d7f874e56d46602c58fde8a1e7a29be1a6e45320083849bb96231fb"
+        },
+        "candidate": {
+          "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/browser-evidence.json",
+          "bytes": 9879,
+          "sha256": "42ec8153eec2552963113d54968f33aaf25e79ea6e000d045cb7ec88873570ba"
+        },
+        "checks": 14,
+        "captures": 10,
+        "visualReview": {
+          "reviewer": "agent",
+          "status": "passed",
+          "scope": "Existing shared table, normal disclosure behavior, typography and overflow reviewed on desktop and mobile captures."
+        },
+        "frontendChange": "Single-word aggregate copy correction; previous accepted app SHA256 is recovered exactly by reverting that word."
+      }
+    }
+  },
+  "deployment": {
+    "status": "active",
+    "targetDomain": "vasirbenchmark.com",
+    "awsAccountAlias": "faedark",
+    "topology": {
+      "owner": "CloudFormation",
+      "stack": "vasirbenchmark-production",
+      "origin": "private-s3-oac",
+      "edge": "cloudfront-release-router",
+      "dns": "route53-apex-alias"
+    }
+  },
+  "claimBoundary": "Rankings compare available paired evidence and can cover different task subsets. Coverage is displayed beside each score and in its calculation. Missing tasks are not zeroed or imputed. Original task scores and fully covered aggregate scores are unchanged. Original source calibration and Writing limitations remain; these development comparisons do not establish population performance or confidence intervals. Analysis limit expanded uniformly from 24 to 64 KiB after authoring began; original author prompts, strict outcomes and exact source remain unchanged. Candidate evidence does not establish live delivery; live byte and browser checks follow publication. The two current Writing reports are development comparisons over three Core Idea cases and one MMORPG prompt for two configurations; they do not enter the established three-benchmark Writing or Overall score basis.",
+  "files": [
+    {
+      "path": "app.js",
+      "bytes": 232359,
+      "sha256": "428598c27593eaec6d23342f80ac000416b4dcb6b53129f9b0ad502d37793525"
+    },
+    {
+      "path": "assets/d3.v7.min.js",
+      "bytes": 279706,
+      "sha256": "f2094bbf6141b359722c4fe454eb6c4b0f0e42cc10cc7af921fc158fceb86539"
+    },
+    {
+      "path": "assets/kanit-latin-900-normal.woff2",
+      "bytes": 19216,
+      "sha256": "f001e4c46c00f65965198ba7547aadd375aa6222feff177c57c943d3bf6794d3"
+    },
+    {
+      "path": "benchmark-report.css",
+      "bytes": 41240,
+      "sha256": "b8ebd4451e7ec18ca4a3769423a8e3b7042f343e44ee2eedb99572ef92b06854"
+    },
+    {
+      "path": "benchmark-report.html",
+      "bytes": 2210,
+      "sha256": "060a4600dbd61ad7527163056cb3a4be8a4d9b3e3de7400e3787dbbfa7ce0136"
+    },
+    {
+      "path": "benchmark-report.js",
+      "bytes": 165098,
+      "sha256": "8a40cb0f8813114df3f0097c64426982f18ce79cef143aa4fbe6251a1de0c851"
+    },
+    {
+      "path": "capture.mjs",
+      "bytes": 195051,
+      "sha256": "f3776b49920fdd74b816d689d514373ad90a269c11260290604b34e30929991e"
+    },
+    {
+      "path": "capture.sh",
+      "bytes": 4994,
+      "sha256": "4cb2289a907a7d4fee4c541c4c8ae0268582b35797a2d3f1edd4e6201259eef0"
+    },
+    {
+      "path": "deployment.json",
+      "bytes": 3577,
+      "sha256": "30c7ee7f40776733359d37e735159b089d0291956d7f951281753da4b48686ab"
+    },
+    {
+      "path": "games-browsercheck.mjs",
+      "bytes": 63737,
+      "sha256": "12a0d4c31422ccdd2186ec2aa7e9424113938ccd064330e8ac35e8366f02a5e1"
+    },
+    {
+      "path": "games.css",
+      "bytes": 21947,
+      "sha256": "271ad9afb1e8f00205c10dbb768418267f6335e64649bc5610c42217066e0e29"
+    },
+    {
+      "path": "games.html",
+      "bytes": 3085,
+      "sha256": "eed02c026dc2cf1aa63f1a3433bf38926ae33cef6b3bbc6c3171dee80cf7f5b0"
+    },
+    {
+      "path": "games.js",
+      "bytes": 34825,
+      "sha256": "4b9d7a536c2d586501ff40cd44798579806eb2886e34b4766b5a1032bb8c712c"
+    },
+    {
+      "path": "index.html",
+      "bytes": 2284,
+      "sha256": "e44c9ad3a04794f1b6d29527b432e2e35297f59f63ea194b6e7fe2e27c4c6a60"
+    },
+    {
+      "path": "infra/production.yml",
+      "bytes": 13312,
+      "sha256": "fad9f5ae900f944e0d0602095cc7053fe4018aa763cabb3e95e4d261bd9fff59"
+    },
+    {
+      "path": "style.css",
+      "bytes": 154656,
+      "sha256": "fe53ce7f646371681195f0e986eaa5cba59cead7224a935836b0d9bf8e16616e"
+    },
+    {
+      "path": "writing-browsercheck.mjs",
+      "bytes": 208710,
+      "sha256": "f7143281d59ab9f55713ad9b4ed2408285572e300537f7f0c7e51876464839ea"
+    },
+    {
+      "path": "writing-compact-browser-evidence.mjs",
+      "role": "compact-writing-evidence-harness",
+      "bytes": 14609,
+      "sha256": "38962d403c5ee9b1c862132e7ec636550d4ae5d1a3fa720d55504c7dcd1fcf47"
+    },
+    {
+      "path": "backend-testing-browsercheck.mjs",
+      "bytes": 131683,
+      "sha256": "3ab1534ef59ce2b10202b04823be3dcbd145c1ca396eb289f711edf3d3ce7e1e"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/prior-template-lock.json",
+      "bytes": 82402,
+      "sha256": "fabad84cf33099474fe81386a70c216673c7a03ecae58d9f91cb66a3f9b88f84"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/prior-app.js",
+      "bytes": 232357,
+      "sha256": "3afad8f1e7f8e01505ea203bcf123c89b34e2d9b0a42591d2085c8f7ae5e4a74"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/browsercheck.mjs",
+      "bytes": 10510,
+      "sha256": "f21bafe21d7f874e56d46602c58fde8a1e7a29be1a6e45320083849bb96231fb"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/browser-evidence.json",
+      "bytes": 9879,
+      "sha256": "42ec8153eec2552963113d54968f33aaf25e79ea6e000d045cb7ec88873570ba"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/publication.json",
+      "bytes": 341,
+      "sha256": "9e47d11c52537503bb1ce0ad029a3cd8922607d7cd166ae874633a14e7eb977e"
+    }
+  ],
+  "captures": [
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/testing-ledger-track-1440.png",
+      "bytes": 111446,
+      "sha256": "9c050ad58e6381d929bed63ef03a756b564a1584b967ecee0abf7c14a18c55ae",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/backend-testing-ledger-chart-1440.png",
+      "bytes": 113690,
+      "sha256": "ec880a07b3c72552ced9824ec3064be4741a4c99705574987460c1083c534f7c",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-ledger-chart-1440.png",
+      "bytes": 113690,
+      "sha256": "ec880a07b3c72552ced9824ec3064be4741a4c99705574987460c1083c534f7c",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-engineering-ledger-1440.png",
+      "bytes": 113690,
+      "sha256": "ec880a07b3c72552ced9824ec3064be4741a4c99705574987460c1083c534f7c",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-combined-leaderboard-1440.png",
+      "bytes": 154541,
+      "sha256": "5c2889fe8317cfb0c1d955ec54b171c870a23e67fd95a16b0cc94dd314086391",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-default-ranking-1440.png",
+      "bytes": 134224,
+      "sha256": "ae7ac8b215463e8e0d98d0ce53ed986205c99f9d13ca64d6e4f3ff5e3a5955a9",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-default-selected-url-1440.png",
+      "bytes": 151506,
+      "sha256": "6f463401de3968e2206c441e2f3ed92503a8218c7048c91d45d53f6336a1a2c4",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-sol-main-ranking-1440.png",
+      "bytes": 149941,
+      "sha256": "e0d0a4f3fd1d21655d79c9feaa0d3a9e20ffa3e3fe3d1f2f50e23d42c9aeb1f5",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-score-breakdown-1440.png",
+      "bytes": 129461,
+      "sha256": "25d3329152a73d43155b177bd66026f559d9fe0f36334df5c0e439628e23bcb5",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-available-resource-comparison-1440.png",
+      "bytes": 180725,
+      "sha256": "c79802fdbcaa4c0e22e09da429a74bcde61027925ff2f9ed70b808025b20ec27",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/engineering-resource-unavailable-1440.png",
+      "bytes": 130175,
+      "sha256": "c86834fd35068cb49c28cfeb3b8cb973b5ad24845f7f2f73b3ccfa3df3f11cc7",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-overview-1440.png",
+      "bytes": 87843,
+      "sha256": "20212235d6caa55fc13ae511e84c85da95900f6f280b9b3dc5b954eb0612d561",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-detection-method-1440.png",
+      "bytes": 120341,
+      "sha256": "1f860f3c9a3e5b304250e2f524e159516539ea5865676b2751ab5118210047d0",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-rubric-1440.png",
+      "bytes": 173298,
+      "sha256": "26abe672e2fb753e3917acd0683221b9b50ce25bb50bb2ec22ecfb55ebb80663",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-test-files-1440.png",
+      "bytes": 163161,
+      "sha256": "c17a7ec7ee90b5c2c2ab9dd00c08ac3dc8e4fca172832c101995e4c1085dfd8c",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-score-calculation-1440.png",
+      "bytes": 147836,
+      "sha256": "8fa97e449a180dbc20df99d670f709641512408288cc646d2783bb4671d28c27",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-fault-evidence-1440.png",
+      "bytes": 185845,
+      "sha256": "536c45cee783b3011d0b3b0fe44a608d04652463e21c785f1d26e2667b8513f8",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-dimension-profile-1440.png",
+      "bytes": 94294,
+      "sha256": "5dbee9faf523c534c84209622ba1f9267d21c43ddd5945b82d84d499d15fc244",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/test-authoring-review-reasons-1440.png",
+      "bytes": 117072,
+      "sha256": "425c3b09f1f581b414479c01f1c0a7e07a4aa5cbfec9063089796c5c5a9063cb",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/overall-combined-engineering-1440.png",
+      "bytes": 162196,
+      "sha256": "4dded1351d6794105cdcd5c29f9546540a6dcb0bf5dd4da6629ab2289039efe4",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/overall-sol-available-profile-1440.png",
+      "bytes": 166207,
+      "sha256": "f2cdd93b7cad0953f19628f14e96f9563889edd55a75a77a10ac848120fd4164",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/writing-sol-complete-scores-1440.png",
+      "bytes": 103180,
+      "sha256": "54d0326f69d96364ddcb053a0d8152924fefc954ac37763a775d8d19e0cf40d8",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/writing-sol-storytelling-core-idea-answers-1440.png",
+      "bytes": 138200,
+      "sha256": "849288cb1948bf681f8726aa71173fbe45d6ac14a61480f65b994bc668829e67",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/writing-sol-storytelling-plot-twists-answers-1440.png",
+      "bytes": 168693,
+      "sha256": "b7f532caeb40f1be79502362ba15ff3521ad5f6a43b9456e340cb72a79150038",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/writing-sol-storytelling-magic-discovery-answers-1440.png",
+      "bytes": 160608,
+      "sha256": "673f2a3ffdecd6fa36fac40577e54564b4c7603445b44fa07e81e22a6c6f7ac6",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/overall-to-engineering-sol-coverage-1440.png",
+      "bytes": 149956,
+      "sha256": "502f57af790b5be1f3a92d3748ac395c1d7125f7ee6fe3933cd0ffcce7d46dfe",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/backend-testing-hyper-scale-chat-1440.png",
+      "bytes": 144879,
+      "sha256": "f5528279faae934989ac4b2efa440c3e1cbea75a09abcd53f75d9ecdc0be1b5e",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-hyper-scale-chat-row-1440.png",
+      "bytes": 293904,
+      "sha256": "4a8d9eaa019454aabe091c6f6d575465bc9131988797047db38cb180f7dbf91e",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-hyper-scale-chat-answer-1440.png",
+      "bytes": 300842,
+      "sha256": "1b4b0e8f7822cd2ee6c49dbda11d65eb89b532ea3739351ab09915b71d092a78",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-hyper-scale-chat-judges-1440.png",
+      "bytes": 256441,
+      "sha256": "e477ed95a26c09e3cca11027ff1d43a3eae4df9570665254b390bf1b83510b6d",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-personalized-home-feed-row-1440.png",
+      "bytes": 299263,
+      "sha256": "c4e9851da782de0c1e3b462f5dcb415ed794daa7879cc2af48c04ae28d79d9de",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-personalized-home-feed-answer-1440.png",
+      "bytes": 405348,
+      "sha256": "a401a10a487bcc398b2b93783762ddb0915891e26d33aacc6dad32eb471d93d0",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-personalized-home-feed-judges-1440.png",
+      "bytes": 276290,
+      "sha256": "2058bc5f013b0449a41ae4574597604b344239c09bc9a5fc87d34c963e6dda49",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-device-telemetry-row-1440.png",
+      "bytes": 297478,
+      "sha256": "681f7acef73a998bb3b6306eb422ffd93e5ea95a5355dcfb775af544517d27fe",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-device-telemetry-answer-1440.png",
+      "bytes": 341742,
+      "sha256": "d0c6ced2e225d8200fbf41db6908446bd4521e3fcdbc4ee6d8e4e48e5a59bc17",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/1440/sol-architecture-device-telemetry-judges-1440.png",
+      "bytes": 260537,
+      "sha256": "9085e9350eb578aa2f244546970cab2e2e9ebc783f603158960efbe2eb36a705",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/testing-ledger-track-820.png",
+      "bytes": 87843,
+      "sha256": "3a7dc6a64c915c649abd4ef83fa15ad0b8ba2d4192801d81e723e9147a4d13db",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/backend-testing-ledger-chart-820.png",
+      "bytes": 84744,
+      "sha256": "92d722214fa5556e20d83d3f6123aad0c126709319459f159f0efeb3e33c2f6c",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-ledger-chart-820.png",
+      "bytes": 80040,
+      "sha256": "9035d78422fb5bcd6dfc73392da698e057c68b4fd3504581c95bab000458d442",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-engineering-ledger-820.png",
+      "bytes": 84256,
+      "sha256": "db8e36f0a4c81ff639056ac3858dc3fa11f8d89c70d287237a7cd3e63cd92ae9",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/engineering-combined-leaderboard-820.png",
+      "bytes": 99920,
+      "sha256": "16751533a0fc29121c50838d11945bb9f7f372495b3dcb2deb716b56ce122110",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/engineering-default-ranking-820.png",
+      "bytes": 83603,
+      "sha256": "67abe49baf3af2e432b0a51c1478bd972681ee10c0274215517f310eeea0cfce",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/engineering-default-selected-url-820.png",
+      "bytes": 91495,
+      "sha256": "3dbb89a9a3141e9b05994e750ea5ae09113a7e3e36d12dab06a1a531f9628393",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/engineering-sol-main-ranking-820.png",
+      "bytes": 90228,
+      "sha256": "73442148e9eeb943f67fe177185d4d45906512de646193d17adb8a8a917c279b",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/engineering-score-breakdown-820.png",
+      "bytes": 88015,
+      "sha256": "20367c0ce3bdc389997ee9c720b7c8f97ee09482de7995d20f95d509f277dcf1",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/engineering-available-resource-comparison-820.png",
+      "bytes": 111556,
+      "sha256": "8acb5225f035527cb2a1b59c5ec908ca1c141211348fbafaf3b63f33bb937b34",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/engineering-resource-unavailable-820.png",
+      "bytes": 110021,
+      "sha256": "d9747d7d6e65f71c9d2cad44b4120c5d6142bc635c49279cb7e4cc41e437e893",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-overview-820.png",
+      "bytes": 81493,
+      "sha256": "ac5477d0efda0862c6d00063ade484b83b5daa4ea99d11af42287f181bc0c5ba",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-detection-method-820.png",
+      "bytes": 97318,
+      "sha256": "593ef1269c0deb200ebfee151c47e6dd9d893cc889bafff4db0b3e9f70334487",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-rubric-820.png",
+      "bytes": 138166,
+      "sha256": "e0fb5e580476c7f7ccbc38aef0582e0869a38ce650961a6700a5da969df7ea73",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-test-files-820.png",
+      "bytes": 134374,
+      "sha256": "f58876c78c0a15ee22b348d301985e9f69fce636127859b53a8b766d447737f7",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-score-calculation-820.png",
+      "bytes": 124689,
+      "sha256": "9df01e65543d040c5903ae5a301160811d42eede7be6b8e9bb196c9e17c9335d",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-fault-evidence-820.png",
+      "bytes": 151695,
+      "sha256": "ccb5cfb0b6b79dbb2b89deede209ca950bd12fb811ede54f3d13108e73423cb2",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-dimension-profile-820.png",
+      "bytes": 86467,
+      "sha256": "8d8b7da518709962352abcb18b910005e4662a40209c411abb8b6e0e72f6c9c0",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/test-authoring-review-reasons-820.png",
+      "bytes": 104972,
+      "sha256": "cd9568a6e74a04f21c9594b131fe01d4ddf2be804d9da742048674346b5bcd09",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/overall-combined-engineering-820.png",
+      "bytes": 138771,
+      "sha256": "2cbff40ca81ec3f86f2a192478087a481c8a3c8c69e07ba6e96adba58463ddf0",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/overall-sol-available-profile-820.png",
+      "bytes": 138980,
+      "sha256": "770a288586be3b5b6241f50b66baf02e89bfc533e34a3341097390c951df525d",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/writing-sol-complete-scores-820.png",
+      "bytes": 88080,
+      "sha256": "7bedcd32f6fe4886c6aaee859b811213b943ddb6091dfef32b2c7286d654886f",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/writing-sol-storytelling-core-idea-answers-820.png",
+      "bytes": 127515,
+      "sha256": "88b055a5615e3c981c681d322cf2654296525a0f0461da72b03e3fcc840bfff7",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/writing-sol-storytelling-plot-twists-answers-820.png",
+      "bytes": 139793,
+      "sha256": "380d383e7230a34027c6864affb0d038a43d4582268efeed07977f634613c6dc",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/writing-sol-storytelling-magic-discovery-answers-820.png",
+      "bytes": 128564,
+      "sha256": "65cef3e5eb6f68785c4e55e54030dc2fa6fdfacbdff8a517f951eafc082c94cb",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/overall-to-engineering-sol-coverage-820.png",
+      "bytes": 90113,
+      "sha256": "001a98c75c270e41069c66ad64e2247aecd44f8bb6ae51d04a9ead34f60cf21e",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/backend-testing-hyper-scale-chat-820.png",
+      "bytes": 99721,
+      "sha256": "90a187b0f3c8ad361852425666f0ea16516c43cbba4a44988fe2288f3a0da2d9",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/sol-architecture-hyper-scale-chat-row-820.png",
+      "bytes": 221831,
+      "sha256": "3b6f2057edb85a9b36ffe8052f90f4bfa3fe3b0875b0f3aafd0854056cf36eff",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/sol-architecture-hyper-scale-chat-answer-820.png",
+      "bytes": 273329,
+      "sha256": "7f494816d749b88be7e845daf8a3a0526fe14792afe62c555e1c0e92f086ecad",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/sol-architecture-hyper-scale-chat-judges-820.png",
+      "bytes": 179343,
+      "sha256": "c5105cc9460dee74681f15d68ea6055bfb9fd4c3427484c7afa4a42a8d05a2d9",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/sol-architecture-personalized-home-feed-row-820.png",
+      "bytes": 213365,
+      "sha256": "674681f8cc23a2217dfa0730ce38b6d655df46e54fdef5f34310fd028badc0f8",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/sol-architecture-personalized-home-feed-answer-820.png",
+      "bytes": 267007,
+      "sha256": "59fae3c82e6c0ae23ff3bf24352dc3687fbf7c69d12ec802c14cd771909eed7b",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/sol-architecture-personalized-home-feed-judges-820.png",
+      "bytes": 194658,
+      "sha256": "a196df578561d3ec3c0a05699bbe9a6ff98927682cb9fa0568de5be16ac69943",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/sol-architecture-device-telemetry-row-820.png",
+      "bytes": 218020,
+      "sha256": "6c8d6545fb64e348631456472b4f4faf5b31fa757ef4a23d8431ebdc335e41f5",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/sol-architecture-device-telemetry-answer-820.png",
+      "bytes": 287473,
+      "sha256": "6e255aa1110f9112e7548c70ee312e9d04af3eff16faa43b500e0aee5405658b",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/820/sol-architecture-device-telemetry-judges-820.png",
+      "bytes": 190156,
+      "sha256": "d589dfda0f95a6ddb0f97a4a9494bc9e8661e590f223c44bf6cc6645ef28d041",
+      "width": 820,
+      "height": 1000
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/testing-ledger-track-390.png",
+      "bytes": 68985,
+      "sha256": "4d6f9a5c8f7f88019907a00ad161d26bded029de0dd969bf352eabab77a3d861",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/backend-testing-ledger-chart-390.png",
+      "bytes": 67533,
+      "sha256": "5062b2577cd4ba9bb32334098410d8448b16bc4b0a1f22e841dcc69f87ac03cc",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-ledger-chart-390.png",
+      "bytes": 65287,
+      "sha256": "8bbbb6a344ba769048c8ab3e2fa3069f735991bf28d8eabbe80fcd61a7e4ae99",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-engineering-ledger-390.png",
+      "bytes": 64845,
+      "sha256": "f0af3d7566c68efb5537b65ebfd32171a44b6c3f7fe6d0f8a7388188c2594ca8",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-combined-leaderboard-390.png",
+      "bytes": 81743,
+      "sha256": "7387555a2f979171e60dac80a1264270a0f6ac86a92f553d919a7bf331457ccb",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-default-ranking-390.png",
+      "bytes": 68945,
+      "sha256": "7598479f15a61a88a112d1bd9c95e9ee05f1e1a29c2402c7b67ba3045c8d1f99",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-default-selected-url-390.png",
+      "bytes": 73083,
+      "sha256": "86a1a02a35dfb8abec1829aa2ce7685f37c0de17dd0c8caf2d46d967107302d8",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-sol-main-ranking-390.png",
+      "bytes": 71634,
+      "sha256": "31aa3d50fb13023b0f04fdb4bd9d074471188c18f7dd76025f0b94ed0fd67560",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-score-breakdown-390.png",
+      "bytes": 71192,
+      "sha256": "943a2a53b3eb4cbe282455d74f26308c18c033257cd6d4c092b44a24c613c9e8",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-available-resource-comparison-390.png",
+      "bytes": 72177,
+      "sha256": "fdc3a2c5b317ca0ecbca54ec266f3fd30e07e41b5157591b193023a5de801596",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/engineering-resource-unavailable-390.png",
+      "bytes": 71717,
+      "sha256": "190aa6777b36490ac668e8bd5baa3c6fdb93ac6ddcee8d4b6e4ae1d9ab9379ca",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-overview-390.png",
+      "bytes": 56571,
+      "sha256": "e51af51ffd24e369a30621cf2c36ae2b734f8536f16421a58e194d6987b1ae6e",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-detection-method-390.png",
+      "bytes": 64239,
+      "sha256": "dc2199b576357e4d7de66dc9706099434e852ff9ee3f691f62b0e9a7a18345ab",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-rubric-390.png",
+      "bytes": 82444,
+      "sha256": "4661a8f98aef4f9f4dc182177e8a90ad99144d447116c42665fcbf5bf5b79239",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-test-files-390.png",
+      "bytes": 61642,
+      "sha256": "1c42dd3f3c8c6b606e91025892c7f1a162d8d173b505bbb1f9589ae4df60e092",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-score-calculation-390.png",
+      "bytes": 60947,
+      "sha256": "a9f709bb9271f381ac9755ed7b42d8c36cf02e66c6b07284fa1c2aee098c0c79",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-fault-evidence-390.png",
+      "bytes": 63854,
+      "sha256": "2b05b32a4c7cb773d6f2faadd797fabf7d237b7e6530fb88c01dc10e7f974c7f",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-dimension-profile-390.png",
+      "bytes": 59110,
+      "sha256": "46e6ab2aeceffd8971923733f825a2f5c5bb2ac244c5cd4963e01b4b5e81a650",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/test-authoring-review-reasons-390.png",
+      "bytes": 78028,
+      "sha256": "8ef2fd882f98763bd4c5c115ed92832859a82490c45578c4c430df1d8587ee85",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/overall-combined-engineering-390.png",
+      "bytes": 53975,
+      "sha256": "9b46c909d4944dc2d88bbcccfc0caec75d7ff9a22328a3d5c4f008d0a14860c8",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/overall-sol-available-profile-390.png",
+      "bytes": 54412,
+      "sha256": "37a359420f1339ce743577090e49120b1953dcb22c95e2d704d7e10e21f411cf",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/writing-sol-complete-scores-390.png",
+      "bytes": 69386,
+      "sha256": "2165d06cd4533f78a0116c1e4df0b6df5d3acfe71b645900c98ee0dc4e4a3e91",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/writing-sol-storytelling-core-idea-answers-390.png",
+      "bytes": 71162,
+      "sha256": "ee2d0902c4c0f54b0e42e3a9730d9a59c213ac9c88032933f34e1476d3908da7",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/writing-sol-storytelling-plot-twists-answers-390.png",
+      "bytes": 75528,
+      "sha256": "8ee9bf5551a059705e269777abc98a7234b21790dfa7fb9149bf4ba5cea6edf2",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/writing-sol-storytelling-magic-discovery-answers-390.png",
+      "bytes": 75343,
+      "sha256": "60e2de4c23004f72a9361bed59d05d215f49194dbc7c3c439a8947e0ceac3623",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/overall-to-engineering-sol-coverage-390.png",
+      "bytes": 70492,
+      "sha256": "ee3854fc056c629387829a3848a2ee165a714b6d99cc9450f6742ba525c61281",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/backend-testing-hyper-scale-chat-390.png",
+      "bytes": 58375,
+      "sha256": "d6a6f25068c51f308b16d15c96694a66c53143e5fb3915f0b8f3f1766e10021b",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-hyper-scale-chat-row-390.png",
+      "bytes": 80807,
+      "sha256": "7a9b203838624c78e4f663e3ba9ac4fc993a6ba4eeb42392f119065a2907f913",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-hyper-scale-chat-answer-390.png",
+      "bytes": 101863,
+      "sha256": "897fe3670ada3f204ea45cf60c447828edca80d3dc38f8dddbfdb736dc2718c0",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-hyper-scale-chat-judges-390.png",
+      "bytes": 82823,
+      "sha256": "f83930ff252f4f84412d838543c76ce39ffe85a5f9f3883d2eb0374012a2cbdc",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-personalized-home-feed-row-390.png",
+      "bytes": 80056,
+      "sha256": "1f4bc6bedb34a4ad07ef8a4c48e93a902bb24d5630efe9658f18ae3005f45336",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-personalized-home-feed-answer-390.png",
+      "bytes": 98162,
+      "sha256": "2d10299e0c14437ea9324289df44dcea827ddfd9523aa887a25b5fefb4d43c46",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-personalized-home-feed-judges-390.png",
+      "bytes": 83859,
+      "sha256": "7a0de41e3753d665460e15a6e6e5a53a3ea2b02d390f48d27c32bb36f15047dd",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-device-telemetry-row-390.png",
+      "bytes": 81466,
+      "sha256": "5bcf07b59fc48799b44b273acb539a9ae62ad3fca6599b4d1606329435e2b0fa",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-device-telemetry-answer-390.png",
+      "bytes": 96842,
+      "sha256": "9fd388eee61a0c1d427c5c6ea38aa85e4a772a740be908a498dcf4c137a19e75",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/test-authoring/2026-10-10/candidate-d4bdee89dbc3/390/sol-architecture-device-telemetry-judges-390.png",
+      "bytes": 84613,
+      "sha256": "e979561bdccde07e5ac1871455c0bc1ae227758350e585e3d6163fb6f7dfa64a",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/1440-storytelling-core-idea-refresh.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 128996,
+      "sha256": "8aad72a2621f355eb8a19a3ede17d7aee9561eecdeb466f6e47977066b6e3ed5"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/1440-storytelling-core-idea-refresh-inspection.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 277906,
+      "sha256": "3894e5566bf4433c28c6500639b0d9905c9cdcbcb0cfff34d3022374df960787"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/1440-storytelling-mmorpg-narrative.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 153985,
+      "sha256": "ebf8b681bae6c32f0b9166aab1d0ce4095437ca1b26181761fdb39c234e03bd7"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/1440-storytelling-mmorpg-narrative-inspection.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 299457,
+      "sha256": "c4e63348e61c9f5f0fe5e48fdf07b19fbddbabf46e9e25b8a956ccd9e2655a99"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/1440-writing-catalog.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 185558,
+      "sha256": "9727b282114fb0c4e8a6a298de9ce230da5089303e9a7585c8ddb9f8632ad9cf"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/390-storytelling-core-idea-refresh.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 54326,
+      "sha256": "66fa97175d92353a291bbb76994b1a1096a3dded69ae6869fe3059c69d4f8347"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/390-storytelling-core-idea-refresh-inspection.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 73284,
+      "sha256": "ea2e5444cbdbd1d5a566025e01ab3db5311481dd1be362d5bc200cdb6977bbe3"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/390-storytelling-mmorpg-narrative.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 52855,
+      "sha256": "a258fe7c8830b1cb4cec7ccb83c604a6f61b1240ac3d5f98cf1efeb6ff9e45a9"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/390-storytelling-mmorpg-narrative-inspection.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 72773,
+      "sha256": "80fcad3b9c4ad0974a0fc4cdcd29fe4a5171f84a0868de036819c410e027b4f7"
+    },
+    {
+      "path": "reviews/writing-refresh/071c75e0c0b9a8fb7d587a218625650b39ce7357bf7870c8709837063885245e/390-writing-catalog.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 62418,
+      "sha256": "0091831c6a352306dcb812b3e6ee1cdb9d4e0dc7ccbedbaa536d5edddf97f32f"
+    }
+  ],
+  "retainedCaptureEvidence": {
+    "version": "2026-10-10-backend-testing-weighted-score-6e54ac66be68",
+    "receipt": {
+      "path": "reviews/test-authoring/2026-10-10/prior-current/template-lock.json",
+      "bytes": 39988,
+      "sha256": "5117fb8ad38430c66308089c23aa347e749fce0c54ee73ec08b6eba547b4cf81"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+# Three.js + Rapier Performance Engineering Eval
+
+This suite checks whether `threejs__improve-performance` makes bounded build and review decisions, diagnoses observed symptoms, and preserves render topology, shader execution cardinality, and valid whole-frame counters.
+
+The core contract is structural, not timing-dependent. For a batching-only change, content cardinality may change instance and draw data but must not silently multiply full-scene passes, full-resolution targets, attachments, or frame/output owners. The treatment must block the exact five-G-buffer-per-enemy-type defect and the independently owned `HudRenderer` terminal-output path, generalize through renamed helpers to any undeclared cardinality fan-out, and still allow fixed centrally owned multipass rendering. It must distinguish a WebGPU render pass targeting the current canvas texture from a second browser presentation.
+
+The cases also exercise positive, negative, and borderline routing; diagnosis, candidate review, implementation, and verification within the same skill for an observed symptom; draw-invariant shader work requested again by each covered fragment invocation; `WebGLRenderer.info` aggregation across multiple render calls; and attention drift under a long otherwise-correct mobile-performance brief. Build and static review need no observed slowdown. Unrelated mechanical edits do not load the skill. Hard substring checks are only a semantic floor; no status label is required. The suite-level judge rejects keyword cosplay, advice that waits for FPS before recognizing a deterministic architecture violation, and blanket rules that treat every additional pass as invalid.
+
+Four contrasting shader cases cover identical loop work grouped or scattered across supplied execution groups, uniform branching versus eager selection and compile specialization, opposing measured outcomes of loop unrolling, and evidenced AMD waterfall lowering versus ordinary texture-array-layer indexing and unsupported browser subgroup assumptions. They test mechanisms and evidence, not GPU vocabulary or blanket optimization rules.
+
+Three performance-process cases cover stalled micro-optimizations, a substantially smaller avatar rig under an authorized quality trade, and a confirmed local defect that should remain narrow. They require the treatment to reconstruct cumulative system cost from an actually empty runtime, recursively explain expensive work, test cheaper representations, and verify the assembled result. The negative case protects useful local fixes from an unnecessary full investigation. These cases omit generation-time output hints; the suite judge owns the substantive expectations. Substring checks remain only a floor, not evidence that the process was followed.
+
+Run the structural smoke test locally:
+
+```bash
+npm run eval -- threejs__improve-performance mock --trials 1
+```
+
+A live-model run is required for the behavioral verdict. Mock mode proves suite discovery, baseline/treatment wiring, and result persistence only.
+
+Current limit: the suite supplies source facts and hypothetical compiler/profile reports to evaluate architecture, shader-execution, instrumentation, and performance-process judgment. Neither mock nor live-model results capture a browser frame, execute the proposed counters, measure GPU cost, or prove visual equivalence; runtime claims still need target-device evidence.
+
+For realistic defect-discovery A/Bs rather than inline topology cases, use one of the manual static-audit fixtures:
+
+- [`fixtures/fog/index.html`](fixtures/fog/index.html), with provenance and isolation rules in [`fixtures/fog/README.md`](fixtures/fog/README.md)
+- [`fixtures/water-ripples/index.html`](fixtures/water-ripples/index.html), with provenance and isolation rules in [`fixtures/water-ripples/README.md`](fixtures/water-ripples/README.md)
+
+These fixtures test static prioritization and falsifier quality; they still cannot establish a demo's runtime bottleneck.
+
+For paired code-generation evaluation, use [`references/moonlit-flooded-observatory-generation-prompt.md`](references/moonlit-flooded-observatory-generation-prompt.md). It fixes one asset-free visual workload while leaving render topology and implementation choices undisclosed; generated artifacts require separate feature-equivalence, runtime, and crossed static-audit evaluation.

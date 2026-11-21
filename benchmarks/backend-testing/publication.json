@@ -1,0 +1,212 @@
+{
+  "kind": "vasirbenchmark-backend-testing-selection",
+  "schemaVersion": 4,
+  "plan": {
+    "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/plan.json",
+    "sha256": "ee9055d9583fb3438ad170bf1afbdbf44bfbe1d09de4e9df499e7078de2ca1c9"
+  },
+  "skill": {
+    "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/skill.json",
+    "sha256": "9310c5b6fde31049af1add359eacfae87bc75acac166df237c05d953db200f4f"
+  },
+  "rubric": {
+    "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/taste-rubric.json",
+    "sha256": "5395bf8eaf5ef2e77e36a647a6dbde07e3bb2dfaf33bbec9442b053c0c8a83aa"
+  },
+  "generation": {
+    "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/generation-summary.json",
+    "sha256": "5ff98c3172beb1bac69da8027ea1140f04f9924cfbcc41f8e094fcd493d57304"
+  },
+  "reviewPlan": {
+    "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/review-plan.json",
+    "sha256": "3211c92182f0401b70cdab447fa0c696fbeed0b032857010744a1e3d4deea95f"
+  },
+  "packet": {
+    "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/packet.json",
+    "sha256": "c51e7be7713abba89841bbf77eb674b756cb8342ed4af48a80df2cb29c43fed1"
+  },
+  "mapping": {
+    "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/mapping.json",
+    "sha256": "0107c38471282fce275d8d99dbb8b274df414eb284d82b81a7b63f9c4fff13d5"
+  },
+  "review": {
+    "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/review-summary.json",
+    "sha256": "efb71c4b4f3006a69e642aa33f1f694c66fe55287c67741e3a737870af40dbb7"
+  },
+  "authors": [
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-a94a8197b6/native/result.json",
+        "sha256": "08077c4f48b344e5ce5757329225c6d507022bdd50e4c48dc482d6f2ec6dbe6a"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-a94a8197b6/native/launch.json",
+        "sha256": "a3120e75c9edd8f9cb05001e5e79cfe2d9b6fed7b0932979d4e3c374864d0597"
+      },
+      "outcome": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-a94a8197b6/outcome.json",
+        "sha256": "1c8407fb201d53d20710d9ab03c65d0a06d7a1969a958cc1e04262c0a049ffa4"
+      },
+      "verification": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-a94a8197b6/verification/evaluation.json",
+        "sha256": "467a6f0ccdb43de28ade9ed23f88062148b9635d01b1931b908bd3cf92b81709"
+      }
+    },
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-4e982aa260/native/result.json",
+        "sha256": "f1e5a408dd241c08d79d1a7854b9f0b843bd03b4d0ad7743d515d16f7708807a"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-4e982aa260/native/launch.json",
+        "sha256": "0b3f982c32969f7d2bf201d25950fbec29f8261016b286eecb8ab7c3fb0bb9f0"
+      },
+      "outcome": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-4e982aa260/outcome.json",
+        "sha256": "acc6421b36386d148a97ad733849f52e117d69a63ec9cba8eba44d3c2abeb193"
+      },
+      "verification": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-4e982aa260/verification/evaluation.json",
+        "sha256": "a452cee415cdd16fe8c47d4341104f850e83d85324ff4ce6aef8d734e64634cf"
+      }
+    },
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-2f0cce869f/native/result.json",
+        "sha256": "b7506ac46dc284d68a3c6a51f9b056755f8c1039fb3e1ce2212baac72e9f9a8e"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-2f0cce869f/native/launch.json",
+        "sha256": "f506b535763ffb2b78f936d2ddfb649bb8137b71e0498b1d75da398d06a539d1"
+      },
+      "outcome": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-2f0cce869f/outcome.json",
+        "sha256": "a5fc77f5d2116e3daa19bb70ab38b489996d6497f79c409704fd357007a20d08"
+      },
+      "verification": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-2f0cce869f/verification/evaluation.json",
+        "sha256": "9e1dfab4078ed0fef69c4817294abca41cae215ac576bffd9517e8276b051eb5"
+      }
+    },
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-2d6f529e5f/native/result.json",
+        "sha256": "b571b6fae8abda322400dadaab64fba6ce0c73cc1cd4716012278dfc2472c87e"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-2d6f529e5f/native/launch.json",
+        "sha256": "332000e1293b76ee18641a116c12dfe43129320423c932d0b771317397c91140"
+      },
+      "outcome": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-2d6f529e5f/outcome.json",
+        "sha256": "7f023ba9d9bb448e4d46e68bf0dbb1f887179da3f7f43e334b7ccfa9ea8c97e0"
+      },
+      "verification": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-2d6f529e5f/verification/evaluation.json",
+        "sha256": "3d9d49dd3bd73522256b1e281ff3c768f367d162d87747d11f9c3e897b04d9b3"
+      }
+    },
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-f6c9b09853/native/result.json",
+        "sha256": "d0d0b3efe31f16bbb38dc5349cd46132a20f0fc56bc251df4189245999291fd0"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-f6c9b09853/native/launch.json",
+        "sha256": "b7ac576344734be524efe82b2a9e6f5fef2937ab48d4680f300a76c3eb1fa0de"
+      },
+      "outcome": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-f6c9b09853/outcome.json",
+        "sha256": "99049339e777296829524525cac71c3b982cf25c97b1d22095b8b78989c5ef0a"
+      },
+      "verification": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-f6c9b09853/verification/evaluation.json",
+        "sha256": "2d633515d16508fbebcc2775b405f28381f7f562e75ad5238b4a9c45869db15c"
+      }
+    },
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-208e3078b6/native/result.json",
+        "sha256": "cf5ae786340ef5ece3f773208566e080c1a6798efc7630351f0c4ecbb16ef76d"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-208e3078b6/native/launch.json",
+        "sha256": "a204fcd6b4cdceb55fe77d70631861de1a975ab5d9d5fc69bf2123c68ffdc432"
+      },
+      "outcome": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-208e3078b6/outcome.json",
+        "sha256": "940326c1b8dd1c9ad6ccc5a4f95fcc953b4a7fdc419c60f2deb50585fb05ba9f"
+      },
+      "verification": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-208e3078b6/verification/evaluation.json",
+        "sha256": "f5077a4811cd69113ce92c07f7f5772f497fce24df392028e25f54132bd18b0c"
+      }
+    },
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-0d49c188d4/native/result.json",
+        "sha256": "3af1682fbc1ddfc3db0da0e8448c11fdf40f78e0a6d41d55b9071ec2704f48d6"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-0d49c188d4/native/launch.json",
+        "sha256": "ea4055e754886156b80b68bcb1e255059584a40c45f752f4280c49f02038e3ba"
+      },
+      "outcome": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-0d49c188d4/outcome.json",
+        "sha256": "169ea13841c2da266318fa0829e91bdbc5886c27efce472e899c77dbef06bee8"
+      },
+      "verification": {
+        "path": ".agents/vasir-evals/backend-testing/paired-repair-2026-10-09/row-0d49c188d4/verification/evaluation.json",
+        "sha256": "846897a6b398b3baf17e2573a394709f7af654b8d496366b76f197a49286bb44"
+      }
+    },
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-f387c3619a/native/result.json",
+        "sha256": "6352309984ed137fa293ee100c0e906d47a2591307d33962c9f467f4883461ba"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-f387c3619a/native/launch.json",
+        "sha256": "b600182033570c263b8894b5250a7dcdfd733d71fc0f9e7afee970f875108bbb"
+      },
+      "outcome": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-f387c3619a/outcome.json",
+        "sha256": "67dc9485dfb2a04057fe1654cce66b7bde1c92b9ad6e482a5f42164b903fbaa2"
+      },
+      "verification": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/row-f387c3619a/verification/evaluation.json",
+        "sha256": "185e318cbd50c39832fef30a7be4987ec1aa8b72736b116e01699c1d9261b49d"
+      }
+    }
+  ],
+  "judges": [
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/judge-1/result.json",
+        "sha256": "18699b690a88cb92df42f3511fbf04186158f022e77a8f867e7b68fa000d72c9"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/judge-1/launch.json",
+        "sha256": "aba5d4364392207a9cdc3259ec27acfdd05e23f9ddee926eb5d01c6fa86ae324"
+      },
+      "validated": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/judge-1/validated.json",
+        "sha256": "3daa62c48688b07c0d44b3089fec11906b96ced8343ac8bbaa2fae377a87e8a2"
+      }
+    },
+    {
+      "receipt": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/judge-2/result.json",
+        "sha256": "ec6c3a976137dbdf33be467c033e54423986404974dd51ff414361a0dc74c7ad"
+      },
+      "launch": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/judge-2/launch.json",
+        "sha256": "946eba5d6f1959fd2c8003c33c13513816fcd8b3258fd85c6f1a8330361a1a18"
+      },
+      "validated": {
+        "path": ".agents/vasir-evals/backend-testing/compact-round-2026-10-10/judge-2/validated.json",
+        "sha256": "e170aa5dab844e89cf8cf83544595b73dffcd5c2d98d25832f5917205709206e"
+      }
+    }
+  ]
+}

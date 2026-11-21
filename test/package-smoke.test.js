@@ -1,0 +1,204 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import childProcess from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+function createTemporaryDirectory() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), "vasir-package-"));
+}
+
+function writeFile(filePath, fileContents) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, fileContents);
+}
+
+function listRelativeFiles(rootDirectory) {
+  const relativeFilePaths = [];
+  const pendingDirectories = [rootDirectory];
+  while (pendingDirectories.length > 0) {
+    const currentDirectory = pendingDirectories.pop();
+    for (const directoryEntry of fs.readdirSync(currentDirectory, { withFileTypes: true })) {
+      const absolutePath = path.join(currentDirectory, directoryEntry.name);
+      if (directoryEntry.isDirectory()) {
+        pendingDirectories.push(absolutePath);
+      } else if (directoryEntry.isFile()) {
+        relativeFilePaths.push(path.relative(rootDirectory, absolutePath));
+      }
+    }
+  }
+  return relativeFilePaths;
+}
+
+function runCommand(commandName, argumentList, currentWorkingDirectory, environmentVariables = {}) {
+  const commandResult = childProcess.spawnSync(commandName, argumentList, {
+    cwd: currentWorkingDirectory,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+    env: {
+      ...process.env,
+      ...environmentVariables
+    }
+  });
+
+  if (commandResult.error) {
+    throw commandResult.error;
+  }
+
+  return commandResult;
+}
+
+test("npm pack produces a runnable vasir binary with help and add support", () => {
+  const packDirectory = createTemporaryDirectory();
+  const homeDirectory = createTemporaryDirectory();
+  const projectDirectory = createTemporaryDirectory();
+  const npmCacheDirectory = path.join(packDirectory, "npm-cache");
+  const npmEnvironmentVariables = {
+    npm_config_cache: npmCacheDirectory
+  };
+  const packResult = runCommand("npm", ["pack", REPO_ROOT], packDirectory, npmEnvironmentVariables);
+  assert.equal(packResult.status, 0, packResult.stderr);
+
+  const tarballFileName = packResult.stdout.trim().split("\n").at(-1);
+  const installPrefixDirectory = path.join(packDirectory, "prefix");
+  const installResult = runCommand(
+    "npm",
+    ["install", "--prefix", installPrefixDirectory, path.join(packDirectory, tarballFileName)],
+    packDirectory,
+    npmEnvironmentVariables
+  );
+  assert.equal(installResult.status, 0, installResult.stderr);
+
+  const binaryPath = path.join(
+    installPrefixDirectory,
+    "node_modules",
+    ".bin",
+    process.platform === "win32" ? "vasir.cmd" : "vasir"
+  );
+  assert.ok(
+    fs.existsSync(path.join(installPrefixDirectory, "node_modules", "vasir", ".vasir-catalog-manifest.json"))
+  );
+  const installedPackageDirectory = path.join(installPrefixDirectory, "node_modules", "vasir");
+  assert.ok(
+    fs.existsSync(path.join(installedPackageDirectory, "benchmarks", "hyper-scale-chat", "benchmark.json"))
+  );
+  const installedFilePaths = listRelativeFiles(installedPackageDirectory);
+  assert.ok(
+    installedFilePaths.every(
+      (relativeFilePath) =>
+        !relativeFilePath.split(path.sep).some((pathSegment) => pathSegment === "__pycache__" || pathSegment === ".pytest_cache") &&
+        !relativeFilePath.endsWith(".pyc")
+    ),
+    "npm package contains generated Python cache files:\n" +
+      installedFilePaths
+        .filter(
+          (relativeFilePath) =>
+            relativeFilePath.split(path.sep).some((pathSegment) => pathSegment === "__pycache__" || pathSegment === ".pytest_cache") ||
+            relativeFilePath.endsWith(".pyc")
+        )
+        .join("\n")
+  );
+
+  const helpResult = runCommand(binaryPath, ["--help"], packDirectory);
+  assert.equal(helpResult.status, 0, helpResult.stderr);
+  assert.match(helpResult.stdout, /vasir status \[--json\]/);
+  assert.match(helpResult.stdout, /vasir context \[--json\] \[--debug\] \[--repo-root <path>\]/);
+  assert.match(helpResult.stdout, /vasir doctor \[--json\]/);
+  assert.match(helpResult.stdout, /vasir repair \[--json\] \[--repo-root <path>\]/);
+  assert.match(helpResult.stdout, /vasir diff \[skill\.\.\.\] \[--json\] \[--exit-code\] \[--repo-root <path>\]/);
+  assert.match(
+    helpResult.stdout,
+    /vasir add <skill> \[skill...\] \[--json\] \[--replace\] \[--agents-profile <name>\]/
+  );
+  assert.match(helpResult.stdout, /vasir adopt \[--json\]/);
+  assert.match(helpResult.stdout, /vasir remove <skill> \[skill...\] \[--json\]/);
+  assert.match(helpResult.stdout, /vasir agents sync \[--scope <path>\] \[--profile <name>\] \[--json\] \[--dry-run\]/);
+  assert.match(helpResult.stdout, /vasir agents init <profile> \[--json\] \[--replace\]/);
+  assert.match(helpResult.stdout, /vasir agents draft-purpose \[--json\] \[--write\] \[--model <name>\]/);
+  assert.match(helpResult.stdout, /vasir agents draft-routing \[--json\] \[--write\]/);
+  assert.match(helpResult.stdout, /vasir agents validate \[--scope <path>\] \[--json\]/);
+  assert.match(
+    helpResult.stdout,
+    /vasir benchmark publish \[--dry-run\] \[--json\] \[--repo-root <path>\]/
+  );
+  assert.match(helpResult.stdout, /vasir eval run <benchmark> --treatment skill:<name>/);
+  assert.match(helpResult.stdout, /vasir eval report <benchmark> \[run-id\] \[--open\]/);
+  assert.match(helpResult.stdout, /vasir eval run <skill> \[--json\] \[--model <name>\] \[--trials <count>\]/);
+  assert.match(helpResult.stdout, /vasir eval inspect <skill> \[run-id\] \[--json\]/);
+  assert.match(helpResult.stdout, /vasir eval rescore <benchmark-or-skill> \[run-id\] \[--json\]/);
+  assert.match(helpResult.stdout, /vasir add all/i);
+  const versionResult = runCommand(binaryPath, ["--version"], packDirectory);
+  assert.equal(versionResult.status, 0, versionResult.stderr);
+  assert.equal(versionResult.stdout.trim(), "vasir 0.1.0");
+
+  const statusResult = runCommand(binaryPath, [], packDirectory);
+  assert.equal(statusResult.status, 0, statusResult.stderr);
+  assert.match(statusResult.stdout, /Status/);
+
+  const addEnvironmentVariables = {
+    ...npmEnvironmentVariables,
+    HOME: homeDirectory,
+    USERPROFILE: homeDirectory
+  };
+  writeFile(
+    path.join(projectDirectory, "package.json"),
+    `${JSON.stringify({ name: "space-admin-console", dependencies: { react: "^19.0.0" } }, null, 2)}\n`
+  );
+  writeFile(path.join(projectDirectory, "src", "components", "Button.tsx"), "export function Button() { return null; }\n");
+  const addResult = runCommand(
+    binaryPath,
+    ["add", "design__building-frontend-interfaces"],
+    projectDirectory,
+    addEnvironmentVariables
+  );
+  assert.equal(addResult.status, 0, addResult.stderr);
+  assert.match(addResult.stdout, /Installed design__building-frontend-interfaces/);
+  assert.match(addResult.stdout, /Project skills ready at/);
+  assert.match(addResult.stdout, /Repo config ready at/);
+  assert.match(addResult.stdout, /AGENTS starter ready at \(frontend, inferred\)/);
+  assert.match(addResult.stdout, /CLAUDE starter ready at \(frontend, inferred\)/);
+  assert.ok(fs.existsSync(path.join(projectDirectory, ".agents", "skills", "design__building-frontend-interfaces", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(projectDirectory, ".agents", "vasir.json")));
+  assert.ok(fs.existsSync(path.join(projectDirectory, "AGENTS.md")));
+  assert.ok(fs.existsSync(path.join(projectDirectory, "CLAUDE.md")));
+  assert.doesNotMatch(fs.readFileSync(path.join(projectDirectory, "AGENTS.md"), "utf8"), /vasir:profile/);
+  assert.doesNotMatch(fs.readFileSync(path.join(projectDirectory, "CLAUDE.md"), "utf8"), /vasir:profile/);
+  const projectConfig = JSON.parse(fs.readFileSync(path.join(projectDirectory, ".agents", "vasir.json"), "utf8"));
+  assert.equal(projectConfig.agents.profile, "frontend");
+
+  const contextResult = runCommand(binaryPath, ["context", "--json", "--debug"], projectDirectory, addEnvironmentVariables);
+  assert.equal(contextResult.status, 0, contextResult.stderr);
+  const parsedContext = JSON.parse(contextResult.stdout);
+  assert.equal(parsedContext.command, "context");
+  assert.equal(parsedContext.schemaVersion, 2);
+  assert.equal(parsedContext.execution.mode, "local");
+  assert.equal(parsedContext.execution.usesModel, false);
+  assert.equal(parsedContext.execution.usesNetwork, false);
+  assert.equal(parsedContext.repoStatus, "tracked");
+  assert.ok(parsedContext.recommendedSkillNames.includes("design__building-frontend-interfaces"));
+  assert.ok(parsedContext.recommendedSkills.some((skillRecommendation) => skillRecommendation.skillName === "design__building-frontend-interfaces"));
+  assert.equal(parsedContext.debug.kind, "contextDebug");
+
+  const validateResult = runCommand(binaryPath, ["agents", "validate", "--json"], projectDirectory, addEnvironmentVariables);
+  assert.equal(validateResult.status, 1);
+  assert.match(validateResult.stderr, /AGENTS_VALIDATION_FAILED/);
+
+  const removeResult = runCommand(binaryPath, ["remove", "design__building-frontend-interfaces"], projectDirectory, addEnvironmentVariables);
+  assert.equal(removeResult.status, 0, removeResult.stderr);
+  assert.match(removeResult.stdout, /Removed design__building-frontend-interfaces/);
+  assert.ok(!fs.existsSync(path.join(projectDirectory, ".agents", "skills", "design__building-frontend-interfaces")));
+
+  const evalResult = runCommand(
+    binaryPath,
+    ["eval", "run", "testing__enforcing-mandate", "--model", "mock"],
+    REPO_ROOT,
+    npmEnvironmentVariables
+  );
+  assert.equal(evalResult.status, 0, evalResult.stderr);
+  assert.match(evalResult.stdout, /Summary/i);
+  assert.match(evalResult.stdout, /Inspect/i);
+});
